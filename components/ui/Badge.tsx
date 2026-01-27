@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
-type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'subtle';
+type BadgeVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'subtle';
 type BadgeSize = 'xs' | 'sm' | 'md' | 'lg';
 
 interface BadgeProps {
@@ -18,6 +18,7 @@ interface BadgeProps {
 const variantStyles: Record<BadgeVariant, string> = {
   default: 'bg-[rgb(var(--muted)/0.1)] text-[rgb(var(--muted))]',
   primary: 'bg-[rgb(var(--accent)/0.1)] text-[rgb(var(--accent))]',
+  secondary: 'bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--text))]',
   success: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
   warning: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
   danger: 'bg-red-500/10 text-red-600 dark:text-red-400',
@@ -35,6 +36,7 @@ const sizeStyles: Record<BadgeSize, string> = {
 const dotColors: Record<BadgeVariant, string> = {
   default: 'bg-[rgb(var(--muted))]',
   primary: 'bg-[rgb(var(--accent))]',
+  secondary: 'bg-[rgb(var(--muted))]',
   success: 'bg-emerald-500',
   warning: 'bg-amber-500',
   danger: 'bg-red-500',
