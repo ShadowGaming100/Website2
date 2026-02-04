@@ -110,6 +110,10 @@ import {
   faEdit,
   faRotateLeft,
   faCircle,
+  faPenToSquare,
+  faTrash,
+  faLayerGroup,
+  faBarsProgress,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -266,5 +270,10 @@ library.add(
   faJs,
   faReact,
   faDocker,
-  faXTwitter
+
+  faXTwitter,
+  faPenToSquare,
+  faTrash,
+  faLayerGroup,
+  faBarsProgress
 );

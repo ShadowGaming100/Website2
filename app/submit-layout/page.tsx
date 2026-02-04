@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Icon } from '@/components/ui/Icon';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import Link from 'next/link';
 
 type SpecPlan = {
   id: string;
@@ -253,13 +254,13 @@ export default function SubmitLayoutPage() {
     const iconName = icon.replace('fa-', '');
     return (
       <div className="mb-4">
-        <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">
-          <Icon icon={['fas', iconName as never] as IconProp} className="text-muted-foreground text-xs" />
+        <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">
+          <Icon icon={['fas', iconName as never] as IconProp} className="text-[rgb(var(--muted))] text-xs" />
           {label}
         </label>
         <input
           type="text"
-          className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground text-base focus:outline-none focus:border-blue-500 focus:bg-card transition-all placeholder:text-muted-foreground"
+          className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] text-sm focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] focus:border-transparent transition-all placeholder-[rgb(var(--muted)/0.5)]"
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -270,51 +271,38 @@ export default function SubmitLayoutPage() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--bg))]">
-      {/* Hero Banner Section */}
-      <section className="relative">
-        <div className="h-48 md:h-64 lg:h-72 relative overflow-hidden">
-          <div className="w-full h-full gradient-bg" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[rgb(var(--bg))] via-[rgb(var(--bg)/0.5)] to-transparent" />
-        </div>
-
-        {/* Overlapping Card */}
-        <div className="container-default relative -mt-20 md:-mt-24">
+      {/* Header Section */}
+      <section className="pt-24 pb-12">
+        <div className="container-default text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] shadow-large p-6 md:p-8"
+            className="max-w-2xl mx-auto"
           >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="max-w-2xl">
-                <h1 className="heading-2 text-[rgb(var(--text))] mb-2 flex items-center gap-3">
-                  <FontAwesomeIcon icon={['fas', 'wand-magic-sparkles'] as IconProp} className="text-[rgb(var(--accent))]" />
-                  <span>Discord Layout <span className="gradient-text">Builder</span></span>
-                </h1>
-                <p className="body-default text-[rgb(var(--muted))] text-balance">
-                  Create professional Discord-formatted hosting layouts instantly with emojis and proper structure.
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="hidden sm:flex flex-col items-end">
-                  <div className="text-xs font-bold text-[rgb(var(--accent))] uppercase tracking-wider">Instant</div>
-                  <div className="text-[10px] text-[rgb(var(--muted))]">Generation</div>
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-[rgb(var(--accent)/0.1)] flex items-center justify-center text-[rgb(var(--accent))]">
-                  <FontAwesomeIcon icon={['fas', 'bolt'] as IconProp} />
-                </div>
-              </div>
-            </div>
+            <Link
+              href="/submit-host"
+              className="inline-flex items-center gap-2 text-sm text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] transition-colors mb-6"
+            >
+              <FontAwesomeIcon icon={['fas', 'arrow-left'] as IconProp} />
+              Back to submission
+            </Link>
+
+            <h1 className="heading-1 text-[rgb(var(--text))] mb-4">
+              Layout <span className="text-[rgb(var(--accent))]">Builder</span>
+            </h1>
+            <p className="body-large text-[rgb(var(--muted))]">
+              Create professional Discord-formatted hosting layouts instantly.
+            </p>
           </motion.div>
         </div>
       </section>
 
-      <div className="container-default py-12">
-
-        <div className="flex flex-col gap-12 mx-4 sm:mx-12">
-          <section className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] shadow-large p-6 sm:p-8">
-            <div className="flex items-center mb-8 pb-6 border-b-2 border-border">
-              <div className="text-2xl mr-6 w-14 h-14 flex items-center justify-center gradient-bg rounded-xl text-white shadow-medium">
-                <Icon icon={['fas', 'edit'] as IconProp} />
+      <div className="container-default pb-24">
+        <div className="max-w-5xl mx-auto">
+          <section className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] shadow-soft p-6 sm:p-8 mb-12">
+            <div className="flex items-center mb-8 pb-6 border-b border-[rgb(var(--border))]">
+              <div className="text-xl mr-4 w-12 h-12 flex items-center justify-center bg-[rgb(var(--accent)/0.1)] rounded-lg text-[rgb(var(--accent))]">
+                <Icon icon={['fas', 'pen-to-square'] as IconProp} />
               </div>
               <div>
                 <h2 className="heading-4 text-[rgb(var(--text))] m-0">Build Your Layout</h2>
@@ -324,55 +312,57 @@ export default function SubmitLayoutPage() {
 
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="mb-12">
-                <div className="flex items-center gap-3 font-bold text-lg text-foreground mb-6 pb-2 border-b-2 border-border">
+                <div className="flex items-center gap-3 font-bold text-lg text-[rgb(var(--text))] mb-6 pb-2 border-b border-[rgb(var(--border))]">
                   <span>📌</span>
                   <span>Basic Information</span>
                 </div>
 
-                <div className="mb-6">
-                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Host Name <span className="text-red-500">*</span></label>
-                  <input type="text" className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-blue-500 focus:bg-card transition-all placeholder:text-muted-foreground" placeholder="e.g., Example Host" value={hostName} onChange={e => setHostName(e.target.value)} required />
-                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="mb-2">
+                    <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Host Name <span className="text-red-500">*</span></label>
+                    <input type="text" className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] transition-all placeholder-[rgb(var(--muted)/0.5)]" placeholder="e.g., Example Host" value={hostName} onChange={e => setHostName(e.target.value)} required />
+                  </div>
 
-                <div className="mb-6">
-                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Plans <span className="text-red-500">*</span></label>
-                  <input type="text" className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-blue-500 focus:bg-card transition-all placeholder:text-muted-foreground" placeholder="e.g., Nextjs, Javascript, Python, Node.js" value={plans} onChange={e => setPlans(e.target.value)} required />
-                  <div className="text-xs text-[rgb(var(--muted))] mt-1 flex items-start gap-1"><Icon icon={['fas', 'circle-info'] as IconProp} className="mt-[2px] text-[10px]" /><span>Comma separated list of plan names</span></div>
-                </div>
+                  <div className="mb-2">
+                    <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Plans <span className="text-red-500">*</span></label>
+                    <input type="text" className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] transition-all placeholder-[rgb(var(--muted)/0.5)]" placeholder="e.g., Nextjs, Javascript, Python" value={plans} onChange={e => setPlans(e.target.value)} required />
+                    <div className="text-xs text-[rgb(var(--muted))] mt-1 flex items-start gap-1"><Icon icon={['fas', 'circle-info'] as IconProp} className="mt-[2px] text-[10px]" /><span>Comma separated list</span></div>
+                  </div>
 
-                <div className="mb-6">
-                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">Targets <span className="text-red-500">*</span></label>
-                  <input type="text" className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-blue-500 focus:bg-card transition-all placeholder:text-muted-foreground" placeholder="e.g., Coding, Gaming" value={targets} onChange={e => setTargets(e.target.value)} required />
-                </div>
+                  <div className="mb-2">
+                    <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Targets <span className="text-red-500">*</span></label>
+                    <input type="text" className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] transition-all placeholder-[rgb(var(--muted)/0.5)]" placeholder="e.g., Coding, Gaming" value={targets} onChange={e => setTargets(e.target.value)} required />
+                  </div>
 
-                <div className="mb-6">
-                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">Locales / Languages <span className="text-red-500">*</span></label>
-                  <input type="text" className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-blue-500 focus:bg-card transition-all placeholder:text-muted-foreground" placeholder="e.g., en, es" value={locales} onChange={e => setLocales(e.target.value)} required />
+                  <div className="mb-2">
+                    <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Locales / Languages <span className="text-red-500">*</span></label>
+                    <input type="text" className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] transition-all placeholder-[rgb(var(--muted)/0.5)]" placeholder="e.g., en, es" value={locales} onChange={e => setLocales(e.target.value)} required />
+                  </div>
                 </div>
               </div>
 
               <div className="mb-12">
-                <div className="flex items-center gap-3 font-bold text-lg text-foreground mb-6 pb-2 border-b-2 border-border">
+                <div className="flex items-center gap-3 font-bold text-lg text-[rgb(var(--text))] mb-6 pb-2 border-b border-[rgb(var(--border))]">
                   <span>🧩</span>
                   <span>Specifications</span>
                 </div>
 
                 <div className="mb-6">
-                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">Spec Type <span className="text-red-500">*</span></label>
-                  <div className="flex flex-col gap-2">
-                    <label className="flex items-center p-3 bg-secondary border-2 border-border rounded cursor-pointer transition-all hover:border-blue-500 hover:bg-card">
-                      <input type="radio" name="specType" value="same" checked={specType === 'same'} onChange={() => setSpecType('same')} className="mr-2 cursor-pointer" />
-                      <span className={specType === 'same' ? 'text-blue-500 font-semibold' : 'text-foreground'}>Same specs for all plans</span>
+                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Spec Type <span className="text-red-500">*</span></label>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <label className="flex-1 flex items-center p-3 bg-[rgb(var(--bg))] border border-[rgb(var(--border))] rounded-xl cursor-pointer transition-all hover:border-[rgb(var(--accent))] hover:bg-[rgb(var(--accent)/0.02)]">
+                      <input type="radio" name="specType" value="same" checked={specType === 'same'} onChange={() => setSpecType('same')} className="mr-2 cursor-pointer accent-[rgb(var(--accent))]" />
+                      <span className={specType === 'same' ? 'text-[rgb(var(--accent))] font-semibold' : 'text-[rgb(var(--text))]'}>Same specs for all plans</span>
                     </label>
-                    <label className="flex items-center p-3 bg-secondary border-2 border-border rounded cursor-pointer transition-all hover:border-blue-500 hover:bg-card">
-                      <input type="radio" name="specType" value="different" checked={specType === 'different'} onChange={() => setSpecType('different')} className="mr-2 cursor-pointer" />
-                      <span className={specType === 'different' ? 'text-blue-500 font-semibold' : 'text-foreground'}>Different specs per target/plan</span>
+                    <label className="flex-1 flex items-center p-3 bg-[rgb(var(--bg))] border border-[rgb(var(--border))] rounded-xl cursor-pointer transition-all hover:border-[rgb(var(--accent))] hover:bg-[rgb(var(--accent)/0.02)]">
+                      <input type="radio" name="specType" value="different" checked={specType === 'different'} onChange={() => setSpecType('different')} className="mr-2 cursor-pointer accent-[rgb(var(--accent))]" />
+                      <span className={specType === 'different' ? 'text-[rgb(var(--accent))] font-semibold' : 'text-[rgb(var(--text))]'}>Different specs per target/plan</span>
                     </label>
                   </div>
                 </div>
 
                 {specType === 'same' ? (
-                  <div className="bg-gradient-to-br from-blue-400/5 to-indigo-500/5 rounded border border-border p-6">
+                  <div className="bg-[rgb(var(--muted)/0.03)] rounded-xl border border-[rgb(var(--border))] p-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {renderSpecInput('RAM', 'fa-memory', sameRam, setSameRam, 'e.g., 4GB')}
                       {renderSpecInput('CPU', 'fa-microchip', sameCpu, setSameCpu, 'e.g., 2 vCores')}
@@ -382,15 +372,15 @@ export default function SubmitLayoutPage() {
                 ) : (
                   <div>
                     <div className="mb-6">
-                      <label className="flex items-center p-3 bg-secondary border-2 border-border rounded cursor-pointer transition-all hover:border-blue-500 hover:bg-card">
-                        <input type="checkbox" checked={otherPlansChecked} onChange={(e) => setOtherPlansChecked(e.target.checked)} className="mr-2 w-[18px] h-[18px] cursor-pointer" />
-                        <span className={otherPlansChecked ? 'text-blue-500 font-semibold' : 'text-foreground'}>All other plans not listed above share the same specs</span>
+                      <label className="flex items-center p-3 bg-[rgb(var(--bg))] border border-[rgb(var(--border))] rounded-xl cursor-pointer transition-all hover:border-[rgb(var(--accent))]">
+                        <input type="checkbox" checked={otherPlansChecked} onChange={(e) => setOtherPlansChecked(e.target.checked)} className="mr-2 w-[18px] h-[18px] cursor-pointer accent-[rgb(var(--accent))]" />
+                        <span className={otherPlansChecked ? 'text-[rgb(var(--accent))] font-semibold' : 'text-[rgb(var(--text))]'}>All other plans not listed above share the same specs</span>
                       </label>
                     </div>
 
-                    <div className="flex gap-2 mb-6">
+                    <div className="flex flex-col sm:flex-row gap-2 mb-6">
                       <select
-                        className="flex-1 p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-blue-500 focus:bg-card focus:outline-none"
+                        className="flex-1 p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]"
                         value={selectedPlanToAdd}
                         onChange={(e) => setSelectedPlanToAdd(e.target.value)}
                       >
@@ -402,7 +392,7 @@ export default function SubmitLayoutPage() {
                       <button
                         type="button"
                         onClick={handleAddPlan}
-                        className="bg-green-500/10 text-green-500 border-2 border-green-500/30 px-6 py-3 rounded font-semibold hover:bg-green-500/20 hover:-translate-y-[2px] transition-all flex items-center gap-2"
+                        className="bg-[rgb(var(--accent)/0.1)] text-[rgb(var(--accent))] border border-[rgb(var(--accent)/0.2)] px-6 py-3 rounded-xl font-semibold hover:bg-[rgb(var(--accent)/0.2)] transition-all flex items-center justify-center gap-2"
                       >
                         <Icon icon={['fas', 'plus'] as IconProp} /> Add Plan
                       </button>
@@ -410,26 +400,26 @@ export default function SubmitLayoutPage() {
 
                     <div className="flex flex-col gap-6">
                       {specPlans.map(plan => (
-                        <div key={plan.id} className="bg-gradient-to-br from-blue-400/5 to-indigo-500/5 rounded border border-border p-6">
+                        <div key={plan.id} className="bg-[rgb(var(--muted)/0.03)] rounded-xl border border-[rgb(var(--border))] p-6">
                           <div className="flex justify-between items-center mb-4">
                             <div className="flex-1">
-                              <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">
-                                <Icon icon={['fas', 'tag'] as IconProp} className="text-muted-foreground text-xs" /> Plan Name
+                              <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">
+                                <Icon icon={['fas', 'tag'] as IconProp} className="text-[rgb(var(--muted))] text-xs" /> Plan Name
                               </label>
                               <input
                                 type="text"
-                                className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-blue-500 focus:bg-card transition-all placeholder:text-muted-foreground"
+                                className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]"
                                 value={plan.name}
                                 onChange={(e) => updateSpecPlan(plan.id, 'name', e.target.value)}
                               />
-                              <div className={`text-xs mt-1 ${plan.name !== plan.originalName ? 'text-orange-500' : 'text-muted-foreground'}`}>
+                              <div className={`text-xs mt-1 ${plan.name !== plan.originalName ? 'text-amber-500' : 'text-[rgb(var(--muted))]'}`}>
                                 {plan.name !== plan.originalName ? `Originally: ${plan.originalName}` : `Plan from: ${plan.originalName}`}
                               </div>
                             </div>
                             <button
                               type="button"
                               onClick={() => removePlan(plan.id, plan.name)}
-                              className="ml-4 bg-red-500/10 text-red-500 border border-red-500/30 px-3 py-1 rounded text-xs hover:bg-red-500/20 transition-all cursor-pointer"
+                              className="ml-4 bg-red-500/10 text-red-500 border border-red-500/30 px-3 py-1.5 rounded-lg text-xs hover:bg-red-500/20 transition-all cursor-pointer font-medium"
                             >
                               <Icon icon={['fas', 'trash'] as IconProp} /> Remove
                             </button>
@@ -443,14 +433,14 @@ export default function SubmitLayoutPage() {
                       ))}
 
                       {otherPlansChecked && (
-                        <div className="bg-gradient-to-br from-amber-400/5 to-orange-500/5 rounded border border-amber-500/30 p-6">
+                        <div className="bg-amber-500/5 rounded-xl border border-amber-500/20 p-6">
                           <div className="flex items-center mb-4">
                             <div className="flex-1">
-                              <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">
-                                <Icon icon={['fas', 'layer-group'] as IconProp} className="text-muted-foreground text-xs" />
+                              <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">
+                                <Icon icon={['fas', 'layer-group'] as IconProp} className="text-[rgb(var(--muted))] text-xs" />
                                 <span className="text-amber-500 font-semibold">All Other Plans</span>
                               </label>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-[rgb(var(--muted))]">
                                 Includes: {availablePlans.filter(p => !specPlans.some(sp => sp.originalName === p)).join(', ')}
                               </div>
                             </div>
@@ -468,47 +458,49 @@ export default function SubmitLayoutPage() {
               </div>
 
               <div className="mb-12">
-                <div className="flex items-center gap-3 font-bold text-lg text-foreground mb-6 pb-2 border-b-2 border-border">
+                <div className="flex items-center gap-3 font-bold text-lg text-[rgb(var(--text))] mb-6 pb-2 border-b border-[rgb(var(--border))]">
                   <span>🔗</span>
                   <span>Links</span>
                 </div>
 
-                <div className="mb-6">
-                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">ToS Link <span className="text-red-500">*</span></label>
-                  <input type="text" className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-blue-500 focus:bg-card transition-all placeholder:text-muted-foreground" placeholder="https://example.com/tos" value={tosLink} onChange={e => setTosLink(e.target.value)} required />
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="mb-2">
+                    <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">ToS Link <span className="text-red-500">*</span></label>
+                    <input type="text" className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]" placeholder="https://example.com/tos" value={tosLink} onChange={e => setTosLink(e.target.value)} required />
+                  </div>
+                  <div className="mb-2">
+                    <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Privacy Policy Link <span className="text-red-500">*</span></label>
+                    <input type="text" className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]" placeholder="https://example.com/privacy" value={privacyLink} onChange={e => setPrivacyLink(e.target.value)} required />
+                  </div>
+                  <div className="mb-2">
+                    <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Plan Link</label>
+                    <input type="text" className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]" placeholder="https://example.com/plan" value={planLink} onChange={e => setPlanLink(e.target.value)} />
+                  </div>
+                  <div className="mb-2">
+                    <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Website Link</label>
+                    <input type="text" className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]" placeholder="https://example.com" value={websiteLink} onChange={e => setWebsiteLink(e.target.value)} />
+                  </div>
+                </div>
+                <div className="mt-6 mb-6">
+                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Discord Invite</label>
+                  <input type="text" className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]" placeholder="https://discord.gg/invite" value={discordLink} onChange={e => setDiscordLink(e.target.value)} />
                 </div>
                 <div className="mb-6">
-                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">Privacy Policy Link <span className="text-red-500">*</span></label>
-                  <input type="text" className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-blue-500 focus:bg-card transition-all placeholder:text-muted-foreground" placeholder="https://example.com/privacy" value={privacyLink} onChange={e => setPrivacyLink(e.target.value)} required />
-                </div>
-                <div className="mb-6">
-                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">Plan Link</label>
-                  <input type="text" className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-blue-500 focus:bg-card transition-all placeholder:text-muted-foreground" placeholder="https://example.com/plan" value={planLink} onChange={e => setPlanLink(e.target.value)} />
-                </div>
-                <div className="mb-6">
-                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">Website Link</label>
-                  <input type="text" className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-blue-500 focus:bg-card transition-all placeholder:text-muted-foreground" placeholder="https://example.com" value={websiteLink} onChange={e => setWebsiteLink(e.target.value)} />
-                </div>
-                <div className="mb-6">
-                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">Discord Invite</label>
-                  <input type="text" className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-blue-500 focus:bg-card transition-all placeholder:text-muted-foreground" placeholder="https://discord.gg/invite" value={discordLink} onChange={e => setDiscordLink(e.target.value)} />
-                </div>
-                <div className="mb-6">
-                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">Other Links</label>
-                  <textarea className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground min-h-[100px] font-mono focus:border-blue-500 focus:bg-card transition-all placeholder:text-muted-foreground" placeholder={`One per line, e.g.:\nDocumentation: https://docs.example.com\nSupport: https://support.example.com`} value={otherLinks} onChange={e => setOtherLinks(e.target.value)}></textarea>
-                  <div className="text-xs text-muted-foreground mt-1 flex items-start gap-1"><Icon icon={['fas', 'circle-info']} className="mt-[2px] text-[10px]" /><span>Format: Label: URL (one per line)</span></div>
+                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Other Links</label>
+                  <textarea className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] min-h-[100px] font-mono focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]" placeholder={`One per line, e.g.:\nDocumentation: https://docs.example.com\nSupport: https://support.example.com`} value={otherLinks} onChange={e => setOtherLinks(e.target.value)}></textarea>
+                  <div className="text-xs text-[rgb(var(--muted))] mt-1 flex items-start gap-1"><Icon icon={['fas', 'circle-info']} className="mt-[2px] text-[10px]" /><span>Format: Label: URL (one per line)</span></div>
                 </div>
               </div>
 
               <div className="mb-12">
-                <div className="flex items-center gap-3 font-bold text-lg text-foreground mb-6 pb-2 border-b-2 border-border">
+                <div className="flex items-center gap-3 font-bold text-lg text-[rgb(var(--text))] mb-6 pb-2 border-b border-[rgb(var(--border))]">
                   <span>📄</span>
                   <span>Information</span>
                 </div>
 
                 <div className="mb-6">
-                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">Renewal Required <span className="text-red-500">*</span></label>
-                  <select className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-blue-500 focus:bg-card focus:outline-none" value={renewalStatus} onChange={e => setRenewalStatus(e.target.value)} required>
+                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Renewal Required <span className="text-red-500">*</span></label>
+                  <select className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]" value={renewalStatus} onChange={e => setRenewalStatus(e.target.value)} required>
                     <option value="">Select an option</option>
                     <option value="yes">This host requires renewal</option>
                     <option value="no">This host does not require renewal</option>
@@ -516,47 +508,49 @@ export default function SubmitLayoutPage() {
                 </div>
 
                 {renewalStatus === 'yes' && (
-                  <div className="bg-gradient-to-br from-amber-400/5 to-orange-500/5 rounded border border-amber-500/30 p-6 mb-6">
-                    <div className="mb-6">
-                      <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-amber-500">Renewal Duration <span className="text-red-500">*</span></label>
-                      <input type="text" className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-amber-500 focus:shadow-[0_0_0_3px_rgba(255,152,0,0.1)] transition-all placeholder:text-muted-foreground" placeholder="e.g., 30 days" value={renewalDuration} onChange={e => setRenewalDuration(e.target.value)} />
-                    </div>
-                    <div className="mb-0">
-                      <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-amber-500">Coins Needed <span className="text-red-500">*</span></label>
-                      <input type="text" className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground focus:border-amber-500 focus:shadow-[0_0_0_3px_rgba(255,152,0,0.1)] transition-all placeholder:text-muted-foreground" placeholder="e.g., 300 coins" value={coinsNeeded} onChange={e => setCoinsNeeded(e.target.value)} />
+                  <div className="bg-amber-500/5 rounded-xl border border-amber-500/20 p-6 mb-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="mb-2">
+                        <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-amber-500">Renewal Duration <span className="text-red-500">*</span></label>
+                        <input type="text" className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="e.g., 30 days" value={renewalDuration} onChange={e => setRenewalDuration(e.target.value)} />
+                      </div>
+                      <div className="mb-0">
+                        <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-amber-500">Coins Needed <span className="text-red-500">*</span></label>
+                        <input type="text" className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="e.g., 300 coins" value={coinsNeeded} onChange={e => setCoinsNeeded(e.target.value)} />
+                      </div>
                     </div>
                   </div>
                 )}
 
                 <div className="mb-6">
-                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-foreground">Notes</label>
-                  <textarea className="w-full p-3 border-2 border-border rounded bg-secondary text-foreground min-h-[100px] font-mono focus:border-blue-500 focus:bg-card transition-all placeholder:text-muted-foreground" placeholder="Add any important notes about the host" value={notes} onChange={e => setNotes(e.target.value)}></textarea>
+                  <label className="flex items-center gap-2 font-semibold text-sm mb-2 text-[rgb(var(--text))]">Notes</label>
+                  <textarea className="w-full p-3 border border-[rgb(var(--border))] rounded-xl bg-[rgb(var(--bg))] text-[rgb(var(--text))] min-h-[100px] font-mono focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]" placeholder="Add any important notes about the host" value={notes} onChange={e => setNotes(e.target.value)}></textarea>
                 </div>
               </div>
 
               <div className="mb-12">
-                <div className="flex items-center gap-3 font-bold text-lg text-foreground mb-6 pb-2 border-b-2 border-border">
+                <div className="flex items-center gap-3 font-bold text-lg text-[rgb(var(--text))] mb-6 pb-2 border-b border-[rgb(var(--border))]">
                   <span>☑️</span>
                   <span>Verification</span>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="flex items-center p-3 bg-secondary border-2 border-border rounded cursor-pointer transition-all hover:border-blue-500 hover:bg-card">
-                    <input type="checkbox" checked={checkToS} onChange={e => setCheckToS(e.target.checked)} className="mr-2 w-[18px] h-[18px] cursor-pointer" />
-                    <span className={checkToS ? 'text-blue-500 font-semibold' : 'text-foreground'}>I have included the ToS</span>
+                <div className="flex flex-col gap-3">
+                  <label className="flex items-center p-4 bg-[rgb(var(--bg))] border border-[rgb(var(--border))] rounded-xl cursor-pointer transition-all hover:border-[rgb(var(--accent))]">
+                    <input type="checkbox" checked={checkToS} onChange={e => setCheckToS(e.target.checked)} className="mr-3 w-5 h-5 cursor-pointer accent-[rgb(var(--accent))]" />
+                    <span className={checkToS ? 'text-[rgb(var(--accent))] font-semibold' : 'text-[rgb(var(--text))]'}>I have included the ToS</span>
                   </label>
-                  <label className="flex items-center p-3 bg-secondary border-2 border-border rounded cursor-pointer transition-all hover:border-blue-500 hover:bg-card">
-                    <input type="checkbox" checked={checkPrivacy} onChange={e => setCheckPrivacy(e.target.checked)} className="mr-2 w-[18px] h-[18px] cursor-pointer" />
-                    <span className={checkPrivacy ? 'text-blue-500 font-semibold' : 'text-foreground'}>I have included the Privacy Policy</span>
+                  <label className="flex items-center p-4 bg-[rgb(var(--bg))] border border-[rgb(var(--border))] rounded-xl cursor-pointer transition-all hover:border-[rgb(var(--accent))]">
+                    <input type="checkbox" checked={checkPrivacy} onChange={e => setCheckPrivacy(e.target.checked)} className="mr-3 w-5 h-5 cursor-pointer accent-[rgb(var(--accent))]" />
+                    <span className={checkPrivacy ? 'text-[rgb(var(--accent))] font-semibold' : 'text-[rgb(var(--text))]'}>I have included the Privacy Policy</span>
                   </label>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t-2 border-border">
+              <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-[rgb(var(--border))]">
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="flex-1 bg-secondary text-foreground border-2 border-border py-3 rounded font-semibold hover:bg-border hover:-translate-y-[2px] transition-transform flex justify-center items-center gap-2"
+                  className="flex-1 bg-[rgb(var(--bg))] text-[rgb(var(--text))] border border-[rgb(var(--border))] py-3.5 rounded-xl font-semibold hover:bg-[rgb(var(--muted)/0.05)] transition-all flex justify-center items-center gap-2"
                 >
                   <Icon icon={['fas', 'rotate-left'] as IconProp} /> Reset Form
                 </button>
@@ -564,19 +558,19 @@ export default function SubmitLayoutPage() {
                   type="button"
                   onClick={copyToClipboard}
                   disabled={!isFormValid}
-                  className={`flex-[2] py-3 rounded font-semibold flex justify-center items-center gap-2 transition-transform ${isFormValid ? 'bg-blue-600 text-white hover:bg-blue-700 hover:-translate-y-[2px] cursor-pointer' : 'bg-secondary text-muted-foreground opacity-50 cursor-not-allowed'}`}
+                  className={`flex-[2] py-3.5 rounded-xl font-semibold flex justify-center items-center gap-2 transition-all ${isFormValid ? 'bg-[rgb(var(--accent))] text-white hover:opacity-90 shadow-soft cursor-pointer' : 'bg-[rgb(var(--muted)/0.2)] text-[rgb(var(--muted))] cursor-not-allowed'}`}
                 >
                   <Icon icon={['fas', 'copy'] as IconProp} /> Copy Message
                 </button>
               </div>
 
-              <div className="mt-8">
-                <div className="bg-[#2f3136] rounded-lg p-4 border border-[#40444b] overflow-hidden">
-                  <div className="text-[14px] font-semibold text-[#b9bbbe] mb-3 flex items-center gap-2">
+              <div className="mt-12">
+                <div className="bg-[#2f3136] rounded-xl p-4 border border-[#202225] overflow-hidden shadow-inner">
+                  <div className="text-[14px] font-semibold text-[#b9bbbe] mb-3 flex items-center gap-2 border-b border-[#202225] pb-2">
                     <Icon icon={['fas', 'code'] as IconProp} className="text-[#7289da]" />
                     <span>Message Preview (Raw Text)</span>
                   </div>
-                  <div className="font-mono text-[13px] leading-relaxed text-[#dcddde] whitespace-pre-wrap break-words max-h-[300px] overflow-y-auto">
+                  <div className="font-mono text-[13px] leading-relaxed text-[#dcddde] whitespace-pre-wrap break-words max-h-[300px] overflow-y-auto custom-scrollbar">
                     {generatedRawText}
                   </div>
                 </div>
@@ -585,24 +579,20 @@ export default function SubmitLayoutPage() {
             </form>
           </section>
 
-          <section className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] shadow-large overflow-hidden mt-12">
-            <div className="flex justify-between items-center p-6 border-b border-[rgb(var(--border))] bg-[rgb(var(--accent)/0.02)]">
+          <section className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] shadow-soft overflow-hidden">
+            <div className="flex justify-between items-center p-6 border-b border-[rgb(var(--border))] bg-[rgb(var(--muted)/0.02)]">
               <h3 className="flex items-center gap-3 font-bold text-lg text-[rgb(var(--text))] m-0">
                 <FontAwesomeIcon icon={['fab', 'discord'] as IconProp} className="text-[#5865F2]" />
                 <span>Discord Message Preview</span>
               </h3>
-              <div className="flex items-center gap-4">
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                  <FontAwesomeIcon icon={['fas', 'circle'] as IconProp} className="text-[6px]" /> Live
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-[11px] font-bold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live
                 </span>
-                <div className="text-xs text-[rgb(var(--accent))] flex items-center gap-1">
-                  <FontAwesomeIcon icon={['fas', 'sync-alt'] as IconProp} className="text-[10px]" />
-                  <span>Real-time</span>
-                </div>
               </div>
             </div>
 
-            <div className="font-sans text-[16px] leading-[1.375] text-[#dcddde] bg-[#36393f] p-4 min-h-[200px] overflow-y-auto max-h-[500px]">
+            <div className="font-sans text-[16px] leading-[1.375] text-[#dcddde] bg-[#36393f] p-6 min-h-[300px] overflow-y-auto max-h-[600px] custom-scrollbar">
               <div className="flex pr-[16px] relative">
                 <div className="w-[40px] h-[40px] rounded-full mr-[16px] shrink-0 bg-[#5865f2] flex items-center justify-center text-white font-bold text-[18px]">FH</div>
                 <div className="flex-1 min-w-0">
@@ -643,7 +633,7 @@ export default function SubmitLayoutPage() {
                     ) : (
                       <>
                         {specPlans.length === 0 && !otherPlansChecked ? (
-                          <>• [Add plans using the &quot;Add Plan&quot; button above]<br /></>
+                          <>• [Add plans using the "Add Plan" button above]<br /></>
                         ) : (
                           <>
                             {specPlans.map(plan => (
@@ -728,7 +718,6 @@ export default function SubmitLayoutPage() {
             </div>
           </section>
         </div>
-
       </div>
 
       <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-2xl p-6 shadow-large z-[10000] flex items-center gap-4 font-bold transition-all duration-300 ${copyNotification ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'} ${copyNotification?.isError ? 'text-red-500' : 'text-emerald-500'}`}>

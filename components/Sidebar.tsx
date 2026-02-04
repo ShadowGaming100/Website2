@@ -24,30 +24,30 @@ export default function Sidebar() {
         <>
             <div
                 id="overlay"
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 opacity-0 invisible transition-all duration-300 [&.active]:opacity-100 [&.active]:visible"
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 opacity-0 invisible transition-all duration-300 [&.active]:opacity-100 [&.active]:visible"
                 onClick={closeSidebar}
                 aria-hidden="true"
             />
 
             <aside
                 id="sidebar"
-                className="fixed left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-[rgb(var(--bg))] z-50 flex flex-col overflow-y-auto -translate-x-full transition-transform duration-300 ease-out [&.open]:translate-x-0 shadow-large"
+                className="fixed left-0 top-0 bottom-0 w-72 sm:w-80 max-w-[85vw] bg-[rgb(var(--bg))] z-50 flex flex-col overflow-y-auto scrollbar-thin -translate-x-full transition-transform duration-300 ease-out-expo [&.open]:translate-x-0 shadow-large border-r border-[rgb(var(--border))]"
                 aria-hidden="true"
             >
-                <div className="flex items-center justify-between p-5 border-b border-[rgb(var(--border))]">
+                <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[rgb(var(--border))]">
                     <Link
                         href="/"
                         onClick={closeSidebar}
-                        className="flex items-center gap-2.5 text-lg font-semibold text-[rgb(var(--text))]"
+                        className="flex items-center gap-2 sm:gap-2.5 text-base sm:text-lg font-semibold text-[rgb(var(--text))]"
                     >
-                        <div className="flex items-center justify-center w-9 h-9 rounded-xl gradient-bg text-white">
-                            <FontAwesomeIcon icon={['fas', 'bolt']} className="text-sm" />
+                        <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl gradient-bg text-white">
+                            <FontAwesomeIcon icon={['fas', 'bolt']} className="text-xs sm:text-sm" />
                         </div>
                         <span>FreeHosts</span>
                     </Link>
                     <button
                         onClick={closeSidebar}
-                        className="flex items-center justify-center w-11 h-11 rounded-xl hover:bg-[rgb(var(--muted)/0.1)] transition-colors active:scale-95"
+                        className="flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-xl hover:bg-[rgb(var(--muted)/0.1)] transition-colors active:scale-95"
                         aria-label="Close menu"
                     >
                         <FontAwesomeIcon icon={['fas', 'xmark']} className="text-xl text-[rgb(var(--muted))]" />
@@ -102,7 +102,8 @@ export default function Sidebar() {
 
                     <button
                         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                        className="flex items-center gap-3 px-4 py-3 text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--muted)/0.08)] rounded-xl transition-all text-left w-full"
+                        className="flex items-center gap-3 px-4 py-3 text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--muted)/0.08)] rounded-xl transition-all text-left w-full active:scale-98"
+                        aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
                     >
                         <div className="w-9 h-9 rounded-lg bg-[rgb(var(--muted)/0.08)] flex items-center justify-center">
                             <FontAwesomeIcon icon={['fas', theme === 'dark' ? 'sun' : 'moon']} className="text-sm" />
@@ -116,7 +117,7 @@ export default function Sidebar() {
                         href="https://discord.gg/QbeZ3b5CQd"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 w-full px-4 py-3.5 gradient-bg text-white font-medium rounded-xl hover:shadow-glow transition-all"
+                        className="flex items-center justify-center gap-2 w-full px-4 py-3.5 gradient-bg text-white font-semibold rounded-xl hover:opacity-90 transition-all active:scale-98 shadow-medium"
                         onClick={closeSidebar}
                     >
                         <FontAwesomeIcon icon={['fab', 'discord']} />

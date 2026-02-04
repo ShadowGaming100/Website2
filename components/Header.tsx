@@ -13,7 +13,6 @@ export default function Header() {
     const { resolvedTheme, toggleTheme } = useTheme();
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
 
         const handleScroll = () => {
@@ -37,37 +36,35 @@ export default function Header() {
     return (
         <header
             className={`sticky top-0 z-50 transition-all duration-300 ${scrolled
-                ? 'bg-[rgb(var(--bg)/0.85)] backdrop-blur-xl border-b border-[rgb(var(--border))] shadow-sm'
+                ? 'bg-[rgb(var(--bg)/0.9)] backdrop-blur-xl border-b border-[rgb(var(--border))] shadow-soft'
                 : 'bg-transparent'
                 }`}
         >
-            <div className="container-default">
-                <div className="flex items-center justify-between h-16 md:h-20">
+            <div className="container-default px-3 sm:px-4">
+                <div className="flex items-center justify-between h-14 sm:h-16 md:h-20 gap-2">
                     <button
                         onClick={toggleSidebar}
-                        className="md:hidden flex items-center justify-center w-11 h-11 rounded-xl hover:bg-[rgb(var(--muted)/0.1)] transition-colors active:scale-95"
+                        className="lg:hidden flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-xl hover:bg-[rgb(var(--muted)/0.1)] transition-colors active:scale-95 text-[rgb(var(--muted))] flex-shrink-0"
                         aria-label="Open menu"
                     >
-                        <FontAwesomeIcon icon={['fas', 'bars']} className="text-xl text-[rgb(var(--muted))]" />
+                        <FontAwesomeIcon icon={['fas', 'bars']} className="text-lg sm:text-xl" />
                     </button>
 
                     <Link
                         href="/"
-                        className="flex items-center gap-2.5 group"
+                        className="flex items-center gap-2 sm:gap-2.5 group flex-shrink-0"
                     >
-                        <motion.div
-                            whileHover={{ scale: 1.05, rotate: -5 }}
-                            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                            className="flex items-center justify-center w-10 h-10 rounded-xl gradient-bg text-white shadow-lg shadow-[rgb(var(--accent)/0.25)]"
+                        <div
+                            className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[rgb(var(--accent))] text-white shadow-sm"
                         >
-                            <FontAwesomeIcon icon={['fas', 'bolt']} className="text-base" />
-                        </motion.div>
-                        <span className="text-xl font-bold text-[rgb(var(--text))] tracking-tight">
-                            Free<span className="gradient-text">Hosts</span>
+                            <FontAwesomeIcon icon={['fas', 'bolt']} className="text-xs sm:text-sm" />
+                        </div>
+                        <span className="text-base sm:text-lg md:text-xl font-bold text-[rgb(var(--text))] tracking-tight">
+                            FreeHosts
                         </span>
                     </Link>
 
-                    <nav className="hidden md:flex items-center gap-1" role="navigation" aria-label="Main">
+                    <nav className="hidden lg:flex items-center gap-1" role="navigation" aria-label="Main">
                         <NavItem href="/hosts" icon={['fas', 'server']}>
                             Hosts
                         </NavItem>
@@ -118,39 +115,43 @@ export default function Header() {
                             href="https://www.trustpilot.com/review/freehosts.space"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--muted)/0.08)] transition-all"
+                            className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--muted)/0.1)] transition-colors border border-transparent hover:border-[rgb(var(--border))]"
                         >
                             <svg viewBox="0 0 24 24" className="w-4 h-4 text-[#00b67a]" fill="currentColor">
                                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                             </svg>
-                            <span className="font-medium">4.8</span>
+                            <span className="font-semibold">4.8</span>
                         </a>
 
                         {mounted && (
-                            <motion.button
-                                whileTap={{ scale: 0.9 }}
+                            <button
                                 onClick={toggleTheme}
-                                className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-[rgb(var(--muted)/0.1)] transition-colors"
-                                aria-label="Toggle theme"
+                                className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-[rgb(var(--muted)/0.12)] active:scale-95 transition-all border border-transparent hover:border-[rgb(var(--border))] text-[rgb(var(--muted))] hover:text-[rgb(var(--text))]"
+                                aria-label={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}
                             >
-                                <FontAwesomeIcon
-                                    icon={['fas', resolvedTheme === 'dark' ? 'sun' : 'moon']}
-                                    className="text-lg text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] transition-colors"
-                                />
-                            </motion.button>
+                                <motion.div
+                                    key={resolvedTheme}
+                                    initial={{ rotate: -30, opacity: 0 }}
+                                    animate={{ rotate: 0, opacity: 1 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    <FontAwesomeIcon
+                                        icon={['fas', resolvedTheme === 'dark' ? 'sun' : 'moon']}
+                                        className="text-lg"
+                                    />
+                                </motion.div>
+                            </button>
                         )}
 
-                        <motion.a
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
+                        <a
                             href="https://discord.gg/QbeZ3b5CQd"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hidden sm:flex items-center gap-2 px-4 py-2 gradient-bg text-white font-medium rounded-xl hover:shadow-glow transition-all text-sm"
+                            className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-2 sm:px-5 sm:py-2.5 bg-[rgb(var(--text))] text-[rgb(var(--bg))] font-semibold rounded-xl hover:opacity-90 transition-opacity text-sm shadow-sm"
                         >
                             <FontAwesomeIcon icon={['fab', 'discord']} />
-                            <span>Discord</span>
-                        </motion.a>
+                            <span className="hidden xs:inline">Discord</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -162,7 +163,7 @@ function NavItem({ href, icon, children }: { href: string; icon: IconProp; child
     return (
         <Link
             href={href}
-            className="flex items-center gap-2 px-3.5 py-2.5 text-[15px] font-semibold text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--muted)/0.08)] rounded-xl transition-all"
+            className="flex items-center gap-2 px-4 py-2 text-[15px] font-medium text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--muted)/0.08)] rounded-lg transition-colors"
         >
             <FontAwesomeIcon icon={icon} className="text-xs opacity-70" />
             <span>{children}</span>
@@ -179,7 +180,7 @@ function DropdownNav({ label, icon, children }: { label: string; icon: IconProp;
             onMouseEnter={() => setIsOpen(true)}
             onMouseLeave={() => setIsOpen(false)}
         >
-            <button className="flex items-center gap-2 px-3.5 py-2.5 text-[15px] font-semibold text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--muted)/0.08)] rounded-xl transition-all">
+            <button className="flex items-center gap-2 px-4 py-2 text-[15px] font-medium text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--muted)/0.08)] rounded-lg transition-colors">
                 <FontAwesomeIcon icon={icon} className="text-xs opacity-70" />
                 <span>{label}</span>
                 <FontAwesomeIcon
@@ -191,11 +192,11 @@ function DropdownNav({ label, icon, children }: { label: string; icon: IconProp;
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                        initial={{ opacity: 0, y: 6, scale: 0.96 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        exit={{ opacity: 0, y: 6, scale: 0.96 }}
                         transition={{ duration: 0.15, ease: 'easeOut' }}
-                        className="absolute top-full left-0 mt-2 w-64 p-2 bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-2xl shadow-large overflow-hidden"
+                        className="absolute top-full left-0 mt-2 w-64 p-1.5 bg-[rgb(var(--card)/0.98)] backdrop-blur-xl border border-[rgb(var(--border))] rounded-xl shadow-large"
                     >
                         {children}
                     </motion.div>
@@ -209,10 +210,10 @@ function DropdownItem({ href, icon, description, children }: { href: string; ico
     return (
         <Link
             href={href}
-            className="flex items-start gap-3 px-3 py-2.5 text-sm hover:bg-[rgb(var(--muted)/0.08)] rounded-xl transition-all group"
+            className="flex items-start gap-3 px-3 py-2 text-sm hover:bg-[rgb(var(--muted)/0.05)] rounded-lg transition-colors group"
         >
-            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-[rgb(var(--accent)/0.1)] text-[rgb(var(--accent))] group-hover:bg-[rgb(var(--accent)/0.15)] transition-colors mt-0.5">
-                <FontAwesomeIcon icon={icon} className="text-sm" />
+            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-[rgb(var(--muted)/0.1)] text-[rgb(var(--text))] mt-0.5 group-hover:bg-[rgb(var(--accent)/0.1)] group-hover:text-[rgb(var(--accent))] transition-colors">
+                <FontAwesomeIcon icon={icon} className="text-xs" />
             </div>
             <div className="flex-1 min-w-0">
                 <span className="font-medium text-[rgb(var(--text))] block">{children}</span>

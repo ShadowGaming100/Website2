@@ -5,164 +5,11 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import Terminal from '@/components/Terminal';
+import TrustpilotWidget from '@/components/TrustpilotWidget';
 
-// Terminal Component with improved styling
-const terminalCommands = [
-    { cmd: 'freehosts search --type static', output: '✓ Found 42 static hosting providers' },
-    { cmd: 'freehosts deploy ./my-app', output: '✓ Deploying to Vercel...' },
-    { cmd: 'freehosts status', output: '✓ All systems operational (99.9% uptime)' },
-    { cmd: 'freehosts list --free --verified', output: '✓ Showing 100+ verified free hosts' },
-];
-
-function Terminal() {
-    const [lines, setLines] = useState<{ type: 'cmd' | 'output'; text: string }[]>([]);
-    const [currentCmd, setCurrentCmd] = useState('');
-    const [isTyping, setIsTyping] = useState(true);
-
-    useEffect(() => {
-        let cmdIndex = 0;
-        let charIndex = 0;
-        let isOutput = false;
-        let timeoutId: NodeJS.Timeout;
-
-        const typeWriter = () => {
-            if (cmdIndex >= terminalCommands.length) {
-                // Reset after showing all commands
-                timeoutId = setTimeout(() => {
-                    setLines([]);
-                    setCurrentCmd('');
-                    cmdIndex = 0;
-                    charIndex = 0;
-                    isOutput = false;
-                    typeWriter();
-                }, 4000);
-                return;
-            }
-
-            const command = terminalCommands[cmdIndex];
-
-            if (!isOutput) {
-                // Typing command
-                if (charIndex <= command.cmd.length) {
-                    setCurrentCmd(command.cmd.slice(0, charIndex));
-                    setIsTyping(true);
-                    charIndex++;
-                    timeoutId = setTimeout(typeWriter, 40 + Math.random() * 30);
-                } else {
-                    // Command finished, show output
-                    setIsTyping(false);
-                    setLines(prev => [...prev, { type: 'cmd', text: command.cmd }]);
-                    setCurrentCmd('');
-                    isOutput = true;
-                    charIndex = 0;
-                    timeoutId = setTimeout(typeWriter, 300);
-                }
-            } else {
-                // Show output
-                setLines(prev => [...prev, { type: 'output', text: command.output }]);
-                isOutput = false;
-                cmdIndex++;
-                timeoutId = setTimeout(typeWriter, 1200);
-            }
-        };
-
-        timeoutId = setTimeout(typeWriter, 800);
-        return () => clearTimeout(timeoutId);
-    }, []);
-
-    return (
-        <div className="relative">
-            {/* Glow effect */}
-            <div className="absolute -inset-4 bg-gradient-to-r from-[rgb(var(--accent)/0.15)] to-[rgb(var(--accent-2)/0.15)] rounded-3xl blur-2xl opacity-60" />
-
-            <div className="relative bg-[#0d1117] rounded-2xl overflow-hidden border border-[#30363d] shadow-2xl">
-                {/* Terminal Header */}
-                <div className="flex items-center justify-between px-4 py-3 bg-[#161b22] border-b border-[#30363d]">
-                    <div className="flex items-center gap-2">
-                        <div className="flex gap-1.5">
-                            <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
-                            <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
-                            <div className="w-3 h-3 rounded-full bg-[#27ca40]" />
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2 text-[#8b949e] text-xs font-mono">
-                        <FontAwesomeIcon icon={['fas', 'terminal']} className="text-[10px]" />
-                        <span>freehosts-cli</span>
-                    </div>
-                    <div className="w-16" />
-                </div>
-
-                {/* Terminal Body */}
-                <div className="p-5 font-mono text-sm min-h-[280px] max-h-[280px] overflow-hidden">
-                    {lines.map((line, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className={`mb-2 ${line.type === 'cmd' ? 'text-[#58a6ff]' : 'text-[#3fb950]'}`}
-                        >
-                            {line.type === 'cmd' ? (
-                                <span>
-                                    <span className="text-[#8b949e]">$</span> {line.text}
-                                </span>
-                            ) : (
-                                <span>{line.text}</span>
-                            )}
-                        </motion.div>
-                    ))}
-
-                    {/* Current typing line */}
-                    <div className="text-[#58a6ff]">
-                        <span className="text-[#8b949e]">$</span> {currentCmd}
-                        {isTyping && (
-                            <motion.span
-                                animate={{ opacity: [1, 0] }}
-                                transition={{ duration: 0.5, repeat: Infinity }}
-                                className="inline-block w-2 h-4 bg-[#58a6ff] ml-0.5 align-middle"
-                            />
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// Trustpilot Widget Component
-function TrustpilotWidget() {
-    return (
-        <a
-            href="https://www.trustpilot.com/review/freehosts.space"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] hover:border-[rgb(var(--accent)/0.3)] transition-all group"
-        >
-            {/* Trustpilot Logo SVG */}
-            <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#00b67a]" fill="currentColor">
-                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-            </svg>
-            <div className="flex flex-col">
-                <div className="flex items-center gap-0.5">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                        <FontAwesomeIcon
-                            key={star}
-                            icon={['fas', star <= 4 ? 'star' : 'star-half-alt']}
-                            className="text-[10px] text-[#00b67a]"
-                        />
-                    ))}
-                </div>
-                <span className="text-xs text-[rgb(var(--muted))] group-hover:text-[rgb(var(--text))] transition-colors">
-                    4.8 on Trustpilot
-                </span>
-            </div>
-        </a>
-    );
-}
-
-// Animation variants
 const fadeInUp = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0 }
 };
 
@@ -252,140 +99,110 @@ export default function HomePage() {
     return (
         <div className="min-h-screen bg-[rgb(var(--bg))]">
             {/* Hero Banner Section */}
-            <section className="relative">
-                {/* Mobile: Stacked Layout, Desktop: Overlapping Layout */}
-                <div className="relative min-h-[36rem] lg:h-[40rem] overflow-hidden flex flex-col lg:block">
-                    {/* Background - Full cover on desktop, background for top part on mobile */}
-                    <div className="absolute inset-0 w-full h-full gradient-bg z-0" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[rgb(var(--bg))] via-[rgb(var(--bg)/0.4)] to-transparent z-0" />
-
-                    {/* Hero Content */}
-                    <div className="container-default relative z-10 pt-24 pb-12 lg:pt-0 lg:pb-0 lg:absolute lg:inset-0 lg:flex lg:items-center">
-                        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center w-full">
-                            {/* Left Content */}
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.5 }}
-                                className="text-center lg:text-left"
-                            >
-                                {/* Trust Badges */}
-                                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-6">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
-                                        <span className="flex h-2 w-2 relative">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                                        </span>
-                                        <span className="text-xs sm:text-sm font-medium text-white">
-                                            5,000+ developers trust us
-                                        </span>
-                                    </div>
-                                    <div className="hidden sm:block">
-                                        <TrustpilotWidget />
-                                    </div>
+            <section className="relative pt-12 pb-24 lg:pt-32 lg:pb-32 overflow-hidden">
+                <div className="container-default relative z-10">
+                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center w-full">
+                        {/* Left Content */}
+                        <div className="text-center lg:text-left">
+                            {/* Trust Badges */}
+                            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mb-8">
+                                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgb(var(--accent)/0.1)] border border-[rgb(var(--accent)/0.2)]">
+                                    <span className="flex h-2 w-2 relative">
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                    <span className="text-sm font-medium text-[rgb(var(--accent))]">
+                                        5,000+ developers trust us
+                                    </span>
                                 </div>
-
-                                <h1 className="heading-1 text-white mb-6">
-                                    Find the Perfect <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/70">Free Hosting</span> for Your Project
-                                </h1>
-
-                                <p className="text-lg md:text-xl text-white/80 mb-8 max-w-xl mx-auto lg:mx-0 text-balance font-medium">
-                                    The most comprehensive directory of verified free hosting providers. Deploy apps without spending a dime.
-                                </p>
-
-                                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start w-full">
-                                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
-                                        <Link
-                                            href="/hosts"
-                                            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-white text-[rgb(var(--accent))] font-bold shadow-xl hover:bg-white/90 transition-all w-full sm:w-auto"
-                                        >
-                                            <span>Browse Hosts</span>
-                                            <FontAwesomeIcon icon={['fas', 'arrow-right']} className="text-sm" />
-                                        </Link>
-                                    </motion.div>
-                                    <Link
-                                        href="/about"
-                                        className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold hover:bg-white/20 transition-all w-full sm:w-auto"
-                                    >
-                                        <span>Learn More</span>
-                                    </Link>
+                                <div className="hidden sm:block">
+                                    <TrustpilotWidget />
                                 </div>
-                            </motion.div>
+                            </div>
 
-                            {/* Right Content - Terminal */}
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.6, delay: 0.2 }}
-                                className="hidden lg:block w-full max-w-lg mx-auto lg:max-w-none"
-                            >
-                                <Terminal />
-                            </motion.div>
+                            <h1 className="heading-1 text-[rgb(var(--text))] mb-6 text-balance">
+                                Find the Perfect <span className="text-[rgb(var(--accent))]">Free Hosting</span> for Your Project
+                            </h1>
+
+                            <p className="body-default text-[rgb(var(--muted))] mb-8 max-w-xl mx-auto lg:mx-0 text-balance font-medium">
+                                The most comprehensive directory of verified free hosting providers. Deploy apps without spending a dime.
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row gap-4 justify- center lg:justify-start w-full">
+                                <Link
+                                    href="/hosts"
+                                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-[rgb(var(--accent))] text-white font-semibold shadow-medium hover:opacity-90 transition-all active:scale-[0.98] w-full sm:w-auto"
+                                >
+                                    <span>Browse Hosts</span>
+                                    <FontAwesomeIcon icon={['fas', 'arrow-right']} className="text-sm" />
+                                </Link>
+                                <Link
+                                    href="/about"
+                                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-[rgb(var(--border))] text-[rgb(var(--text))] font-semibold hover:bg-[rgb(var(--muted)/0.05)] hover:border-[rgb(var(--accent)/0.5)] transition-all active:scale-[0.98] w-full sm:w-auto"
+                                >
+                                    <span>Learn More</span>
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Right Content - Terminal */}
+                        <div className="hidden lg:block">
+                            <Terminal />
                         </div>
                     </div>
                 </div>
+            </section>
 
-                {/* Overlapping Info Cards */}
-                <div className="container-default relative z-20 -mt-8 lg:-mt-16">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6"
-                    >
+            {/* Stats Section */}
+            <section className="py-12 border-y border-[rgb(var(--border))] bg-[rgb(var(--card))]">
+                <div className="container-default">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {stats.map((stat, i) => (
                             <div
                                 key={i}
-                                className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] shadow-large p-5 md:p-6 flex flex-col items-center text-center group hover:border-[rgb(var(--accent))] transition-all"
+                                className="flex flex-col items-center text-center p-4"
                             >
-                                <div className="w-12 h-12 rounded-xl bg-[rgb(var(--accent)/0.1)] flex items-center justify-center text-[rgb(var(--accent))] mb-3 md:mb-4 group-hover:scale-110 transition-transform">
-                                    <FontAwesomeIcon icon={stat.icon} className="text-xl" />
+                                <div className="text-3xl font-bold text-[rgb(var(--text))] mb-2">{stat.value}</div>
+                                <div className="flex items-center gap-2 text-sm font-semibold text-[rgb(var(--muted))] uppercase tracking-wider">
+                                    <FontAwesomeIcon icon={stat.icon} className="text-[rgb(var(--accent))]" />
+                                    <span>{stat.label}</span>
                                 </div>
-                                <div className="text-2xl md:text-3xl font-bold text-[rgb(var(--text))] mb-1">{stat.value}</div>
-                                <div className="text-xs md:text-sm font-semibold text-[rgb(var(--muted))] uppercase tracking-wider">{stat.label}</div>
                             </div>
                         ))}
-                    </motion.div>
+                    </div>
                 </div>
             </section>
 
             {/* Main Content Sections */}
-            <div className="py-12">
-
+            <div>
                 {/* Hosting Types Section */}
-                <section className="py-16 border-y border-[rgb(var(--border))] bg-[rgb(var(--muted)/0.02)]">
+                <section className="section-padding bg-[rgb(var(--bg))]">
                     <div className="container-default">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="text-center mb-10"
-                        >
-                            <h2 className="heading-3 text-[rgb(var(--text))] mb-3">
+                        <div className="text-center mb-16">
+                            <h2 className="heading-2 text-[rgb(var(--text))] mb-4">
                                 Every Type of Hosting
                             </h2>
-                            <p className="body-default text-[rgb(var(--muted))]">
-                                From simple static sites to complex full-stack applications
+                            <p className="body-default text-[rgb(var(--muted))] max-w-2xl mx-auto">
+                                From simple static sites to complex full-stack applications, we verify them all.
                             </p>
-                        </motion.div>
+                        </div>
 
                         <motion.div
                             variants={staggerContainer}
                             initial="hidden"
                             whileInView="visible"
                             viewport={{ once: true }}
-                            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4"
+                            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
                         >
                             {hostingTypes.map((type, i) => (
                                 <motion.div
                                     key={i}
                                     variants={fadeInUp}
-                                    whileHover={{ y: -4 }}
-                                    className="group p-4 rounded-2xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] hover:border-[rgb(var(--accent)/0.5)] hover:shadow-medium transition-all text-center"
+                                    className="group p-5 rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] hover:border-[rgb(var(--accent)/0.5)] transition-all text-center card-hover"
                                 >
-                                    <div className="w-11 h-11 mx-auto mb-3 rounded-xl bg-[rgb(var(--accent)/0.1)] flex items-center justify-center group-hover:bg-[rgb(var(--accent)/0.15)] group-hover:scale-110 transition-all">
-                                        <FontAwesomeIcon icon={type.icon} className="text-lg text-[rgb(var(--accent))]" />
+                                    <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-[rgb(var(--muted)/0.1)] flex items-center justify-center group-hover:bg-[rgb(var(--accent)/0.1)] group-hover:text-[rgb(var(--accent))] transition-colors">
+                                        <FontAwesomeIcon icon={type.icon} className="text-lg" />
                                     </div>
-                                    <h3 className="font-semibold text-[rgb(var(--text))] text-sm mb-0.5">{type.title}</h3>
+                                    <h3 className="font-semibold text-[rgb(var(--text))] text-sm mb-1">{type.title}</h3>
                                     <p className="text-xs text-[rgb(var(--muted))]">{type.description}</p>
                                 </motion.div>
                             ))}
@@ -394,14 +211,9 @@ export default function HomePage() {
                 </section>
 
                 {/* Features Section */}
-                <section className="section-padding">
+                <section className="section-padding bg-[rgb(var(--card))] border-y border-[rgb(var(--border))]">
                     <div className="container-default">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="text-center mb-12"
-                        >
+                        <div className="text-center mb-16">
                             <span className="inline-block px-3 py-1 rounded-full bg-[rgb(var(--accent)/0.1)] text-[rgb(var(--accent))] text-sm font-medium mb-4">
                                 Why FreeHosts
                             </span>
@@ -409,29 +221,28 @@ export default function HomePage() {
                                 Everything You Need
                             </h2>
                             <p className="body-default text-[rgb(var(--muted))] max-w-2xl mx-auto">
-                                We&apos;ve built the most comprehensive and trustworthy free hosting directory on the internet.
+                                Reliable, transparent, and built for developers.
                             </p>
-                        </motion.div>
+                        </div>
 
                         <motion.div
                             variants={staggerContainer}
                             initial="hidden"
                             whileInView="visible"
                             viewport={{ once: true }}
-                            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+                            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
                         >
                             {features.map((feature, i) => (
                                 <motion.div
                                     key={i}
                                     variants={fadeInUp}
-                                    whileHover={{ y: -4 }}
-                                    className="group p-6 rounded-2xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] hover:border-[rgb(var(--accent)/0.3)] hover:shadow-medium transition-all"
+                                    className="p-8 rounded-xl bg-[rgb(var(--bg))] border border-[rgb(var(--border))] hover:border-[rgb(var(--accent)/0.3)] transition-all"
                                 >
-                                    <div className="w-11 h-11 rounded-xl bg-[rgb(var(--accent)/0.1)] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                        <FontAwesomeIcon icon={feature.icon} className="text-[rgb(var(--accent))]" />
+                                    <div className="w-12 h-12 rounded-lg bg-[rgb(var(--accent)/0.1)] flex items-center justify-center mb-6 text-[rgb(var(--accent))]">
+                                        <FontAwesomeIcon icon={feature.icon} className="text-xl" />
                                     </div>
-                                    <h3 className="heading-4 text-[rgb(var(--text))] mb-2">{feature.title}</h3>
-                                    <p className="body-small text-[rgb(var(--muted))]">{feature.description}</p>
+                                    <h3 className="heading-4 text-[rgb(var(--text))] mb-3">{feature.title}</h3>
+                                    <p className="body-default text-[rgb(var(--muted))]">{feature.description}</p>
                                 </motion.div>
                             ))}
                         </motion.div>
@@ -439,108 +250,69 @@ export default function HomePage() {
                 </section>
 
                 {/* How It Works Section */}
-                <section className="section-padding bg-gradient-to-b from-transparent to-[rgb(var(--muted)/0.03)]">
+                <section className="section-padding bg-[rgb(var(--bg))]">
                     <div className="container-default">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="text-center mb-12"
-                        >
+                        <div className="text-center mb-16">
                             <h2 className="heading-2 text-[rgb(var(--text))] mb-4">
                                 How It Works
                             </h2>
                             <p className="body-default text-[rgb(var(--muted))] max-w-2xl mx-auto">
                                 Finding the right free hosting is simple with FreeHosts.
                             </p>
-                        </motion.div>
+                        </div>
 
-                        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                        <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
                             {[
-                                { step: '01', title: 'Browse', description: 'Explore our curated directory of verified free hosting providers', icon: ['fas', 'search'] as IconProp },
-                                { step: '02', title: 'Compare', description: 'Filter by features, resources, and technology stack', icon: ['fas', 'filter'] as IconProp },
-                                { step: '03', title: 'Deploy', description: 'Sign up and launch your project in minutes', icon: ['fas', 'rocket'] as IconProp },
+                                { step: '01', title: 'Browse Directory', description: 'Explore our curated directory of verified free hosting providers', icon: ['fas', 'search'] as IconProp },
+                                { step: '02', title: 'Compare Features', description: 'Filter by features, resources, and technology stack', icon: ['fas', 'filter'] as IconProp },
+                                { step: '03', title: 'Deploy Project', description: 'Sign up and launch your project in minutes', icon: ['fas', 'rocket'] as IconProp },
                             ].map((item, i) => (
-                                <motion.div
+                                <div
                                     key={i}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: i * 0.15 }}
-                                    className="relative text-center"
+                                    className="relative text-center group"
                                 >
-                                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl gradient-bg flex items-center justify-center text-white shadow-lg shadow-[rgb(var(--accent)/0.25)]">
-                                        <FontAwesomeIcon icon={item.icon} className="text-xl" />
+                                    <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] flex items-center justify-center text-[rgb(var(--text))] shadow-sm group-hover:border-[rgb(var(--accent))] transition-colors">
+                                        <FontAwesomeIcon icon={item.icon} className="text-2xl" />
                                     </div>
-                                    <div className="text-xs font-bold text-[rgb(var(--accent))] mb-2">{item.step}</div>
-                                    <h3 className="heading-4 text-[rgb(var(--text))] mb-2">{item.title}</h3>
+                                    <div className="text-xs font-bold text-[rgb(var(--accent))] mb-3 tracking-widest uppercase">{item.step}</div>
+                                    <h3 className="heading-4 text-[rgb(var(--text))] mb-3">{item.title}</h3>
                                     <p className="body-small text-[rgb(var(--muted))]">{item.description}</p>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
                     </div>
                 </section>
 
                 {/* CTA Section */}
-                <section className="section-padding">
+                <section className="section-padding pt-0">
                     <div className="container-default">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="relative overflow-hidden rounded-3xl gradient-bg p-8 md:p-12 lg:p-16"
-                        >
-                            {/* Decorative elements */}
-                            <div className="absolute inset-0 opacity-10">
-                                <div className="absolute top-0 left-0 w-40 h-40 bg-white rounded-full blur-3xl" />
-                                <div className="absolute bottom-0 right-0 w-60 h-60 bg-white rounded-full blur-3xl" />
-                            </div>
-
-                            <div className="relative z-10 grid lg:grid-cols-2 gap-8 items-center">
-                                <div className="text-center lg:text-left">
-                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                                        Join Our Community
-                                    </h2>
-                                    <p className="text-lg text-white/80 mb-6">
-                                        Connect with thousands of developers. Share experiences, get recommendations, and stay updated on the latest free hosting solutions.
-                                    </p>
-                                    <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                                        <motion.a
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            href="https://discord.gg/QbeZ3b5CQd"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white text-[rgb(var(--accent))] font-semibold shadow-large transition-all"
-                                        >
-                                            <FontAwesomeIcon icon={['fab', 'discord']} />
-                                            <span>Join Discord</span>
-                                        </motion.a>
-                                        <Link
-                                            href="/hosts"
-                                            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border-2 border-white/30 text-white font-medium hover:bg-white/10 transition-all"
-                                        >
-                                            <span>Browse Hosts</span>
-                                        </Link>
-                                    </div>
-                                </div>
-
-                                {/* Quick stats */}
-                                <div className="grid grid-cols-3 gap-4">
-                                    {[
-                                        { value: '5,000+', label: 'Members', icon: ['fas', 'users'] as IconProp },
-                                        { value: '100+', label: 'Daily Chats', icon: ['fas', 'comments'] as IconProp },
-                                        { value: '24/7', label: 'Support', icon: ['fas', 'clock'] as IconProp },
-                                    ].map((stat, i) => (
-                                        <div key={i} className="text-center p-4 rounded-2xl bg-white/10 backdrop-blur-sm">
-                                            <FontAwesomeIcon icon={stat.icon} className="text-xl text-white/80 mb-2" />
-                                            <div className="text-2xl font-bold text-white">{stat.value}</div>
-                                            <div className="text-sm text-white/70">{stat.label}</div>
-                                        </div>
-                                    ))}
+                        <div className="relative overflow-hidden rounded-2xl bg-[rgb(var(--accent))] text-white p-12 md:p-20 text-center">
+                            <div className="relative z-10 max-w-3xl mx-auto">
+                                <h2 className="heading-2 mb-6 text-white">
+                                    Join Our Community
+                                </h2>
+                                <p className="text-lg text-white/90 mb-10 max-w-2xl mx-auto">
+                                    Connect with thousands of developers. Share experiences, get recommendations, and stay updated on the latest free hosting solutions.
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                    <a
+                                        href="https://discord.gg/QbeZ3b5CQd"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-white text-[rgb(var(--accent))] font-semibold shadow-large hover:opacity-90 transition-all active:scale-[0.98]"
+                                    >
+                                        <FontAwesomeIcon icon={['fab', 'discord']} />
+                                        <span>Join Discord</span>
+                                    </a>
+                                    <Link
+                                        href="/hosts"
+                                        className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border-2 border-white/30 text-white font-semibold hover:bg-white/10 transition-all active:scale-[0.98]"
+                                    >
+                                        <span>Browse Hosts</span>
+                                    </Link>
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
                     </div>
                 </section>
             </div>

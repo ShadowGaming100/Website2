@@ -34,11 +34,11 @@ export default function Footer() {
 
     return (
         <footer className="mt-auto border-t border-[rgb(var(--border))] bg-[rgb(var(--bg))]">
-            <div className="container-default section-padding">
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12">
+            <div className="container-default py-12 md:py-16 px-4 sm:px-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-12">
                     <div className="col-span-2 md:col-span-4 lg:col-span-2">
                         <Link href="/" className="inline-flex items-center gap-2.5 text-xl font-bold text-[rgb(var(--text))] mb-4">
-                            <div className="flex items-center justify-center w-9 h-9 rounded-xl gradient-bg text-white">
+                            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-[rgb(var(--accent))] text-white shadow-sm">
                                 <FontAwesomeIcon icon={['fas', 'bolt']} className="text-sm" />
                             </div>
                             <span className="font-semibold tracking-tight">FreeHosts</span>
@@ -47,17 +47,17 @@ export default function Footer() {
                             The trusted directory for finding verified free hosting solutions. Built by developers, for developers.
                         </p>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                             {socialLinks.map((social) => (
                                 <a
                                     key={social.label}
                                     href={social.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center justify-center w-10 h-10 rounded-xl bg-[rgb(var(--muted)/0.08)] hover:bg-[rgb(var(--accent)/0.1)] text-[rgb(var(--muted))] hover:text-[rgb(var(--accent))] transition-all"
+                                    className="flex items-center justify-center w-10 h-10 rounded-lg bg-[rgb(var(--muted)/0.08)] hover:bg-[rgb(var(--accent)/0.15)] text-[rgb(var(--muted))] hover:text-[rgb(var(--accent))] transition-all active:scale-95 border border-transparent hover:border-[rgb(var(--accent)/0.3)]"
                                     aria-label={social.label}
                                 >
-                                    <FontAwesomeIcon icon={social.icon} className="text-lg" />
+                                    <FontAwesomeIcon icon={social.icon} className="text-base" />
                                 </a>
                             ))}
                         </div>

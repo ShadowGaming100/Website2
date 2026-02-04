@@ -1,68 +1,31 @@
-'use client';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { useEffect, useRef } from 'react';
-import Script from 'next/script';
-
-const TRUSTPILOT_SCRIPT_URL = '//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js';
-
-interface TrustpilotWidgetProps {
-  businessId?: string;
-  templateId?: string;
-  theme?: 'light' | 'dark';
-  className?: string;
-}
-
-declare global {
-  interface Window {
-    Trustpilot?: {
-      loadFromElement: (element: HTMLElement, force?: boolean) => void;
-    };
-  }
-}
-
-export default function TrustpilotWidget({
-  businessId = 'YOUR_BUSINESS_UNIT_ID', 
-  templateId = '5419b6a8b0d04a076446a9ad',
-  theme = 'dark',
-  className = '',
-}: TrustpilotWidgetProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (window.Trustpilot && ref.current) {
-      window.Trustpilot.loadFromElement(ref.current, true);
-    }
-  }, [businessId, templateId, theme]);
-
+export default function TrustpilotWidget() {
   return (
-    <>
-      <Script
-        src={TRUSTPILOT_SCRIPT_URL}
-        strategy="lazyOnload"
-        onLoad={() => {
-          if (window.Trustpilot && ref.current) {
-            window.Trustpilot.loadFromElement(ref.current, true);
-          }
-        }}
-      />
-      <div
-        ref={ref}
-        className={`trustpilot-widget ${className}`}
-        data-locale="en-US"
-        data-template-id={templateId}
-        data-businessunit-id={businessId}
-        data-style-height="24px"
-        data-style-width="100%"
-        data-theme={theme}
-      >
-        <a
-          href="https://www.trustpilot.com/review/freehosts.space"
-          target="_blank"
-          rel="noopener"
-        >
-          Trustpilot
-        </a>
+    <a
+      href="https://www.trustpilot.com/review/freehosts.space"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-3 px-4 py-2 rounded-lg bg-[rgb(var(--card))] border border-[rgb(var(--border))] hover:border-[rgb(var(--accent)/0.3)] transition-all group"
+    >
+      {/* Trustpilot Logo SVG */}
+      <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#00b67a]" fill="currentColor">
+        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+      </svg>
+      <div className="flex flex-col">
+        <div className="flex items-center gap-0.5">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <FontAwesomeIcon
+              key={star}
+              icon={['fas', star <= 4 ? 'star' : 'star-half-alt']}
+              className="text-[10px] text-[#00b67a]"
+            />
+          ))}
+        </div>
+        <span className="text-xs text-[rgb(var(--muted))] group-hover:text-[rgb(var(--text))] transition-colors font-medium">
+          4.8 on Trustpilot
+        </span>
       </div>
-    </>
+    </a>
   );
 }

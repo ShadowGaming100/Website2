@@ -129,38 +129,28 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--bg))]">
-      {/* Hero Banner */}
-      <section className="relative">
-        <div className="h-48 md:h-64 lg:h-72 relative overflow-hidden">
-          <div className="w-full h-full gradient-bg" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[rgb(var(--bg))] via-[rgb(var(--bg)/0.5)] to-transparent" />
-        </div>
-
-        {/* Overlapping Card */}
-        <div className="container-default relative -mt-20 md:-mt-24">
+      {/* Hero Section */}
+      <section className="pt-12 pb-16 lg:pt-24 lg:pb-20">
+        <div className="container-default text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] shadow-large p-6 md:p-8"
+            transition={{ duration: 0.5 }}
           >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-              <div className="max-w-2xl">
-                <h1 className="heading-2 text-[rgb(var(--text))] mb-4">
-                  Frequently Asked <span className="gradient-text">Questions</span>
-                </h1>
-                <p className="body-default text-[rgb(var(--muted))] text-balance">
-                  Everything you need to know about FreeHosts and the hosting providers we list.
-                </p>
-              </div>
-              <div className="flex-shrink-0">
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-[rgb(var(--accent)/0.1)] flex items-center justify-center">
-                  <FontAwesomeIcon icon={['fas', 'circle-question']} className="text-3xl text-[rgb(var(--accent))]" />
-                </div>
-              </div>
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl gradient-bg mb-6">
+              <FontAwesomeIcon icon={['fas', 'circle-question']} className="text-2xl text-white" />
             </div>
 
-            {/* Search Input in Card */}
-            <div className="relative">
+            <h1 className="heading-1 text-[rgb(var(--text))] mb-4">
+              Frequently Asked <span className="text-[rgb(var(--accent))]">Questions</span>
+            </h1>
+
+            <p className="body-large text-[rgb(var(--muted))] max-w-2xl mx-auto mb-10">
+              Everything you need to know about FreeHosts and the hosting providers we list.
+            </p>
+
+            {/* Search Input */}
+            <div className="max-w-2xl mx-auto relative">
               <FontAwesomeIcon
                 icon={['fas', 'magnifying-glass']}
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))]"
@@ -170,7 +160,7 @@ export default function FAQPage() {
                 placeholder="Search for answers..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full px-12 py-3 rounded-xl bg-[rgb(var(--muted)/0.05)] border border-[rgb(var(--border))] text-[rgb(var(--text))] placeholder-[rgb(var(--muted)/0.6)] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] focus:border-transparent transition-all"
+                className="w-full px-12 py-3.5 rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--text))] placeholder-[rgb(var(--muted)/0.6)] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] focus:border-transparent transition-all"
               />
               {search && (
                 <button
@@ -181,49 +171,31 @@ export default function FAQPage() {
                 </button>
               )}
             </div>
-
-            {/* Category Quick Links Area in Card Footer */}
-            <div className="flex items-center gap-2 mt-8 pt-6 border-t border-[rgb(var(--border))] overflow-x-auto pb-1 scrollbar-hide">
-              <span className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider mr-2 whitespace-nowrap">Categories:</span>
-              {FAQ_CATEGORIES.map((cat, i) => (
-                <button
-                  key={i}
-                  onClick={() => {
-                    const el = document.getElementById(`category-${cat.category.toLowerCase().replace(/\s+/g, '-')}`);
-                    el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }}
-                  className="px-3 py-1.5 rounded-lg bg-[rgb(var(--muted)/0.05)] border border-[rgb(var(--border))] text-xs font-medium text-[rgb(var(--muted))] hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--accent))] transition-all whitespace-nowrap"
-                >
-                  {cat.category}
-                </button>
-              ))}
-            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Main Content Sections */}
-      <div className="container-default py-12 max-w-4xl">
+      {/* Main Content */}
+      <div className="container-default pb-16 max-w-4xl">
         {filteredCategories.length > 0 ? (
-          <div className="space-y-10">
+          <div className="space-y-12">
             {filteredCategories.map((category, catIndex) => (
               <motion.div
                 key={catIndex}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: catIndex * 0.1 }}
+                transition={{ delay: catIndex * 0.1, duration: 0.5 }}
               >
-                <div
-                  id={`category-${category.category.toLowerCase().replace(/\s+/g, '-')}`}
-                  className="flex items-center gap-3 mb-5 scroll-mt-24"
-                >
+                {/* Category Header */}
+                <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 rounded-xl bg-[rgb(var(--accent)/0.1)] flex items-center justify-center">
                     <FontAwesomeIcon icon={category.icon} className="text-[rgb(var(--accent))]" />
                   </div>
                   <h2 className="heading-4 text-[rgb(var(--text))]">{category.category}</h2>
                 </div>
 
+                {/* FAQs */}
                 <div className="space-y-3">
                   {category.faqs.map((faq, faqIndex) => {
                     const itemId = `${catIndex}-${faqIndex}`;
@@ -232,13 +204,13 @@ export default function FAQPage() {
                     return (
                       <div
                         key={faqIndex}
-                        className="bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-2xl overflow-hidden"
+                        className="bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-xl overflow-hidden"
                       >
                         <button
                           onClick={() => toggleItem(itemId)}
                           className="w-full flex items-center justify-between p-5 text-left hover:bg-[rgb(var(--muted)/0.03)] transition-colors"
                         >
-                          <span className="font-medium text-[rgb(var(--text))] pr-4">
+                          <span className="font-semibold text-[rgb(var(--text))] pr-4">
                             {faq.question}
                           </span>
                           <motion.div
@@ -277,7 +249,7 @@ export default function FAQPage() {
             </div>
             <h3 className="heading-4 text-[rgb(var(--text))] mb-2">No results found</h3>
             <p className="text-[rgb(var(--muted))] mb-6">
-              We couldn&apos;t find any questions matching &quot;{search}&quot;
+              We couldn't find any questions matching &quot;{search}&quot;
             </p>
             <Button onClick={() => setSearch('')} variant="secondary">
               Clear Search
@@ -287,24 +259,27 @@ export default function FAQPage() {
       </div>
 
       {/* CTA Section */}
-      <section className="pb-12">
+      <section className="pb-16">
         <div className="container-default">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative overflow-hidden rounded-3xl gradient-bg p-8 md:p-12 text-center"
+            className="relative overflow-hidden rounded-2xl gradient-bg p-8 md:p-12 text-center"
           >
             <div className="relative z-10 max-w-2xl mx-auto">
-              <div className="w-14 h-14 mx-auto mb-5 rounded-2xl bg-white/20 flex items-center justify-center">
+              <div className="w-14 h-14 mx-auto mb-5 rounded-xl bg-white/20 flex items-center justify-center">
                 <FontAwesomeIcon icon={['fas', 'comments'] as IconProp} className="text-2xl text-white" />
               </div>
-              <h2 className="text-3xl font-bold text-white mb-4">
+
+              <h2 className="heading-2 text-white mb-4">
                 Still Have Questions?
               </h2>
-              <p className="text-lg text-white/80 mb-8">
+
+              <p className="text-lg text-white/90 mb-8 max-w-xl mx-auto">
                 Join our Discord community where thousands of developers discuss free hosting.
               </p>
+
               <Button
                 href="https://discord.gg/QbeZ3b5CQd"
                 variant="secondary"

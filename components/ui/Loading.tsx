@@ -58,7 +58,7 @@ interface LoadingSkeletonProps {
 export function LoadingSkeleton({ className = '' }: LoadingSkeletonProps) {
   return (
     <div
-      className={`bg-[rgb(var(--muted)/0.1)] rounded-xl animate-pulse ${className}`.trim()}
+      className={`skeleton ${className}`.trim()}
     />
   );
 }

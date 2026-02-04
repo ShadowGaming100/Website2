@@ -82,87 +82,74 @@ export default function SubmissionRulesPage() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--bg))]">
-      {/* Hero Banner */}
-      <section className="relative">
-        <div className="h-48 md:h-64 lg:h-72 relative overflow-hidden">
-          <div className="w-full h-full gradient-bg" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[rgb(var(--bg))] via-[rgb(var(--bg)/0.5)] to-transparent" />
-        </div>
-
-        {/* Overlapping Card */}
-        <div className="container-default relative -mt-20 md:-mt-24">
+      {/* Header Section */}
+      <section className="pt-24 pb-12">
+        <div className="container-default text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] shadow-large p-6 md:p-8"
+            className="max-w-2xl mx-auto"
           >
-            <div className="flex items-start gap-4 mb-6">
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl gradient-bg flex items-center justify-center flex-shrink-0">
-                <FontAwesomeIcon icon={['fas', 'clipboard-list']} className="text-3xl text-white" />
-              </div>
-              <div className="flex-1">
-                <h1 className="heading-2 text-[rgb(var(--text))] mb-2">Hosting Submission Rules</h1>
-                <p className="body-default text-[rgb(var(--muted))]">
-                  Please read these rules carefully before submitting your host
-                </p>
-              </div>
-            </div>
+            <Link
+              href="/submit-host"
+              className="inline-flex items-center gap-2 text-sm text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] transition-colors mb-6"
+            >
+              <FontAwesomeIcon icon={['fas', 'arrow-left'] as IconProp} />
+              Back to submission
+            </Link>
 
-            {/* Back Button */}
-            <div className="mt-6 pt-6 border-t border-[rgb(var(--border))]">
-              <Link
-                href="/submit-host"
-                className="inline-flex items-center gap-2 text-sm text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] transition-colors"
-              >
-                <FontAwesomeIcon icon={['fas', 'arrow-left']} />
-                Back to submission
-              </Link>
-            </div>
+            <h1 className="heading-1 text-[rgb(var(--text))] mb-4">
+              Submission <span className="text-[rgb(var(--accent))]">Rules</span>
+            </h1>
+            <p className="body-large text-[rgb(var(--muted))]">
+              Please read these rules carefully before submitting your host.
+            </p>
           </motion.div>
         </div>
       </section>
 
       {/* Main Content */}
-      <div className="container-default py-8">
+      <div className="container-default pb-24">
         {/* Warning */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 mb-8"
+          className="bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-xl p-6 mb-12 flex items-start gap-4"
         >
-          <div className="flex items-start gap-3">
-            <FontAwesomeIcon icon={['fas', 'triangle-exclamation']} className="text-amber-500 mt-1" />
-            <div>
-              <h3 className="font-semibold text-[rgb(var(--text))] mb-2">Important</h3>
-              <p className="body-small text-[rgb(var(--muted))]">
-                Failure to follow these guidelines may result in your submission being rejected. Submissions not following the required layout will be ignored.
-              </p>
-            </div>
+          <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0 text-amber-500">
+            <FontAwesomeIcon icon={['fas', 'triangle-exclamation']} />
+          </div>
+          <div>
+            <h3 className="font-semibold text-[rgb(var(--text))] mb-1">Important Requirement</h3>
+            <p className="text-sm text-[rgb(var(--muted))]">
+              Failure to follow these guidelines may result in your submission being rejected. Submissions not following the required layout will be ignored.
+            </p>
           </div>
         </motion.div>
 
         {/* Rules Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {ruleCategories.map((category, index) => (
             <motion.div
               key={category.title}
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               transition={{ delay: 0.1 + index * 0.05 }}
-              className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-6 hover:border-[rgb(var(--accent)/0.3)] transition-all"
+              className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-6 hover:border-[rgb(var(--accent)/0.3)] transition-all card-hover"
             >
-              <div className="flex items-center gap-3 mb-4 pb-4 border-b border-[rgb(var(--border))]">
-                <div className={`w-10 h-10 rounded-lg bg-${category.color}-500/10 flex items-center justify-center`}>
-                  <FontAwesomeIcon icon={category.icon} className={`text-${category.color}-500`} />
+              <div className="flex items-center gap-3 mb-6">
+                <div className={`w-10 h-10 rounded-lg bg-[rgb(var(--muted)/0.05)] flex items-center justify-center text-[rgb(var(--text))]`}>
+                  <FontAwesomeIcon icon={category.icon} />
                 </div>
-                <h3 className="font-semibold text-[rgb(var(--text))]">{category.title}</h3>
+                <h3 className="font-semibold text-[rgb(var(--text))] text-lg">{category.title}</h3>
               </div>
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {category.rules.map((rule, i) => (
-                  <li key={i} className="flex gap-2 text-sm text-[rgb(var(--muted))]">
-                    <FontAwesomeIcon icon={['fas', 'check']} className={`text-${category.color}-500 mt-1 text-xs flex-shrink-0`} />
-                    <span>{rule}</span>
+                  <li key={i} className="flex gap-3 text-sm text-[rgb(var(--muted))]">
+                    <FontAwesomeIcon icon={['fas', 'check']} className={`text-[rgb(var(--accent))] mt-1 text-xs flex-shrink-0`} />
+                    <span className="leading-relaxed">{rule}</span>
                   </li>
                 ))}
               </ul>
@@ -173,17 +160,28 @@ export default function SubmissionRulesPage() {
         {/* Layout Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-8 mb-8"
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+          className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-8 mb-16"
         >
-          <h2 className="heading-4 text-[rgb(var(--text))] mb-4">Submission Layout</h2>
-          <p className="body-default text-[rgb(var(--muted))] mb-6">
-            If a host has multiple targets, you must list the specs for each target separately. All hosts must follow the required layout:
-          </p>
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-8">
+            <div className="flex-1">
+              <h2 className="heading-3 text-[rgb(var(--text))] mb-4">Submission Layout</h2>
+              <p className="body-default text-[rgb(var(--muted))] mb-6">
+                If a host has multiple targets, you must list the specs for each target separately. All hosts must follow the required format.
+              </p>
 
-          <div className="bg-[rgb(var(--muted)/0.05)] rounded-xl p-4 font-mono text-sm mb-4 overflow-x-auto border border-[rgb(var(--border))]">
-            <pre className="text-[rgb(var(--text))]">{`Host Name:
+              <div className="flex flex-wrap gap-3">
+                <Button href="/submit-layout" variant="primary" icon={['fas', 'wand-magic-sparkles']}>
+                  Use Layout Builder
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex-1 w-full md:max-w-md">
+              <div className="bg-[rgb(var(--bg))] rounded-xl p-5 font-mono text-xs md:text-sm overflow-x-auto border border-[rgb(var(--border))] text-[rgb(var(--muted))] leading-relaxed shadow-inner">
+                <pre>{`Host Name:
 Targets:
 Specs:
 
@@ -199,30 +197,21 @@ For <Target 2> (if any):
 
 Links: (ToS, Privacy Policy, plan links)
 Information: (Renewal info, duration, coins needed, notes)`}</pre>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button href="/submit-layout" variant="secondary" icon={['fas', 'lightbulb']}>
-              Use Layout Builder
-            </Button>
+              </div>
+            </div>
           </div>
         </motion.div>
 
         {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-8 text-center"
-        >
+        <div className="text-center">
           <h2 className="heading-3 text-[rgb(var(--text))] mb-4">Ready to Submit?</h2>
-          <p className="body-default text-[rgb(var(--muted))] mb-6 max-w-2xl mx-auto">
-            If your hosting service meets all the requirements above, click the button below to proceed to the submission form.
+          <p className="body-default text-[rgb(var(--muted))] mb-8">
+            If your hosting service meets all the requirements above, you can proceed.
           </p>
-          <Button href="/submit-host" variant="primary" size="lg" icon={['fas', 'paper-plane']}>
-            Proceed to Submission
+          <Button href="/submit-host" variant="secondary" size="lg" icon={['fas', 'arrow-right']}>
+            Return to Submission
           </Button>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

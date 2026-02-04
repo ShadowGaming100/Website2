@@ -58,9 +58,9 @@ function HostCard({ host }: { host: Host }) {
       exit={{ opacity: 0, y: -20 }}
       className="group h-full"
     >
-      <div className="h-full flex flex-col bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] overflow-hidden hover:border-[rgb(var(--accent)/0.5)] hover:shadow-large transition-all duration-300">
+      <div className="h-full flex flex-col bg-[rgb(var(--card))] rounded-xl border border-[rgb(var(--border))] overflow-hidden hover:border-[rgb(var(--accent)/0.5)] transition-all duration-300 card-hover">
         {/* Banner */}
-        <div className="relative h-36 w-full overflow-hidden">
+        <div className="relative h-36 w-full overflow-hidden bg-[rgb(var(--muted)/0.05)]">
           {host.banner ? (
             <Image
               src={host.banner}
@@ -70,9 +70,10 @@ function HostCard({ host }: { host: Host }) {
               unoptimized
             />
           ) : (
-            <div className="w-full h-full gradient-bg opacity-80" />
+            <div className="w-full h-full flex items-center justify-center text-[rgb(var(--muted)/0.2)]">
+              <FontAwesomeIcon icon={['fas', 'image']} className="text-4xl" />
+            </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
           {/* Badges */}
           <div className="absolute top-3 right-3 flex items-center gap-2">
@@ -92,7 +93,7 @@ function HostCard({ host }: { host: Host }) {
         {/* Host Icon moved outside banner overflow to prevent cropping */}
         <div className="relative">
           <div className="absolute -top-6 left-5 z-10">
-            <div className="w-14 h-14 rounded-xl bg-[rgb(var(--card))] border-2 border-[rgb(var(--card))] shadow-medium overflow-hidden">
+            <div className="w-14 h-14 rounded-lg bg-[rgb(var(--card))] border border-[rgb(var(--border))] shadow-sm overflow-hidden flex items-center justify-center">
               {host.icon ? (
                 <Image
                   src={host.icon}
@@ -103,7 +104,7 @@ function HostCard({ host }: { host: Host }) {
                   unoptimized
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center gradient-bg text-white">
+                <div className="text-[rgb(var(--text))]">
                   <FontAwesomeIcon icon={['fas', 'server']} />
                 </div>
               )}
@@ -123,7 +124,7 @@ function HostCard({ host }: { host: Host }) {
               </Badge>
               {host.locale?.slice(0, 2).map(lang => (
                 <Badge key={lang} variant="subtle" size="xs">
-                  {lang}
+                  {getLanguageName(lang.toLowerCase())}
                 </Badge>
               ))}
             </div>
@@ -137,7 +138,7 @@ function HostCard({ host }: { host: Host }) {
           <div className="grid grid-cols-2 gap-2 mb-4">
             {host.ram !== undefined && (
               <div className="flex items-center gap-2 text-sm">
-                <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-md bg-blue-500/10 flex items-center justify-center">
                   <FontAwesomeIcon icon={['fas', 'memory']} className="text-xs text-blue-500" />
                 </div>
                 <span className="font-medium text-[rgb(var(--text))]">{formatResource(host.ram)}</span>
@@ -145,7 +146,7 @@ function HostCard({ host }: { host: Host }) {
             )}
             {host.storage !== undefined && (
               <div className="flex items-center gap-2 text-sm">
-                <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-md bg-amber-500/10 flex items-center justify-center">
                   <FontAwesomeIcon icon={['fas', 'hard-drive']} className="text-xs text-amber-500" />
                 </div>
                 <span className="font-medium text-[rgb(var(--text))]">{formatResource(host.storage)}</span>
@@ -153,7 +154,7 @@ function HostCard({ host }: { host: Host }) {
             )}
             {host.cores !== undefined && (
               <div className="flex items-center gap-2 text-sm">
-                <div className="w-7 h-7 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-md bg-violet-500/10 flex items-center justify-center">
                   <FontAwesomeIcon icon={['fas', 'microchip']} className="text-xs text-violet-500" />
                 </div>
                 <span className="font-medium text-[rgb(var(--text))]">{host.cores} vCPU</span>
@@ -161,7 +162,7 @@ function HostCard({ host }: { host: Host }) {
             )}
             {host.location && host.location.length > 0 && (
               <div className="flex items-center gap-2 text-sm">
-                <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-md bg-emerald-500/10 flex items-center justify-center">
                   <FontAwesomeIcon icon={['fas', 'globe']} className="text-xs text-emerald-500" />
                 </div>
                 <span className="font-medium text-[rgb(var(--text))]">{host.location.length} region{host.location.length > 1 ? 's' : ''}</span>
@@ -226,7 +227,7 @@ export default function HostsPage() {
   }, []);
 
   const availableLocales = useMemo(() => {
-    return Array.from(new Set(hosts.flatMap(h => h.locale || []))).sort();
+    return Array.from(new Set(hosts.flatMap(h => h.locale?.map(l => l.toLowerCase()) || []))).sort();
   }, [hosts]);
 
   const availableTargets = useMemo(() => {
@@ -248,7 +249,9 @@ export default function HostsPage() {
     }
 
     if (selectedLocale && selectedLocale !== 'all') {
-      result = result.filter(host => host.locale?.includes(selectedLocale));
+      result = result.filter(host =>
+        host.locale?.some(lang => lang.toLowerCase() === selectedLocale.toLowerCase())
+      );
     }
 
     if (selectedTarget && selectedTarget !== 'all') {
@@ -307,227 +310,219 @@ export default function HostsPage() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--bg))]">
-      {/* Hero Banner */}
-      <section className="relative">
-        {/* Banner Gradient */}
-        <div className="h-48 md:h-64 lg:h-72 relative overflow-hidden">
-          <div className="w-full h-full gradient-bg" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[rgb(var(--bg))] via-[rgb(var(--bg)/0.5)] to-transparent" />
-        </div>
-
-        {/* Overlapping Card */}
-        <div className="container-default relative -mt-20 md:-mt-24">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] shadow-large p-6 md:p-8"
-          >
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-              <div>
-                <h1 className="heading-2 text-[rgb(var(--text))] mb-2">Hosting Directory</h1>
-                <p className="body-default text-[rgb(var(--muted))]">
-                  Browse {hosts.length}+ verified free hosting providers
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button href="/submit-host" variant="primary" icon={['fas', 'plus']}>
-                  Submit Host
-                </Button>
-              </div>
+      {/* Hero Section */}
+      <section className="pt-24 pb-12 border-b border-[rgb(var(--border))] bg-[rgb(var(--bg))]">
+        <div className="container-default">
+          <div className="max-w-4xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgb(var(--accent)/0.1)] border border-[rgb(var(--accent)/0.2)] mb-6">
+              <span className="flex h-2 w-2 relative">
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[rgb(var(--accent))]"></span>
+              </span>
+              <span className="text-sm font-medium text-[rgb(var(--accent))]">
+                Direct Access
+              </span>
             </div>
-
-            {/* Search & Filters */}
-            <div className="p-4 bg-[rgb(var(--muted)/0.05)] rounded-2xl border border-[rgb(var(--border))]">
-              <div className="flex flex-col md:flex-row gap-3">
-                {/* Search Input */}
-                <div className="relative flex-1">
-                  <FontAwesomeIcon
-                    icon={['fas', 'magnifying-glass']}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))]"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search hosts..."
-                    className="w-full bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-xl py-3 pl-11 pr-4 text-[rgb(var(--text))] placeholder-[rgb(var(--muted)/0.6)] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] focus:border-transparent transition-all"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] transition-colors"
-                    >
-                      <FontAwesomeIcon icon={['fas', 'xmark']} />
-                    </button>
-                  )}
-                </div>
-
-                {/* Language Filter */}
-                <div className="relative md:w-44">
-                  <select
-                    value={selectedLocale}
-                    onChange={(e) => setSelectedLocale(e.target.value)}
-                    className="w-full appearance-none bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-xl py-3 px-4 pr-9 text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] focus:border-transparent transition-all cursor-pointer text-sm"
-                  >
-                    <option value="all">All Languages</option>
-                    {availableLocales.map(l => <option key={l} value={l}>{getLanguageName(l)}</option>)}
-                  </select>
-                  <FontAwesomeIcon
-                    icon={['fas', 'chevron-down']}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] text-xs pointer-events-none"
-                  />
-                </div>
-
-                {/* Target Filter */}
-                <div className="relative md:w-44">
-                  <select
-                    value={selectedTarget}
-                    onChange={(e) => setSelectedTarget(e.target.value)}
-                    className="w-full appearance-none bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-xl py-3 px-4 pr-9 text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] focus:border-transparent transition-all cursor-pointer text-sm"
-                  >
-                    <option value="all">All Types</option>
-                    {availableTargets.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                  <FontAwesomeIcon
-                    icon={['fas', 'chevron-down']}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] text-xs pointer-events-none"
-                  />
-                </div>
-              </div>
-
-              {/* Active filters indicator */}
-              {hasActiveFilters && (
-                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[rgb(var(--border))]">
-                  <span className="text-xs text-[rgb(var(--muted))]">Active filters:</span>
-                  <button
-                    onClick={clearFilters}
-                    className="text-xs text-[rgb(var(--accent))] hover:underline"
-                  >
-                    Clear all
-                  </button>
-                </div>
-              )}
-            </div>
-          </motion.div>
+            <h1 className="heading-1 text-[rgb(var(--text))] mb-6 text-balance">
+              Verified <span className="text-[rgb(var(--accent))]">Free Hosting</span> Directory
+            </h1>
+            <p className="body-large text-[rgb(var(--muted))] max-w-2xl text-balance">
+              Browse {hosts.length > 0 ? `${hosts.length}+` : 'our'} verified free hosting providers.
+              Filter by technology, resources, or location to find the perfect home for your project.
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Main Content */}
-      <div className="container-default py-8">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-12 h-12 rounded-full border-4 border-[rgb(var(--accent)/0.2)] border-t-[rgb(var(--accent))] animate-spin mb-4" />
-            <p className="text-[rgb(var(--muted))]">Loading hosts...</p>
-          </div>
-        ) : (
-          <>
-            {/* Results Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <p className="text-[rgb(var(--muted))]">
-                Showing <span className="font-semibold text-[rgb(var(--text))]">{totalItems}</span> {totalItems === 1 ? 'host' : 'hosts'}
-              </p>
+      <div className="container-default py-12">
+        <div className="flex flex-col lg:flex-row gap-8">
 
-              {/* Sort Options */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
-                <span className="text-sm text-[rgb(var(--muted))] whitespace-nowrap">Sort:</span>
-                {sortOptions.map((option) => (
+          {/* Filters Sidebar (Mobile: Top, Desktop: Left) */}
+          <div className="lg:w-64 flex-shrink-0 space-y-6">
+            {/* Search */}
+            <div className="bg-[rgb(var(--card))] rounded-xl border border-[rgb(var(--border))] p-4">
+              <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider mb-3 block">Search</label>
+              <div className="relative">
+                <FontAwesomeIcon
+                  icon={['fas', 'magnifying-glass']}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))]"
+                />
+                <input
+                  type="text"
+                  placeholder="Find a host..."
+                  className="w-full bg-[rgb(var(--bg))] border border-[rgb(var(--border))] rounded-lg py-2 pl-9 pr-3 text-sm text-[rgb(var(--text))] placeholder-[rgb(var(--muted)/0.6)] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] focus:border-transparent transition-all"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {searchQuery && (
                   <button
-                    key={option.value}
-                    onClick={() => setSortBy(option.value)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${sortBy === option.value
-                      ? 'bg-[rgb(var(--accent))] text-white'
-                      : 'bg-[rgb(var(--muted)/0.08)] text-[rgb(var(--muted))] hover:bg-[rgb(var(--muted)/0.12)]'
-                      }`}
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] hover:text-[rgb(var(--text))]"
                   >
-                    <FontAwesomeIcon icon={option.icon} className="text-xs" />
-                    {option.label}
+                    <FontAwesomeIcon icon={['fas', 'xmark']} size="sm" />
                   </button>
-                ))}
+                )}
               </div>
             </div>
 
-            {/* Hosts Grid */}
-            <AnimatePresence mode="wait">
-              {paginatedHosts.length > 0 ? (
-                <motion.div
-                  layout
-                  className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-                >
-                  {paginatedHosts.map((host) => (
-                    <HostCard key={host.id} host={host} />
-                  ))}
-                </motion.div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-20"
-                >
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-[rgb(var(--muted)/0.08)] flex items-center justify-center">
-                    <FontAwesomeIcon icon={['fas', 'magnifying-glass']} className="text-3xl text-[rgb(var(--muted))]" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-[rgb(var(--text))] mb-2">No hosts found</h3>
-                  <p className="text-[rgb(var(--muted))] mb-6">
-                    Try adjusting your search or filters
-                  </p>
-                  <Button onClick={clearFilters} variant="secondary">
-                    Clear Filters
+            {/* Filters */}
+            <div className="bg-[rgb(var(--card))] rounded-xl border border-[rgb(var(--border))] p-4 space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider mb-3 block">Language</label>
+                <div className="relative">
+                  <select
+                    value={selectedLocale}
+                    onChange={(e) => setSelectedLocale(e.target.value)}
+                    className="w-full appearance-none bg-[rgb(var(--bg))] border border-[rgb(var(--border))] rounded-lg py-2 px-3 pr-8 text-sm text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] focus:border-transparent transition-all cursor-pointer"
+                  >
+                    <option value="all">All Languages</option>
+                    {availableLocales.map(l => <option key={l} value={l}>{getLanguageName(l)}</option>)}
+                  </select>
+                  <FontAwesomeIcon icon={['fas', 'chevron-down']} className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] text-xs pointer-events-none" />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider mb-3 block">Type</label>
+                <div className="relative">
+                  <select
+                    value={selectedTarget}
+                    onChange={(e) => setSelectedTarget(e.target.value)}
+                    className="w-full appearance-none bg-[rgb(var(--bg))] border border-[rgb(var(--border))] rounded-lg py-2 px-3 pr-8 text-sm text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] focus:border-transparent transition-all cursor-pointer"
+                  >
+                    <option value="all">All Types</option>
+                    {availableTargets.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                  <FontAwesomeIcon icon={['fas', 'chevron-down']} className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] text-xs pointer-events-none" />
+                </div>
+              </div>
+
+              {hasActiveFilters && (
+                <div className="pt-4 border-t border-[rgb(var(--border))]">
+                  <Button onClick={clearFilters} variant="ghost" size="sm" className="w-full justify-center text-[rgb(var(--muted))] hover:text-[rgb(var(--text))]">
+                    Clear All Filters
                   </Button>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
+            </div>
+          </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 mt-12">
-                <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--muted))] disabled:opacity-40 disabled:cursor-not-allowed hover:border-[rgb(var(--accent))] transition-all"
-                >
-                  <FontAwesomeIcon icon={['fas', 'chevron-left']} className="text-sm" />
-                </button>
 
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1)
-                    .filter(page => {
-                      if (totalPages <= 7) return true;
-                      if (page === 1 || page === totalPages) return true;
-                      if (Math.abs(page - currentPage) <= 1) return true;
-                      return false;
-                    })
-                    .map((page, idx, arr) => {
-                      const showEllipsis = idx > 0 && page - arr[idx - 1] > 1;
-                      return (
-                        <div key={page} className="flex items-center gap-1">
-                          {showEllipsis && (
-                            <span className="w-10 text-center text-[rgb(var(--muted))]">...</span>
-                          )}
-                          <button
-                            onClick={() => setCurrentPage(page)}
-                            className={`w-10 h-10 rounded-xl flex items-center justify-center font-medium transition-all ${currentPage === page
-                              ? 'gradient-bg text-white shadow-glow'
-                              : 'bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--muted))] hover:border-[rgb(var(--accent))]'
-                              }`}
-                          >
-                            {page}
-                          </button>
-                        </div>
-                      );
-                    })}
+          {/* Results */}
+          <div className="flex-1">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-20 bg-[rgb(var(--card))] rounded-xl border border-[rgb(var(--border))]">
+                <div className="w-10 h-10 rounded-full border-2 border-[rgb(var(--accent)/0.2)] border-t-[rgb(var(--accent))] animate-spin mb-4" />
+                <p className="text-[rgb(var(--muted))] text-sm">Loading directory...</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-sm text-[rgb(var(--muted))]">
+                    Showing <span className="font-semibold text-[rgb(var(--text))]">{totalItems}</span> results
+                  </span>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-[rgb(var(--muted))] hidden sm:inline">Sort:</span>
+                    <div className="relative">
+                      <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value as SortOption)}
+                        className="appearance-none bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-lg py-1.5 px-3 pr-8 text-sm text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] focus:border-transparent transition-all cursor-pointer hover:border-[rgb(var(--accent)/0.5)]"
+                      >
+                        {sortOptions.map(option => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                      <FontAwesomeIcon icon={['fas', 'chevron-down']} className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] text-xs pointer-events-none" />
+                    </div>
+                  </div>
                 </div>
 
-                <button
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="w-10 h-10 rounded-xl flex items-center justify-center bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--muted))] disabled:opacity-40 disabled:cursor-not-allowed hover:border-[rgb(var(--accent))] transition-all"
-                >
-                  <FontAwesomeIcon icon={['fas', 'chevron-right']} className="text-sm" />
-                </button>
-              </div>
+                <AnimatePresence mode="wait">
+                  {paginatedHosts.length > 0 ? (
+                    <motion.div
+                      layout
+                      className="grid md:grid-cols-2 xl:grid-cols-3 gap-6"
+                    >
+                      {paginatedHosts.map((host) => (
+                        <HostCard key={host.id} host={host} />
+                      ))}
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex flex-col items-center justify-center py-20 bg-[rgb(var(--card))] rounded-xl border border-[rgb(var(--border))] text-center"
+                    >
+                      <div className="w-16 h-16 rounded-full bg-[rgb(var(--muted)/0.1)] flex items-center justify-center mb-4">
+                        <FontAwesomeIcon icon={['fas', 'magnifying-glass']} className="text-2xl text-[rgb(var(--muted))]" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-[rgb(var(--text))] mb-1">No hosts found</h3>
+                      <p className="text-sm text-[rgb(var(--muted))] mb-6 max-w-xs mx-auto">
+                        We couldn&apos;t find any hosts matching your criteria. Try adjusting your filters.
+                      </p>
+                      <Button onClick={clearFilters} variant="secondary" size="sm">
+                        Clear Filters
+                      </Button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex justify-center items-center gap-2 mt-12">
+                    <button
+                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      disabled={currentPage === 1}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--muted))] disabled:opacity-40 disabled:cursor-not-allowed hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--text))] transition-all"
+                    >
+                      <FontAwesomeIcon icon={['fas', 'chevron-left']} className="text-xs" />
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1)
+                        .filter(page => {
+                          if (totalPages <= 7) return true;
+                          if (page === 1 || page === totalPages) return true;
+                          if (Math.abs(page - currentPage) <= 1) return true;
+                          return false;
+                        })
+                        .map((page, idx, arr) => {
+                          const showEllipsis = idx > 0 && page - arr[idx - 1] > 1;
+                          return (
+                            <div key={page} className="flex items-center gap-1">
+                              {showEllipsis && (
+                                <span className="w-8 text-center text-[rgb(var(--muted))] text-sm">...</span>
+                              )}
+                              <button
+                                onClick={() => setCurrentPage(page)}
+                                className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${currentPage === page
+                                  ? 'bg-[rgb(var(--accent))] text-white shadow-sm'
+                                  : 'bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--muted))] hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--text))]'
+                                  }`}
+                              >
+                                {page}
+                              </button>
+                            </div>
+                          );
+                        })}
+                    </div>
+
+                    <button
+                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      disabled={currentPage === totalPages}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--muted))] disabled:opacity-40 disabled:cursor-not-allowed hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--text))] transition-all"
+                    >
+                      <FontAwesomeIcon icon={['fas', 'chevron-right']} className="text-xs" />
+                    </button>
+                  </div>
+                )}
+              </>
             )}
-          </>
-        )}
+          </div>
+
+        </div>
       </div>
     </div>
   );

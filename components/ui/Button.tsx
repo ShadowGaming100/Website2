@@ -37,15 +37,15 @@ type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'gradient-bg text-white font-medium hover:shadow-glow hover:scale-[1.02] active:scale-[0.98]',
+    'gradient-bg text-white font-semibold hover:opacity-90 active:scale-[0.98] shadow-medium',
   secondary:
-    'bg-[rgb(var(--card))] text-[rgb(var(--text))] border border-[rgb(var(--border))] hover:border-[rgb(var(--accent))] hover:bg-[rgb(var(--muted)/0.05)]',
+    'bg-[rgb(var(--card))] text-[rgb(var(--text))] border border-[rgb(var(--border))] hover:border-[rgb(var(--accent)/0.5)] hover:bg-[rgb(var(--muted)/0.05)] active:scale-[0.98]',
   ghost:
-    'bg-transparent text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--muted)/0.08)]',
+    'bg-transparent text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--muted)/0.1)] active:scale-[0.98]',
   outline:
-    'bg-transparent text-[rgb(var(--accent))] border border-[rgb(var(--accent))] hover:bg-[rgb(var(--accent))] hover:text-white',
+    'bg-transparent text-[rgb(var(--accent))] border border-[rgb(var(--accent)/0.5)] hover:bg-[rgb(var(--accent))] hover:text-white hover:border-[rgb(var(--accent))] active:scale-[0.98]',
   danger:
-    'bg-red-500 text-white font-medium hover:bg-red-600 hover:shadow-lg',
+    'bg-red-500 text-white font-semibold hover:bg-red-600 active:scale-[0.98] shadow-medium',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
