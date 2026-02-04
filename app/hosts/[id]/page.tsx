@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { Host } from '@/types/host';
-import countries from 'i18n-iso-countries';
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { Host } from "@/types/host";
+import countries from "i18n-iso-countries";
 import en from "i18n-iso-countries/langs/en.json";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { Modal } from '@/components/ui/Modal';
-import { fetchHostById, fetchHosts } from '@/lib/cache';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Modal } from "@/components/ui/Modal";
+import { fetchHostById, fetchHosts } from "@/lib/cache";
 
-export const runtime = 'edge';
+export const runtime = "edge";
 countries.registerLocale(en);
 
-type TabType = 'overview' | 'features' | 'resources' | 'links';
+type TabType = "overview" | "features" | "resources" | "links";
 
 export default function HostDetailsPage() {
   const params = useParams();
@@ -26,7 +26,7 @@ export default function HostDetailsPage() {
   const [similarHosts, setSimilarHosts] = useState<Host[]>([]);
   const [loading, setLoading] = useState(true);
   const [showVoteModal, setShowVoteModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const [activeTab, setActiveTab] = useState<TabType>("overview");
 
   useEffect(() => {
     const fetchHost = async () => {
@@ -42,22 +42,24 @@ export default function HostDetailsPage() {
 
           const allHosts = await fetchHosts();
           const similar = allHosts
-            .filter(h => h.id !== foundHost.id)
-            .map(h => {
+            .filter((h) => h.id !== foundHost.id)
+            .map((h) => {
               let score = 0;
               if (h.type === foundHost.type) score += 5;
-              const commonTargets = h.targets.filter(t => foundHost.targets.includes(t));
+              const commonTargets = h.targets.filter((t) =>
+                foundHost.targets.includes(t),
+              );
               score += commonTargets.length * 2;
               return { host: h, score };
             })
             .sort((a, b) => b.score - a.score)
             .slice(0, 3)
-            .map(item => item.host);
+            .map((item) => item.host);
 
           setSimilarHosts(similar);
         }
       } catch (error) {
-        console.error('Error fetching host data:', error);
+        console.error("Error fetching host data:", error);
       } finally {
         setLoading(false);
       }
@@ -84,34 +86,48 @@ export default function HostDetailsPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-4">
           <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-[rgb(var(--muted)/0.08)] flex items-center justify-center">
-            <FontAwesomeIcon icon={['fas', 'magnifying-glass']} className="text-3xl text-[rgb(var(--muted))]" />
+            <FontAwesomeIcon
+              icon={["fas", "magnifying-glass"]}
+              className="text-3xl text-[rgb(var(--muted))]"
+            />
           </div>
-          <h1 className="heading-3 text-[rgb(var(--text))] mb-2">Host Not Found</h1>
-          <p className="text-[rgb(var(--muted))] mb-6">The hosting provider you&apos;re looking for doesn&apos;t exist.</p>
-          <Button href="/hosts" variant="primary">Browse All Hosts</Button>
+          <h1 className="heading-3 text-[rgb(var(--text))] mb-2">
+            Host Not Found
+          </h1>
+          <p className="text-[rgb(var(--muted))] mb-6">
+            The hosting provider you&apos;re looking for doesn&apos;t exist.
+          </p>
+          <Button href="/hosts" variant="primary">
+            Browse All Hosts
+          </Button>
         </div>
       </div>
     );
   }
 
   const formatResource = (value: number) => {
-    if (value >= 1024) return `${(value / 1024).toFixed(1).replace(/\.0$/, '')} GB`;
+    if (value >= 1024)
+      return `${(value / 1024).toFixed(1).replace(/\.0$/, "")} GB`;
     return `${value} MB`;
   };
 
   const totalVotes = host.approvals + host.disapprovals;
-  const approvalRating = totalVotes > 0 ? Math.round((host.approvals / totalVotes) * 100) : 0;
+  const approvalRating =
+    totalVotes > 0 ? Math.round((host.approvals / totalVotes) * 100) : 0;
   const websiteUrl = host.links?.website;
 
   const formatAttributeKey = (key: string) => {
-    return key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    return key
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
   const tabs: { id: TabType; label: string; icon: IconProp }[] = [
-    { id: 'overview', label: 'Overview', icon: ['fas', 'circle-info'] },
-    { id: 'features', label: 'Features', icon: ['fas', 'star'] },
-    { id: 'resources', label: 'Resources', icon: ['fas', 'server'] },
-    { id: 'links', label: 'Links', icon: ['fas', 'link'] },
+    { id: "overview", label: "Overview", icon: ["fas", "circle-info"] },
+    { id: "features", label: "Features", icon: ["fas", "star"] },
+    { id: "resources", label: "Resources", icon: ["fas", "server"] },
+    { id: "links", label: "Links", icon: ["fas", "link"] },
   ];
 
   return (
@@ -145,10 +161,20 @@ export default function HostDetailsPage() {
               {/* Host Icon */}
               <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-[rgb(var(--bg))] border border-[rgb(var(--border))] overflow-hidden flex-shrink-0">
                 {host.icon ? (
-                  <Image src={host.icon} alt={host.name} width={96} height={96} className="object-contain p-2" unoptimized />
+                  <Image
+                    src={host.icon}
+                    alt={host.name}
+                    width={96}
+                    height={96}
+                    className="object-contain p-2"
+                    unoptimized
+                  />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center gradient-bg text-white">
-                    <FontAwesomeIcon icon={['fas', 'server']} className="text-3xl" />
+                    <FontAwesomeIcon
+                      icon={["fas", "server"]}
+                      className="text-3xl"
+                    />
                   </div>
                 )}
               </div>
@@ -157,15 +183,15 @@ export default function HostDetailsPage() {
               <div className="flex-1 min-w-0">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div>
-                    <h1 className="heading-2 text-[rgb(var(--text))] mb-2">{host.name}</h1>
+                    <h1 className="heading-2 text-[rgb(var(--text))] mb-2">
+                      {host.name}
+                    </h1>
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge variant="primary">{host.type} Hosting</Badge>
-                      <Badge variant="warning" icon={['fas', 'star']}>
+                      <Badge variant="warning" icon={["fas", "star"]}>
                         {host.rating.toFixed(1)}
                       </Badge>
-                      <Badge variant="default">
-                        {totalVotes} votes
-                      </Badge>
+                      <Badge variant="default">{totalVotes} votes</Badge>
                     </div>
                   </div>
 
@@ -175,7 +201,7 @@ export default function HostDetailsPage() {
                       href={websiteUrl}
                       variant="primary"
                       size="lg"
-                      icon={['fas', 'arrow-up-right-from-square']}
+                      icon={["fas", "arrow-up-right-from-square"]}
                       className="shrink-0"
                     >
                       Visit Website
@@ -191,7 +217,7 @@ export default function HostDetailsPage() {
                 href="/hosts"
                 className="inline-flex items-center gap-2 text-sm text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] transition-colors"
               >
-                <FontAwesomeIcon icon={['fas', 'arrow-left']} />
+                <FontAwesomeIcon icon={["fas", "arrow-left"]} />
                 Back to all hosts
               </Link>
             </div>
@@ -210,10 +236,11 @@ export default function HostDetailsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-all active:scale-98 ${activeTab === tab.id
-                      ? 'bg-[rgb(var(--card))] text-[rgb(var(--text))] shadow-soft'
-                      : 'text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--muted)/0.05)]'
-                    }`}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-all active:scale-98 ${
+                    activeTab === tab.id
+                      ? "bg-[rgb(var(--card))] text-[rgb(var(--text))] shadow-soft"
+                      : "text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--muted)/0.05)]"
+                  }`}
                 >
                   <FontAwesomeIcon icon={tab.icon} className="text-xs" />
                   {tab.label}
@@ -228,11 +255,13 @@ export default function HostDetailsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
             >
-              {activeTab === 'overview' && (
+              {activeTab === "overview" && (
                 <div className="space-y-6">
                   {/* Description */}
                   <div className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-6">
-                    <h2 className="heading-4 text-[rgb(var(--text))] mb-4">About {host.name}</h2>
+                    <h2 className="heading-4 text-[rgb(var(--text))] mb-4">
+                      About {host.name}
+                    </h2>
                     <p className="body-default text-[rgb(var(--muted))] whitespace-pre-line">
                       {host.description}
                     </p>
@@ -241,9 +270,11 @@ export default function HostDetailsPage() {
                   {/* Targets */}
                   {host.targets && host.targets.length > 0 && (
                     <div className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-6">
-                      <h2 className="heading-4 text-[rgb(var(--text))] mb-4">Perfect For</h2>
+                      <h2 className="heading-4 text-[rgb(var(--text))] mb-4">
+                        Perfect For
+                      </h2>
                       <div className="flex flex-wrap gap-2">
-                        {host.targets.map(target => (
+                        {host.targets.map((target) => (
                           <Badge key={target} variant="primary" size="md">
                             {target}
                           </Badge>
@@ -256,10 +287,17 @@ export default function HostDetailsPage() {
                   {host.notes && (
                     <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6">
                       <div className="flex items-start gap-3">
-                        <FontAwesomeIcon icon={['fas', 'circle-info']} className="text-amber-500 mt-1" />
+                        <FontAwesomeIcon
+                          icon={["fas", "circle-info"]}
+                          className="text-amber-500 mt-1"
+                        />
                         <div>
-                          <h3 className="font-semibold text-[rgb(var(--text))] mb-2">Important Notes</h3>
-                          <p className="body-small text-[rgb(var(--muted))]">{host.notes}</p>
+                          <h3 className="font-semibold text-[rgb(var(--text))] mb-2">
+                            Important Notes
+                          </h3>
+                          <p className="body-small text-[rgb(var(--muted))]">
+                            {host.notes}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -267,65 +305,101 @@ export default function HostDetailsPage() {
                 </div>
               )}
 
-              {activeTab === 'features' && (
+              {activeTab === "features" && (
                 <div className="space-y-6">
                   {/* Detailed Features */}
-                  {host.features_detailed && host.features_detailed.length > 0 && (
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {host.features_detailed.map((feature, idx) => (
-                        <div
-                          key={idx}
-                          className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-5 hover:border-[rgb(var(--accent)/0.3)] transition-colors"
-                        >
-                          <h3 className="font-semibold text-[rgb(var(--text))] mb-2">{feature.title}</h3>
-                          <p className="body-small text-[rgb(var(--muted))]">{feature.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Attributes */}
-                  {host.attributes && Object.keys(host.attributes).length > 0 && (
-                    <div className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-6">
-                      <h2 className="heading-4 text-[rgb(var(--text))] mb-4">Service Details</h2>
-                      <div className="grid sm:grid-cols-2 gap-3">
-                        {Object.entries(host.attributes).map(([key, value]) => (
-                          <div key={key} className="flex items-center justify-between py-2 px-3 rounded-xl bg-[rgb(var(--muted)/0.05)]">
-                            <span className="text-sm text-[rgb(var(--muted))]">{formatAttributeKey(key)}</span>
-                            {value ? (
-                              <Badge variant="success" size="xs">Yes</Badge>
-                            ) : (
-                              <Badge variant="danger" size="xs">No</Badge>
-                            )}
+                  {host.features_detailed &&
+                    host.features_detailed.length > 0 && (
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        {host.features_detailed.map((feature, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-5 hover:border-[rgb(var(--accent)/0.3)] transition-colors"
+                          >
+                            <h3 className="font-semibold text-[rgb(var(--text))] mb-2">
+                              {feature.title}
+                            </h3>
+                            <p className="body-small text-[rgb(var(--muted))]">
+                              {feature.description}
+                            </p>
                           </div>
                         ))}
                       </div>
-                    </div>
-                  )}
+                    )}
+
+                  {/* Attributes */}
+                  {host.attributes &&
+                    Object.keys(host.attributes).length > 0 && (
+                      <div className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-6">
+                        <h2 className="heading-4 text-[rgb(var(--text))] mb-4">
+                          Service Details
+                        </h2>
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          {Object.entries(host.attributes).map(
+                            ([key, value]) => (
+                              <div
+                                key={key}
+                                className="flex items-center justify-between py-2 px-3 rounded-xl bg-[rgb(var(--muted)/0.05)]"
+                              >
+                                <span className="text-sm text-[rgb(var(--muted))]">
+                                  {formatAttributeKey(key)}
+                                </span>
+                                {value ? (
+                                  <Badge variant="success" size="xs">
+                                    Yes
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="danger" size="xs">
+                                    No
+                                  </Badge>
+                                )}
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      </div>
+                    )}
                 </div>
               )}
 
-              {activeTab === 'resources' && (
+              {activeTab === "resources" && (
                 <div className="space-y-6">
                   {/* Resources Grid */}
                   <div className="grid sm:grid-cols-2 gap-4">
                     {host.ram !== undefined && (
-                      <ResourceCard icon={['fas', 'memory']} label="RAM" value={formatResource(host.ram)} color="blue" />
+                      <ResourceCard
+                        icon={["fas", "memory"]}
+                        label="RAM"
+                        value={formatResource(host.ram)}
+                        color="blue"
+                      />
                     )}
                     {host.storage !== undefined && (
-                      <ResourceCard icon={['fas', 'hard-drive']} label="Storage" value={formatResource(host.storage)} color="amber" />
+                      <ResourceCard
+                        icon={["fas", "hard-drive"]}
+                        label="Storage"
+                        value={formatResource(host.storage)}
+                        color="amber"
+                      />
                     )}
                     {host.cores !== undefined && (
-                      <ResourceCard icon={['fas', 'microchip']} label="CPU Cores" value={`${host.cores} vCPU`} color="violet" />
+                      <ResourceCard
+                        icon={["fas", "microchip"]}
+                        label="CPU Cores"
+                        value={`${host.cores} vCPU`}
+                        color="violet"
+                      />
                     )}
                   </div>
 
                   {/* Locations */}
                   {host.location && host.location.length > 0 && (
                     <div className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-6">
-                      <h2 className="heading-4 text-[rgb(var(--text))] mb-4">Server Locations</h2>
+                      <h2 className="heading-4 text-[rgb(var(--text))] mb-4">
+                        Server Locations
+                      </h2>
                       <div className="flex flex-wrap gap-3">
-                        {host.location.map(loc => (
+                        {host.location.map((loc) => (
                           <div
                             key={loc}
                             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[rgb(var(--muted)/0.05)] border border-[rgb(var(--border))]"
@@ -338,7 +412,9 @@ export default function HostDetailsPage() {
                               className="w-6 h-auto rounded shadow-sm"
                               unoptimized
                             />
-                            <span className="font-medium text-[rgb(var(--text))]">{loc}</span>
+                            <span className="font-medium text-[rgb(var(--text))]">
+                              {loc}
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -350,11 +426,18 @@ export default function HostDetailsPage() {
                     <div className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-6">
                       <div className="flex items-start gap-3">
                         <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-                          <FontAwesomeIcon icon={['fas', 'clock']} className="text-blue-500" />
+                          <FontAwesomeIcon
+                            icon={["fas", "clock"]}
+                            className="text-blue-500"
+                          />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-[rgb(var(--text))] mb-1">Renewal Policy</h3>
-                          <p className="body-small text-[rgb(var(--muted))]">{host.renewal}</p>
+                          <h3 className="font-semibold text-[rgb(var(--text))] mb-1">
+                            Renewal Policy
+                          </h3>
+                          <p className="body-small text-[rgb(var(--muted))]">
+                            {host.renewal}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -362,7 +445,7 @@ export default function HostDetailsPage() {
                 </div>
               )}
 
-              {activeTab === 'links' && (
+              {activeTab === "links" && (
                 <div className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-6">
                   {host.links && Object.keys(host.links).length > 0 ? (
                     <div className="space-y-3">
@@ -374,17 +457,33 @@ export default function HostDetailsPage() {
                           rel="noopener noreferrer"
                           className="flex items-center gap-4 p-4 rounded-xl hover:bg-[rgb(var(--muted)/0.05)] transition-colors group"
                         >
-                          <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-white shrink-0 ${key === 'website' ? 'bg-blue-500' :
-                              key === 'discord' ? 'bg-[#5865F2]' :
-                                key === 'github' ? 'bg-[#24292e]' :
-                                  key === 'panel' ? 'bg-violet-500' :
-                                    'bg-emerald-500'
-                            }`}>
+                          <div
+                            className={`w-11 h-11 rounded-xl flex items-center justify-center text-white shrink-0 ${
+                              key === "website"
+                                ? "bg-blue-500"
+                                : key === "discord"
+                                  ? "bg-[#5865F2]"
+                                  : key === "github"
+                                    ? "bg-[#24292e]"
+                                    : key === "panel"
+                                      ? "bg-violet-500"
+                                      : "bg-emerald-500"
+                            }`}
+                          >
                             <FontAwesomeIcon
                               icon={
-                                key === 'discord' ? ['fab', 'discord'] :
-                                  key === 'github' ? ['fab', 'github'] :
-                                    ['fas', key === 'website' ? 'globe' : key === 'panel' ? 'columns' : 'link']
+                                key === "discord"
+                                  ? ["fab", "discord"]
+                                  : key === "github"
+                                    ? ["fab", "github"]
+                                    : [
+                                        "fas",
+                                        key === "website"
+                                          ? "globe"
+                                          : key === "panel"
+                                            ? "columns"
+                                            : "link",
+                                      ]
                               }
                             />
                           </div>
@@ -396,12 +495,17 @@ export default function HostDetailsPage() {
                               {url}
                             </div>
                           </div>
-                          <FontAwesomeIcon icon={['fas', 'arrow-up-right-from-square']} className="text-[rgb(var(--muted))] group-hover:text-[rgb(var(--accent))] transition-colors" />
+                          <FontAwesomeIcon
+                            icon={["fas", "arrow-up-right-from-square"]}
+                            className="text-[rgb(var(--muted))] group-hover:text-[rgb(var(--accent))] transition-colors"
+                          />
                         </a>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-[rgb(var(--muted))] text-center py-8">No links available</p>
+                    <p className="text-[rgb(var(--muted))] text-center py-8">
+                      No links available
+                    </p>
                   )}
                 </div>
               )}
@@ -410,18 +514,31 @@ export default function HostDetailsPage() {
             {/* Similar Hosts */}
             {similarHosts.length > 0 && (
               <div className="pt-6">
-                <h2 className="heading-4 text-[rgb(var(--text))] mb-4">Similar Hosts</h2>
+                <h2 className="heading-4 text-[rgb(var(--text))] mb-4">
+                  Similar Hosts
+                </h2>
                 <div className="grid sm:grid-cols-3 gap-4">
-                  {similarHosts.map(sh => (
-                    <Link key={sh.id} href={`/hosts/${sh.id}`} className="group">
+                  {similarHosts.map((sh) => (
+                    <Link
+                      key={sh.id}
+                      href={`/hosts/${sh.id}`}
+                      className="group"
+                    >
                       <div className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-4 hover:border-[rgb(var(--accent)/0.5)] hover:shadow-medium transition-all">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 rounded-xl bg-[rgb(var(--muted)/0.08)] overflow-hidden flex-shrink-0">
                             {sh.icon ? (
-                              <Image src={sh.icon} alt={sh.name} width={48} height={48} className="object-contain p-1" unoptimized />
+                              <Image
+                                src={sh.icon}
+                                alt={sh.name}
+                                width={48}
+                                height={48}
+                                className="object-contain p-1"
+                                unoptimized
+                              />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center gradient-bg text-white">
-                                <FontAwesomeIcon icon={['fas', 'server']} />
+                                <FontAwesomeIcon icon={["fas", "server"]} />
                               </div>
                             )}
                           </div>
@@ -429,7 +546,9 @@ export default function HostDetailsPage() {
                             <h3 className="font-semibold text-[rgb(var(--text))] truncate group-hover:text-[rgb(var(--accent))] transition-colors">
                               {sh.name}
                             </h3>
-                            <p className="text-xs text-[rgb(var(--muted))]">{sh.type}</p>
+                            <p className="text-xs text-[rgb(var(--muted))]">
+                              {sh.type}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -445,19 +564,33 @@ export default function HostDetailsPage() {
             {/* Voting Card */}
             <div className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-6">
               <div className="text-center mb-6">
-                <div className="text-5xl font-bold gradient-text mb-1">{approvalRating}%</div>
-                <div className="text-sm text-[rgb(var(--muted))]">Approval Rating</div>
-                <div className="text-xs text-[rgb(var(--muted))] mt-1">{totalVotes} total votes</div>
+                <div className="text-5xl font-bold gradient-text mb-1">
+                  {approvalRating}%
+                </div>
+                <div className="text-sm text-[rgb(var(--muted))]">
+                  Approval Rating
+                </div>
+                <div className="text-xs text-[rgb(var(--muted))] mt-1">
+                  {totalVotes} total votes
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="text-center p-3 rounded-xl bg-emerald-500/10">
-                  <div className="text-2xl font-bold text-emerald-500">{host.approvals}</div>
-                  <div className="text-xs text-[rgb(var(--muted))]">Upvotes</div>
+                  <div className="text-2xl font-bold text-emerald-500">
+                    {host.approvals}
+                  </div>
+                  <div className="text-xs text-[rgb(var(--muted))]">
+                    Upvotes
+                  </div>
                 </div>
                 <div className="text-center p-3 rounded-xl bg-red-500/10">
-                  <div className="text-2xl font-bold text-red-500">{host.disapprovals}</div>
-                  <div className="text-xs text-[rgb(var(--muted))]">Downvotes</div>
+                  <div className="text-2xl font-bold text-red-500">
+                    {host.disapprovals}
+                  </div>
+                  <div className="text-xs text-[rgb(var(--muted))]">
+                    Downvotes
+                  </div>
                 </div>
               </div>
 
@@ -466,7 +599,7 @@ export default function HostDetailsPage() {
                   onClick={() => setShowVoteModal(true)}
                   variant="primary"
                   fullWidth
-                  icon={['fas', 'thumbs-up']}
+                  icon={["fas", "thumbs-up"]}
                 >
                   Vote
                 </Button>
@@ -476,10 +609,15 @@ export default function HostDetailsPage() {
             {/* Languages */}
             {host.locale && host.locale.length > 0 && (
               <div className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-6">
-                <h3 className="font-semibold text-[rgb(var(--text))] mb-4">Languages</h3>
+                <h3 className="font-semibold text-[rgb(var(--text))] mb-4">
+                  Languages
+                </h3>
                 <div className="flex flex-wrap gap-2">
-                  {host.locale.map(lang => (
-                    <div key={lang} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[rgb(var(--muted)/0.05)] text-sm">
+                  {host.locale.map((lang) => (
+                    <div
+                      key={lang}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[rgb(var(--muted)/0.05)] text-sm"
+                    >
                       <Image
                         src={getFlagUrl(lang)}
                         alt={lang}
@@ -506,14 +644,16 @@ export default function HostDetailsPage() {
         isOpen={showVoteModal}
         onClose={() => setShowVoteModal(false)}
         title="Join Discord to Vote"
-        icon={['fab', 'discord']}
+        icon={["fab", "discord"]}
         footer={
           <>
-            <Button variant="ghost" onClick={() => setShowVoteModal(false)}>Close</Button>
+            <Button variant="ghost" onClick={() => setShowVoteModal(false)}>
+              Close
+            </Button>
             <Button
               href="https://discord.gg/QbeZ3b5CQd"
               variant="primary"
-              icon={['fab', 'discord']}
+              icon={["fab", "discord"]}
             >
               Join Server
             </Button>
@@ -531,23 +671,37 @@ export default function HostDetailsPage() {
 }
 
 // Resource Card Component
-function ResourceCard({ icon, label, value, color }: { icon: IconProp; label: string; value: string; color: 'blue' | 'amber' | 'violet' | 'emerald' }) {
+function ResourceCard({
+  icon,
+  label,
+  value,
+  color,
+}: {
+  icon: IconProp;
+  label: string;
+  value: string;
+  color: "blue" | "amber" | "violet" | "emerald";
+}) {
   const colorClasses = {
-    blue: 'bg-blue-500/10 text-blue-500',
-    amber: 'bg-amber-500/10 text-amber-500',
-    violet: 'bg-violet-500/10 text-violet-500',
-    emerald: 'bg-emerald-500/10 text-emerald-500',
+    blue: "bg-blue-500/10 text-blue-500",
+    amber: "bg-amber-500/10 text-amber-500",
+    violet: "bg-violet-500/10 text-violet-500",
+    emerald: "bg-emerald-500/10 text-emerald-500",
   };
 
   return (
     <div className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-5">
       <div className="flex items-start gap-4">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${colorClasses[color]}`}>
+        <div
+          className={`w-12 h-12 rounded-xl flex items-center justify-center ${colorClasses[color]}`}
+        >
           <FontAwesomeIcon icon={icon} className="text-xl" />
         </div>
         <div>
           <p className="text-sm text-[rgb(var(--muted))] mb-1">{label}</p>
-          <div className="text-2xl font-bold text-[rgb(var(--text))]">{value}</div>
+          <div className="text-2xl font-bold text-[rgb(var(--text))]">
+            {value}
+          </div>
         </div>
       </div>
     </div>
@@ -590,7 +744,7 @@ function DiscordWidget() {
 
 // Flag URL helper
 function getFlagUrl(codeOrName: string) {
-  if (!codeOrName) return 'https://flagcdn.com/w40/un.png';
+  if (!codeOrName) return "https://flagcdn.com/w40/un.png";
 
   const cleanInput = codeOrName.trim();
 
@@ -607,10 +761,10 @@ function getFlagUrl(codeOrName: string) {
     return `https://flagcdn.com/w40/${upper.toLowerCase()}.png`;
   }
 
-  const codeFromName = countries.getAlpha2Code(cleanInput, 'en');
+  const codeFromName = countries.getAlpha2Code(cleanInput, "en");
   if (codeFromName) {
     return `https://flagcdn.com/w40/${codeFromName.toLowerCase()}.png`;
   }
 
-  return 'https://flagcdn.com/w40/un.png';
+  return "https://flagcdn.com/w40/un.png";
 }

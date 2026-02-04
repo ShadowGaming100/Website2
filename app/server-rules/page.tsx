@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { Button } from '@/components/ui/Button';
+import React from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { Button } from "@/components/ui/button";
 
 export default function ServerRulesPage() {
   return (
@@ -26,10 +26,15 @@ export default function ServerRulesPage() {
           >
             <div className="flex items-start gap-4 mb-6">
               <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl gradient-bg flex items-center justify-center flex-shrink-0">
-                <FontAwesomeIcon icon={['fas', 'users-gear'] as IconProp} className="text-3xl text-white" />
+                <FontAwesomeIcon
+                  icon={["fas", "users-gear"] as IconProp}
+                  className="text-3xl text-white"
+                />
               </div>
               <div className="flex-1">
-                <h1 className="heading-2 text-[rgb(var(--text))] mb-2">Server Rules</h1>
+                <h1 className="heading-2 text-[rgb(var(--text))] mb-2">
+                  Server Rules
+                </h1>
                 <p className="body-default text-[rgb(var(--muted))]">
                   Community guidelines for the FreeHosts Discord server
                 </p>
@@ -42,7 +47,7 @@ export default function ServerRulesPage() {
                 href="/"
                 className="inline-flex items-center gap-2 text-sm text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] transition-colors"
               >
-                <FontAwesomeIcon icon={['fas', 'arrow-left'] as IconProp} />
+                <FontAwesomeIcon icon={["fas", "arrow-left"] as IconProp} />
                 Back to home
               </Link>
             </div>
@@ -60,7 +65,10 @@ export default function ServerRulesPage() {
             className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-8 text-center"
           >
             <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-[rgb(var(--accent)/0.1)] flex items-center justify-center">
-              <FontAwesomeIcon icon={['fas', 'person-digging'] as IconProp} className="text-4xl text-[rgb(var(--accent))]" />
+              <FontAwesomeIcon
+                icon={["fas", "person-digging"] as IconProp}
+                className="text-4xl text-[rgb(var(--accent))]"
+              />
             </div>
 
             <h2 className="heading-3 text-[rgb(var(--text))] mb-4">
@@ -68,17 +76,23 @@ export default function ServerRulesPage() {
             </h2>
 
             <p className="body-default text-[rgb(var(--muted))] mb-8 max-w-lg mx-auto">
-              Our team is finalizing the community guidelines to ensure a safe and welcoming environment for everyone.
+              Our team is finalizing the community guidelines to ensure a safe
+              and welcoming environment for everyone.
             </p>
 
             {/* Progress Bar */}
             <div className="bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-2xl p-6 mb-8">
               <h3 className="font-semibold text-[rgb(var(--text))] mb-4 flex items-center justify-center gap-2">
-                <FontAwesomeIcon icon={['fas', 'person-digging'] as IconProp} className="text-[rgb(var(--accent))]" />
+                <FontAwesomeIcon
+                  icon={["fas", "person-digging"] as IconProp}
+                  className="text-[rgb(var(--accent))]"
+                />
                 Development Status
               </h3>
               <p className="body-small text-[rgb(var(--muted))] mb-6">
-                We&apos;re working hard to bring you our complete server rules and guidelines. This page is currently being built and will be available soon.
+                We&apos;re working hard to bring you our complete server rules
+                and guidelines. This page is currently being built and will be
+                available soon.
               </p>
 
               <div className="w-full h-2 bg-[rgb(var(--muted)/0.1)] rounded-full overflow-hidden mb-2">
@@ -95,14 +109,14 @@ export default function ServerRulesPage() {
               <Button
                 href="/hosts"
                 variant="primary"
-                icon={['fas', 'server'] as IconProp}
+                icon={["fas", "server"] as IconProp}
               >
                 Browse Hosts
               </Button>
               <Button
                 href="https://discord.gg/QbeZ3b5CQd"
                 variant="secondary"
-                icon={['fab', 'discord'] as IconProp}
+                icon={["fab", "discord"] as IconProp}
               >
                 Join Discord
               </Button>

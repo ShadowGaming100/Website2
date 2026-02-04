@@ -1,179 +1,57 @@
-import Link from 'next/link';
-import {
-  ButtonHTMLAttributes,
-  AnchorHTMLAttributes,
-  ReactNode,
-} from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outline' | 'danger';
-type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+import { cn } from "@/lib/utils"
 
-interface BaseButtonProps {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  icon?: IconProp;
-  iconPosition?: 'left' | 'right';
-  loading?: boolean;
-  disabled?: boolean;
-  fullWidth?: boolean;
-  iconOnly?: boolean;
-  children?: ReactNode;
-  className?: string;
-}
-
-type ButtonAsButton = BaseButtonProps &
-  Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseButtonProps> & {
-    href?: never;
-  };
-
-type ButtonAsLink = BaseButtonProps &
-  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseButtonProps> & {
-    href: string;
-  };
-
-type ButtonProps = ButtonAsButton | ButtonAsLink;
-
-const variantStyles: Record<ButtonVariant, string> = {
-  primary:
-    'gradient-bg text-white font-semibold hover:opacity-90 active:scale-[0.98] shadow-medium',
-  secondary:
-    'bg-[rgb(var(--card))] text-[rgb(var(--text))] border border-[rgb(var(--border))] hover:border-[rgb(var(--accent)/0.5)] hover:bg-[rgb(var(--muted)/0.05)] active:scale-[0.98]',
-  ghost:
-    'bg-transparent text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--muted)/0.1)] active:scale-[0.98]',
-  outline:
-    'bg-transparent text-[rgb(var(--accent))] border border-[rgb(var(--accent)/0.5)] hover:bg-[rgb(var(--accent))] hover:text-white hover:border-[rgb(var(--accent))] active:scale-[0.98]',
-  danger:
-    'bg-red-500 text-white font-semibold hover:bg-red-600 active:scale-[0.98] shadow-medium',
-};
-
-const sizeStyles: Record<ButtonSize, string> = {
-  xs: 'text-xs px-2.5 py-1.5 gap-1.5',
-  sm: 'text-sm px-3 py-2 gap-2',
-  md: 'text-sm px-4 py-2.5 gap-2',
-  lg: 'text-base px-5 py-3 gap-2.5',
-  xl: 'text-base px-6 py-3.5 gap-3',
-};
-
-const iconOnlySizeStyles: Record<ButtonSize, string> = {
-  xs: 'w-7 h-7',
-  sm: 'w-8 h-8',
-  md: 'w-10 h-10',
-  lg: 'w-11 h-11',
-  xl: 'w-12 h-12',
-};
-
-const iconSizeStyles: Record<ButtonSize, string> = {
-  xs: 'text-xs',
-  sm: 'text-xs',
-  md: 'text-sm',
-  lg: 'text-sm',
-  xl: 'text-base',
-};
-
-export function Button({
-  variant = 'secondary',
-  size = 'md',
-  icon,
-  iconPosition = 'left',
-  loading = false,
-  fullWidth = false,
-  iconOnly = false,
-  children,
-  className = '',
-  disabled,
-  ...props
-}: ButtonProps) {
-  const baseStyles =
-    'inline-flex items-center justify-center rounded-xl font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent))] focus-visible:ring-offset-2';
-
-  const combinedClassName = [
-    baseStyles,
-    variantStyles[variant],
-    iconOnly ? iconOnlySizeStyles[size] : sizeStyles[size],
-    fullWidth ? 'w-full' : '',
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const iconClass = iconSizeStyles[size];
-
-  const content = (
-    <>
-      {loading && (
-        <FontAwesomeIcon icon={['fas', 'spinner']} spin className={iconClass} />
-      )}
-      {!loading && icon && iconPosition === 'left' && (
-        <FontAwesomeIcon icon={icon} className={iconClass} />
-      )}
-      {!iconOnly && children && <span>{children}</span>}
-      {!loading && icon && iconPosition === 'right' && (
-        <FontAwesomeIcon icon={icon} className={iconClass} />
-      )}
-    </>
-  );
-
-  if ('href' in props) {
-    const { href, ...anchorProps } = props as ButtonAsLink;
-
-    if (href.startsWith('http')) {
-      return (
-        <a
-          href={href}
-          className={combinedClassName}
-          target="_blank"
-          rel="noopener noreferrer"
-          {...anchorProps}
-        >
-          {content}
-        </a>
-      );
-    }
-
-    return (
-      <Link
-        href={href}
-        className={combinedClassName}
-        {...anchorProps}
-      >
-        {content}
-      </Link>
-    );
+const buttonVariants = cva(
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  {
+    variants: {
+      variant: {
+        default:
+          "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+        destructive:
+          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        outline:
+          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+        secondary:
+          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-9 px-4 py-2",
+        sm: "h-8 rounded-md px-3 text-xs",
+        lg: "h-10 rounded-md px-8",
+        icon: "h-9 w-9",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
   }
+)
 
-  const buttonProps = props as ButtonAsButton;
-
-  return (
-    <button
-      type="button"
-      className={combinedClassName}
-      disabled={disabled || loading}
-      {...buttonProps}
-    >
-      {content}
-    </button>
-  );
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean
 }
 
-export function IconButton({
-  icon,
-  variant = 'ghost',
-  size = 'md',
-  className = '',
-  'aria-label': ariaLabel,
-  ...props
-}: Omit<ButtonProps, 'children' | 'iconOnly'> & { 'aria-label': string }) {
-  return (
-    <Button
-      variant={variant}
-      size={size}
-      icon={icon}
-      iconOnly
-      className={className}
-      aria-label={ariaLabel}
-      {...(props as ButtonProps)}
-    />
-  );
-}
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button"
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+Button.displayName = "Button"
+
+export { Button, buttonVariants }

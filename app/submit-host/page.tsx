@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { Button } from '@/components/ui/Button';
+import React from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { Button } from "@/components/ui/button";
 
 export default function SubmitHostPage() {
   return (
@@ -19,7 +19,10 @@ export default function SubmitHostPage() {
             className="max-w-2xl mx-auto"
           >
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-bg mb-6 text-white shadow-lg">
-              <FontAwesomeIcon icon={['fas', 'server'] as IconProp} className="text-3xl" />
+              <FontAwesomeIcon
+                icon={["fas", "server"] as IconProp}
+                className="text-3xl"
+              />
             </div>
 
             <h1 className="heading-1 text-[rgb(var(--text))] mb-4">
@@ -43,7 +46,10 @@ export default function SubmitHostPage() {
             className="bg-[rgb(var(--card))] rounded-2xl border border-[rgb(var(--border))] p-8 md:p-12 text-center shadow-soft"
           >
             <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-[rgb(var(--muted)/0.05)] flex items-center justify-center">
-              <FontAwesomeIcon icon={['fas', 'person-digging'] as IconProp} className="text-4xl text-[rgb(var(--muted))]" />
+              <FontAwesomeIcon
+                icon={["fas", "person-digging"] as IconProp}
+                className="text-4xl text-[rgb(var(--muted))]"
+              />
             </div>
 
             <h2 className="heading-3 text-[rgb(var(--text))] mb-4">
@@ -51,17 +57,24 @@ export default function SubmitHostPage() {
             </h2>
 
             <p className="body-default text-[rgb(var(--muted))] mb-8 max-w-lg mx-auto leading-relaxed">
-              We&apos;re working hard to build a seamless submission experience. This feature is technically complex and requires careful security implementation.
+              We&apos;re working hard to build a seamless submission experience.
+              This feature is technically complex and requires careful security
+              implementation.
             </p>
 
             {/* Progress Bar */}
             <div className="bg-[rgb(var(--bg))] border border-[rgb(var(--border))] rounded-xl p-6 mb-10 text-left">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-[rgb(var(--text))] flex items-center gap-2">
-                  <FontAwesomeIcon icon={['fas', 'bars-progress'] as IconProp} className="text-[rgb(var(--accent))]" />
+                  <FontAwesomeIcon
+                    icon={["fas", "bars-progress"] as IconProp}
+                    className="text-[rgb(var(--accent))]"
+                  />
                   Development Status
                 </h3>
-                <span className="text-sm font-bold text-[rgb(var(--accent))]">60%</span>
+                <span className="text-sm font-bold text-[rgb(var(--accent))]">
+                  60%
+                </span>
               </div>
 
               <div className="w-full h-2.5 bg-[rgb(var(--muted)/0.1)] rounded-full overflow-hidden mb-3">
@@ -71,7 +84,8 @@ export default function SubmitHostPage() {
               </div>
 
               <p className="text-xs text-[rgb(var(--muted))]">
-                Currently implementing backend validation and anti-spam measures.
+                Currently implementing backend validation and anti-spam
+                measures.
               </p>
             </div>
 
@@ -80,14 +94,14 @@ export default function SubmitHostPage() {
               <Button
                 href="/submission-rules"
                 variant="primary"
-                icon={['fas', 'list-check'] as IconProp}
+                icon={["fas", "list-check"] as IconProp}
               >
                 Read Rules
               </Button>
               <Button
                 href="https://discord.gg/QbeZ3b5CQd"
                 variant="secondary"
-                icon={['fab', 'discord'] as IconProp}
+                icon={["fab", "discord"] as IconProp}
               >
                 Join Discord
               </Button>
@@ -98,7 +112,7 @@ export default function SubmitHostPage() {
                 href="/"
                 className="text-sm text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] transition-colors inline-flex items-center gap-2"
               >
-                <FontAwesomeIcon icon={['fas', 'arrow-left'] as IconProp} />
+                <FontAwesomeIcon icon={["fas", "arrow-left"] as IconProp} />
                 Back to home
               </Link>
             </div>

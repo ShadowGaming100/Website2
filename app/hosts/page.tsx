@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
-import { Host, SortOption } from '@/types/host';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { fetchHosts } from '@/lib/cache';
+import { useState, useEffect, useMemo, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { Host, SortOption } from "@/types/host";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { fetchHosts } from "@/lib/cache";
 
-export const runtime = 'edge';
+export const runtime = "edge";
 const ITEMS_PER_PAGE = 12;
 
 const getLanguageName = (code: string) => {
   try {
-    return new Intl.DisplayNames(['en'], { type: 'language' }).of(code) || code;
+    return new Intl.DisplayNames(["en"], { type: "language" }).of(code) || code;
   } catch {
     return code;
   }
@@ -23,12 +23,12 @@ const getLanguageName = (code: string) => {
 
 // Sort options configuration
 const sortOptions: { value: SortOption; label: string; icon: IconProp }[] = [
-  { value: 'random', label: 'Random', icon: ['fas', 'shuffle'] },
-  { value: 'name_asc', label: 'Name', icon: ['fas', 'arrow-down-a-z'] },
-  { value: 'date_newest', label: 'Newest', icon: ['fas', 'clock'] },
-  { value: 'ram_desc', label: 'RAM', icon: ['fas', 'memory'] },
-  { value: 'cpu_desc', label: 'CPU', icon: ['fas', 'microchip'] },
-  { value: 'storage_desc', label: 'Storage', icon: ['fas', 'hard-drive'] },
+  { value: "random", label: "Random", icon: ["fas", "shuffle"] },
+  { value: "name_asc", label: "Name", icon: ["fas", "arrow-down-a-z"] },
+  { value: "date_newest", label: "Newest", icon: ["fas", "clock"] },
+  { value: "ram_desc", label: "RAM", icon: ["fas", "memory"] },
+  { value: "cpu_desc", label: "CPU", icon: ["fas", "microchip"] },
+  { value: "storage_desc", label: "Storage", icon: ["fas", "hard-drive"] },
 ];
 
 // Check if host is new (added within 15 days)
@@ -44,7 +44,8 @@ const isNew = (dateStr: string) => {
 // Host Card Component
 function HostCard({ host }: { host: Host }) {
   const formatResource = (value: number) => {
-    if (value >= 1024) return `${(value / 1024).toFixed(1).replace(/\.0$/, '')} GB`;
+    if (value >= 1024)
+      return `${(value / 1024).toFixed(1).replace(/\.0$/, "")} GB`;
     return `${value} MB`;
   };
 
@@ -71,7 +72,7 @@ function HostCard({ host }: { host: Host }) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-[rgb(var(--muted)/0.2)]">
-              <FontAwesomeIcon icon={['fas', 'image']} className="text-4xl" />
+              <FontAwesomeIcon icon={["fas", "image"]} className="text-4xl" />
             </div>
           )}
 
@@ -79,12 +80,15 @@ function HostCard({ host }: { host: Host }) {
           <div className="absolute top-3 right-3 flex items-center gap-2">
             {host.created_at && isNew(host.created_at) && (
               <Badge variant="success" size="sm">
-                <FontAwesomeIcon icon={['fas', 'star']} className="text-[10px]" />
+                <FontAwesomeIcon
+                  icon={["fas", "star"]}
+                  className="text-[10px]"
+                />
                 New
               </Badge>
             )}
             <Badge variant="warning" size="sm">
-              <FontAwesomeIcon icon={['fas', 'star']} className="text-[10px]" />
+              <FontAwesomeIcon icon={["fas", "star"]} className="text-[10px]" />
               {host.rating.toFixed(1)}
             </Badge>
           </div>
@@ -105,7 +109,7 @@ function HostCard({ host }: { host: Host }) {
                 />
               ) : (
                 <div className="text-[rgb(var(--text))]">
-                  <FontAwesomeIcon icon={['fas', 'server']} />
+                  <FontAwesomeIcon icon={["fas", "server"]} />
                 </div>
               )}
             </div>
@@ -122,7 +126,7 @@ function HostCard({ host }: { host: Host }) {
               <Badge variant="subtle" size="xs">
                 {host.type}
               </Badge>
-              {host.locale?.slice(0, 2).map(lang => (
+              {host.locale?.slice(0, 2).map((lang) => (
                 <Badge key={lang} variant="subtle" size="xs">
                   {getLanguageName(lang.toLowerCase())}
                 </Badge>
@@ -139,59 +143,99 @@ function HostCard({ host }: { host: Host }) {
             {host.ram !== undefined && (
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-7 h-7 rounded-md bg-blue-500/10 flex items-center justify-center">
-                  <FontAwesomeIcon icon={['fas', 'memory']} className="text-xs text-blue-500" />
+                  <FontAwesomeIcon
+                    icon={["fas", "memory"]}
+                    className="text-xs text-blue-500"
+                  />
                 </div>
-                <span className="font-medium text-[rgb(var(--text))]">{formatResource(host.ram)}</span>
+                <span className="font-medium text-[rgb(var(--text))]">
+                  {formatResource(host.ram)}
+                </span>
               </div>
             )}
             {host.storage !== undefined && (
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-7 h-7 rounded-md bg-amber-500/10 flex items-center justify-center">
-                  <FontAwesomeIcon icon={['fas', 'hard-drive']} className="text-xs text-amber-500" />
+                  <FontAwesomeIcon
+                    icon={["fas", "hard-drive"]}
+                    className="text-xs text-amber-500"
+                  />
                 </div>
-                <span className="font-medium text-[rgb(var(--text))]">{formatResource(host.storage)}</span>
+                <span className="font-medium text-[rgb(var(--text))]">
+                  {formatResource(host.storage)}
+                </span>
               </div>
             )}
             {host.cores !== undefined && (
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-7 h-7 rounded-md bg-violet-500/10 flex items-center justify-center">
-                  <FontAwesomeIcon icon={['fas', 'microchip']} className="text-xs text-violet-500" />
+                  <FontAwesomeIcon
+                    icon={["fas", "microchip"]}
+                    className="text-xs text-violet-500"
+                  />
                 </div>
-                <span className="font-medium text-[rgb(var(--text))]">{host.cores} vCPU</span>
+                <span className="font-medium text-[rgb(var(--text))]">
+                  {host.cores} vCPU
+                </span>
               </div>
             )}
             {host.location && host.location.length > 0 && (
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-7 h-7 rounded-md bg-emerald-500/10 flex items-center justify-center">
-                  <FontAwesomeIcon icon={['fas', 'globe']} className="text-xs text-emerald-500" />
+                  <FontAwesomeIcon
+                    icon={["fas", "globe"]}
+                    className="text-xs text-emerald-500"
+                  />
                 </div>
-                <span className="font-medium text-[rgb(var(--text))]">{host.location.length} region{host.location.length > 1 ? 's' : ''}</span>
+                <span className="font-medium text-[rgb(var(--text))]">
+                  {host.location.length} region
+                  {host.location.length > 1 ? "s" : ""}
+                </span>
               </div>
             )}
           </div>
 
           {/* Attribute Tags */}
-          {(host.attributes?.free_subdomain || host.attributes?.custom_domain || host.attributes?.no_ads) && (
+          {(host.attributes?.free_subdomain ||
+            host.attributes?.custom_domain ||
+            host.attributes?.no_ads) && (
             <div className="flex flex-wrap gap-1.5 mb-4">
               {host.attributes?.free_subdomain && (
-                <Badge variant="primary" size="xs">Subdomain</Badge>
+                <Badge variant="primary" size="xs">
+                  Subdomain
+                </Badge>
               )}
               {host.attributes?.custom_domain && (
-                <Badge variant="info" size="xs">Custom Domain</Badge>
+                <Badge variant="info" size="xs">
+                  Custom Domain
+                </Badge>
               )}
               {host.attributes?.no_ads && (
-                <Badge variant="success" size="xs">No Ads</Badge>
+                <Badge variant="success" size="xs">
+                  No Ads
+                </Badge>
               )}
             </div>
           )}
 
           {/* Actions */}
           <div className="flex gap-2 mt-auto pt-4 border-t border-[rgb(var(--border))]">
-            <Button href={`/hosts/${host.id}`} variant="ghost" size="sm" className="flex-1">
+            <Button
+              href={`/hosts/${host.id}`}
+              variant="ghost"
+              size="sm"
+              className="flex-1"
+            >
               Details
             </Button>
             {websiteUrl && (
-              <Button href={websiteUrl} variant="primary" size="sm" icon={['fas', 'arrow-up-right-from-square']} className="flex-1">
+              <Button
+                href={websiteUrl}
+                variant="primary"
+                size="sm"
+                icon={["fas", "arrow-up-right-from-square"]}
+                className="flex-1"
+              >
                 Visit
               </Button>
             )}
@@ -205,10 +249,10 @@ function HostCard({ host }: { host: Host }) {
 export default function HostsPage() {
   const [hosts, setHosts] = useState<Host[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLocale, setSelectedLocale] = useState<string>('all');
-  const [selectedTarget, setSelectedTarget] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<SortOption>('random');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedLocale, setSelectedLocale] = useState<string>("all");
+  const [selectedTarget, setSelectedTarget] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<SortOption>("random");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -217,7 +261,7 @@ export default function HostsPage() {
         const fetchedHosts = await fetchHosts();
         setHosts(fetchedHosts);
       } catch (error) {
-        console.error('Failed to fetch hosts:', error);
+        console.error("Failed to fetch hosts:", error);
       } finally {
         setLoading(false);
       }
@@ -227,11 +271,15 @@ export default function HostsPage() {
   }, []);
 
   const availableLocales = useMemo(() => {
-    return Array.from(new Set(hosts.flatMap(h => h.locale?.map(l => l.toLowerCase()) || []))).sort();
+    return Array.from(
+      new Set(
+        hosts.flatMap((h) => h.locale?.map((l) => l.toLowerCase()) || []),
+      ),
+    ).sort();
   }, [hosts]);
 
   const availableTargets = useMemo(() => {
-    return Array.from(new Set(hosts.flatMap(h => h.targets || []))).sort();
+    return Array.from(new Set(hosts.flatMap((h) => h.targets || []))).sort();
   }, [hosts]);
 
   const filteredHosts = useMemo(() => {
@@ -241,35 +289,52 @@ export default function HostsPage() {
 
     if (searchQuery && searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
-      result = result.filter(host =>
-        host.name.toLowerCase().includes(query) ||
-        host.description.toLowerCase().includes(query) ||
-        host.type.toLowerCase().includes(query)
+      result = result.filter(
+        (host) =>
+          host.name.toLowerCase().includes(query) ||
+          host.description.toLowerCase().includes(query) ||
+          host.type.toLowerCase().includes(query),
       );
     }
 
-    if (selectedLocale && selectedLocale !== 'all') {
-      result = result.filter(host =>
-        host.locale?.some(lang => lang.toLowerCase() === selectedLocale.toLowerCase())
+    if (selectedLocale && selectedLocale !== "all") {
+      result = result.filter((host) =>
+        host.locale?.some(
+          (lang) => lang.toLowerCase() === selectedLocale.toLowerCase(),
+        ),
       );
     }
 
-    if (selectedTarget && selectedTarget !== 'all') {
-      result = result.filter(host => host.targets && host.targets.includes(selectedTarget));
+    if (selectedTarget && selectedTarget !== "all") {
+      result = result.filter(
+        (host) => host.targets && host.targets.includes(selectedTarget),
+      );
     }
 
-    if (sortBy !== 'random') {
+    if (sortBy !== "random") {
       result.sort((a, b) => {
         switch (sortBy) {
-          case 'rating_desc': return b.rating - a.rating;
-          case 'rating_asc': return a.rating - b.rating;
-          case 'name_asc': return a.name.localeCompare(b.name);
-          case 'name_desc': return b.name.localeCompare(a.name);
-          case 'date_newest': return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-          case 'cpu_desc': return (b.cores || 0) - (a.cores || 0);
-          case 'ram_desc': return (b.ram || 0) - (a.ram || 0);
-          case 'storage_desc': return (b.storage || 0) - (a.storage || 0);
-          default: return 0;
+          case "rating_desc":
+            return b.rating - a.rating;
+          case "rating_asc":
+            return a.rating - b.rating;
+          case "name_asc":
+            return a.name.localeCompare(b.name);
+          case "name_desc":
+            return b.name.localeCompare(a.name);
+          case "date_newest":
+            return (
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+            );
+          case "cpu_desc":
+            return (b.cores || 0) - (a.cores || 0);
+          case "ram_desc":
+            return (b.ram || 0) - (a.ram || 0);
+          case "storage_desc":
+            return (b.storage || 0) - (a.storage || 0);
+          default:
+            return 0;
         }
       });
     }
@@ -285,7 +350,12 @@ export default function HostsPage() {
     return filteredHosts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   }, [filteredHosts, currentPage]);
 
-  const prevFilters = useRef({ searchQuery, selectedLocale, selectedTarget, sortBy });
+  const prevFilters = useRef({
+    searchQuery,
+    selectedLocale,
+    selectedTarget,
+    sortBy,
+  });
   useEffect(() => {
     const filtersChanged =
       prevFilters.current.searchQuery !== searchQuery ||
@@ -294,19 +364,25 @@ export default function HostsPage() {
       prevFilters.current.sortBy !== sortBy;
 
     if (filtersChanged) {
-      prevFilters.current = { searchQuery, selectedLocale, selectedTarget, sortBy };
+      prevFilters.current = {
+        searchQuery,
+        selectedLocale,
+        selectedTarget,
+        sortBy,
+      };
       setCurrentPage(1);
     }
   }, [searchQuery, selectedLocale, selectedTarget, sortBy]);
 
   const clearFilters = () => {
-    setSearchQuery('');
-    setSelectedLocale('all');
-    setSelectedTarget('all');
-    setSortBy('random');
+    setSearchQuery("");
+    setSelectedLocale("all");
+    setSelectedTarget("all");
+    setSortBy("random");
   };
 
-  const hasActiveFilters = searchQuery || selectedLocale !== 'all' || selectedTarget !== 'all';
+  const hasActiveFilters =
+    searchQuery || selectedLocale !== "all" || selectedTarget !== "all";
 
   return (
     <div className="min-h-screen bg-[rgb(var(--bg))]">
@@ -323,11 +399,14 @@ export default function HostsPage() {
               </span>
             </div>
             <h1 className="heading-1 text-[rgb(var(--text))] mb-6 text-balance">
-              Verified <span className="text-[rgb(var(--accent))]">Free Hosting</span> Directory
+              Verified{" "}
+              <span className="text-[rgb(var(--accent))]">Free Hosting</span>{" "}
+              Directory
             </h1>
             <p className="body-large text-[rgb(var(--muted))] max-w-2xl text-balance">
-              Browse {hosts.length > 0 ? `${hosts.length}+` : 'our'} verified free hosting providers.
-              Filter by technology, resources, or location to find the perfect home for your project.
+              Browse {hosts.length > 0 ? `${hosts.length}+` : "our"} verified
+              free hosting providers. Filter by technology, resources, or
+              location to find the perfect home for your project.
             </p>
           </div>
         </div>
@@ -336,15 +415,16 @@ export default function HostsPage() {
       {/* Main Content */}
       <div className="container-default py-12">
         <div className="flex flex-col lg:flex-row gap-8">
-
           {/* Filters Sidebar (Mobile: Top, Desktop: Left) */}
           <div className="lg:w-64 flex-shrink-0 space-y-6">
             {/* Search */}
             <div className="bg-[rgb(var(--card))] rounded-xl border border-[rgb(var(--border))] p-4">
-              <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider mb-3 block">Search</label>
+              <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider mb-3 block">
+                Search
+              </label>
               <div className="relative">
                 <FontAwesomeIcon
-                  icon={['fas', 'magnifying-glass']}
+                  icon={["fas", "magnifying-glass"]}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))]"
                 />
                 <input
@@ -356,10 +436,10 @@ export default function HostsPage() {
                 />
                 {searchQuery && (
                   <button
-                    onClick={() => setSearchQuery('')}
+                    onClick={() => setSearchQuery("")}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] hover:text-[rgb(var(--text))]"
                   >
-                    <FontAwesomeIcon icon={['fas', 'xmark']} size="sm" />
+                    <FontAwesomeIcon icon={["fas", "xmark"]} size="sm" />
                   </button>
                 )}
               </div>
@@ -368,7 +448,9 @@ export default function HostsPage() {
             {/* Filters */}
             <div className="bg-[rgb(var(--card))] rounded-xl border border-[rgb(var(--border))] p-4 space-y-4">
               <div>
-                <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider mb-3 block">Language</label>
+                <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider mb-3 block">
+                  Language
+                </label>
                 <div className="relative">
                   <select
                     value={selectedLocale}
@@ -376,14 +458,23 @@ export default function HostsPage() {
                     className="w-full appearance-none bg-[rgb(var(--bg))] border border-[rgb(var(--border))] rounded-lg py-2 px-3 pr-8 text-sm text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] focus:border-transparent transition-all cursor-pointer"
                   >
                     <option value="all">All Languages</option>
-                    {availableLocales.map(l => <option key={l} value={l}>{getLanguageName(l)}</option>)}
+                    {availableLocales.map((l) => (
+                      <option key={l} value={l}>
+                        {getLanguageName(l)}
+                      </option>
+                    ))}
                   </select>
-                  <FontAwesomeIcon icon={['fas', 'chevron-down']} className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] text-xs pointer-events-none" />
+                  <FontAwesomeIcon
+                    icon={["fas", "chevron-down"]}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] text-xs pointer-events-none"
+                  />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider mb-3 block">Type</label>
+                <label className="text-xs font-semibold text-[rgb(var(--muted))] uppercase tracking-wider mb-3 block">
+                  Type
+                </label>
                 <div className="relative">
                   <select
                     value={selectedTarget}
@@ -391,15 +482,27 @@ export default function HostsPage() {
                     className="w-full appearance-none bg-[rgb(var(--bg))] border border-[rgb(var(--border))] rounded-lg py-2 px-3 pr-8 text-sm text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] focus:border-transparent transition-all cursor-pointer"
                   >
                     <option value="all">All Types</option>
-                    {availableTargets.map(t => <option key={t} value={t}>{t}</option>)}
+                    {availableTargets.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
                   </select>
-                  <FontAwesomeIcon icon={['fas', 'chevron-down']} className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] text-xs pointer-events-none" />
+                  <FontAwesomeIcon
+                    icon={["fas", "chevron-down"]}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] text-xs pointer-events-none"
+                  />
                 </div>
               </div>
 
               {hasActiveFilters && (
                 <div className="pt-4 border-t border-[rgb(var(--border))]">
-                  <Button onClick={clearFilters} variant="ghost" size="sm" className="w-full justify-center text-[rgb(var(--muted))] hover:text-[rgb(var(--text))]">
+                  <Button
+                    onClick={clearFilters}
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-center text-[rgb(var(--muted))] hover:text-[rgb(var(--text))]"
+                  >
                     Clear All Filters
                   </Button>
                 </div>
@@ -407,34 +510,48 @@ export default function HostsPage() {
             </div>
           </div>
 
-
           {/* Results */}
           <div className="flex-1">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20 bg-[rgb(var(--card))] rounded-xl border border-[rgb(var(--border))]">
                 <div className="w-10 h-10 rounded-full border-2 border-[rgb(var(--accent)/0.2)] border-t-[rgb(var(--accent))] animate-spin mb-4" />
-                <p className="text-[rgb(var(--muted))] text-sm">Loading directory...</p>
+                <p className="text-[rgb(var(--muted))] text-sm">
+                  Loading directory...
+                </p>
               </div>
             ) : (
               <>
                 <div className="flex items-center justify-between mb-6">
                   <span className="text-sm text-[rgb(var(--muted))]">
-                    Showing <span className="font-semibold text-[rgb(var(--text))]">{totalItems}</span> results
+                    Showing{" "}
+                    <span className="font-semibold text-[rgb(var(--text))]">
+                      {totalItems}
+                    </span>{" "}
+                    results
                   </span>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-[rgb(var(--muted))] hidden sm:inline">Sort:</span>
+                    <span className="text-sm text-[rgb(var(--muted))] hidden sm:inline">
+                      Sort:
+                    </span>
                     <div className="relative">
                       <select
                         value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value as SortOption)}
+                        onChange={(e) =>
+                          setSortBy(e.target.value as SortOption)
+                        }
                         className="appearance-none bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-lg py-1.5 px-3 pr-8 text-sm text-[rgb(var(--text))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))] focus:border-transparent transition-all cursor-pointer hover:border-[rgb(var(--accent)/0.5)]"
                       >
-                        {sortOptions.map(option => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
+                        {sortOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
                         ))}
                       </select>
-                      <FontAwesomeIcon icon={['fas', 'chevron-down']} className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] text-xs pointer-events-none" />
+                      <FontAwesomeIcon
+                        icon={["fas", "chevron-down"]}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--muted))] text-xs pointer-events-none"
+                      />
                     </div>
                   </div>
                 </div>
@@ -456,13 +573,23 @@ export default function HostsPage() {
                       className="flex flex-col items-center justify-center py-20 bg-[rgb(var(--card))] rounded-xl border border-[rgb(var(--border))] text-center"
                     >
                       <div className="w-16 h-16 rounded-full bg-[rgb(var(--muted)/0.1)] flex items-center justify-center mb-4">
-                        <FontAwesomeIcon icon={['fas', 'magnifying-glass']} className="text-2xl text-[rgb(var(--muted))]" />
+                        <FontAwesomeIcon
+                          icon={["fas", "magnifying-glass"]}
+                          className="text-2xl text-[rgb(var(--muted))]"
+                        />
                       </div>
-                      <h3 className="text-lg font-semibold text-[rgb(var(--text))] mb-1">No hosts found</h3>
+                      <h3 className="text-lg font-semibold text-[rgb(var(--text))] mb-1">
+                        No hosts found
+                      </h3>
                       <p className="text-sm text-[rgb(var(--muted))] mb-6 max-w-xs mx-auto">
-                        We couldn&apos;t find any hosts matching your criteria. Try adjusting your filters.
+                        We couldn&apos;t find any hosts matching your criteria.
+                        Try adjusting your filters.
                       </p>
-                      <Button onClick={clearFilters} variant="secondary" size="sm">
+                      <Button
+                        onClick={clearFilters}
+                        variant="secondary"
+                        size="sm"
+                      >
                         Clear Filters
                       </Button>
                     </motion.div>
@@ -473,34 +600,43 @@ export default function HostsPage() {
                 {totalPages > 1 && (
                   <div className="flex justify-center items-center gap-2 mt-12">
                     <button
-                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      onClick={() =>
+                        setCurrentPage(Math.max(1, currentPage - 1))
+                      }
                       disabled={currentPage === 1}
                       className="w-9 h-9 rounded-lg flex items-center justify-center bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--muted))] disabled:opacity-40 disabled:cursor-not-allowed hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--text))] transition-all"
                     >
-                      <FontAwesomeIcon icon={['fas', 'chevron-left']} className="text-xs" />
+                      <FontAwesomeIcon
+                        icon={["fas", "chevron-left"]}
+                        className="text-xs"
+                      />
                     </button>
 
                     <div className="flex items-center gap-1">
                       {Array.from({ length: totalPages }, (_, i) => i + 1)
-                        .filter(page => {
+                        .filter((page) => {
                           if (totalPages <= 7) return true;
                           if (page === 1 || page === totalPages) return true;
                           if (Math.abs(page - currentPage) <= 1) return true;
                           return false;
                         })
                         .map((page, idx, arr) => {
-                          const showEllipsis = idx > 0 && page - arr[idx - 1] > 1;
+                          const showEllipsis =
+                            idx > 0 && page - arr[idx - 1] > 1;
                           return (
                             <div key={page} className="flex items-center gap-1">
                               {showEllipsis && (
-                                <span className="w-8 text-center text-[rgb(var(--muted))] text-sm">...</span>
+                                <span className="w-8 text-center text-[rgb(var(--muted))] text-sm">
+                                  ...
+                                </span>
                               )}
                               <button
                                 onClick={() => setCurrentPage(page)}
-                                className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${currentPage === page
-                                  ? 'bg-[rgb(var(--accent))] text-white shadow-sm'
-                                  : 'bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--muted))] hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--text))]'
-                                  }`}
+                                className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
+                                  currentPage === page
+                                    ? "bg-[rgb(var(--accent))] text-white shadow-sm"
+                                    : "bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--muted))] hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--text))]"
+                                }`}
                               >
                                 {page}
                               </button>
@@ -510,18 +646,22 @@ export default function HostsPage() {
                     </div>
 
                     <button
-                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      onClick={() =>
+                        setCurrentPage(Math.min(totalPages, currentPage + 1))
+                      }
                       disabled={currentPage === totalPages}
                       className="w-9 h-9 rounded-lg flex items-center justify-center bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--muted))] disabled:opacity-40 disabled:cursor-not-allowed hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--text))] transition-all"
                     >
-                      <FontAwesomeIcon icon={['fas', 'chevron-right']} className="text-xs" />
+                      <FontAwesomeIcon
+                        icon={["fas", "chevron-right"]}
+                        className="text-xs"
+                      />
                     </button>
                   </div>
                 )}
               </>
             )}
           </div>
-
         </div>
       </div>
     </div>
