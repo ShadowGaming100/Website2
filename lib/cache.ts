@@ -1,79 +1,115 @@
-import { Host } from '@/types/host';
-
-let hostsCache: Host[] | null = null;
-let cacheTimestamp: number | null = null;
-const CACHE_DURATION = 5 * 60 * 1000;
-
-function getApiBaseUrl(): string {
-  if (typeof window !== 'undefined') {
-    return window.location.origin || 'http://localhost:3000';
-  }
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+export interface Host {
+  id: number
+  name: string
+  description?: string
+  info?: string
+  type?: string
+  locale: string[]
+  targets: string[]
+  status?: string
+  cpu?: string
+  ram?: string
+  ramMB?: number
+  disk?: string
+  diskMB?: number
+  approvals: number
+  disapprovals: number
+  created_at?: string
+  free_plan?: string
+  links: string[]
 }
 
+// Server-side cache
+let hostsCache: Host[] | null = null
+let cacheTimestamp: number | null = null
+const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+
 export async function fetchHosts(): Promise<Host[]> {
+  // Check if we have a valid cache
   if (
     hostsCache &&
     cacheTimestamp &&
     Date.now() - cacheTimestamp < CACHE_DURATION
   ) {
-    return hostsCache;
+    return hostsCache
   }
 
   try {
-    const apiUrl = `${getApiBaseUrl()}/api/hosts`;
-    const response = await fetch(apiUrl);
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch hosts: ${response.status} ${response.statusText}`);
-    }
-    
-    const hosts: Host[] = await response.json();
-    
-    hostsCache = hosts;
-    cacheTimestamp = Date.now();
+    const response = await fetch('https://api.freehosts.space/api/hosts?limit=1000', {
+      next: { revalidate: 300 }, // Revalidate every 5 minutes
+    })
+    if (!response.ok) throw new Error(`API ${response.status}`)
+    const data = await response.json()
 
-    return hosts;
+    const hostsData = Array.isArray(data?.data)
+      ? data.data
+      : Array.isArray(data)
+      ? data
+      : []
+
+    const cleanedHosts: Host[] = hostsData.map((host: any) => ({
+      id: host.id || 0,
+      name: host.name || 'Unknown Host',
+      description: host.description || '',
+      info: host.info || '',
+      type: host.type || '',
+      locale: Array.isArray(host.locale) ? host.locale : [],
+      targets: Array.isArray(host.targets) ? host.targets : [],
+      status: host.status || 'Unknown',
+      cpu: host.cpu || 'Unknown',
+      ram: host.ram || 'Unknown',
+      ramMB: host.ramMB || 0,
+      disk: host.disk || 'Unknown',
+      diskMB: host.diskMB || 0,
+      approvals: host.approvals || 0,
+      disapprovals: host.disapprovals || 0,
+      created_at: host.created_at || '',
+      free_plan: host.free_plan || '',
+      links: Array.isArray(host.links) ? host.links : [],
+    }))
+
+    // Update cache
+    hostsCache = cleanedHosts
+    cacheTimestamp = Date.now()
+
+    return cleanedHosts
   } catch (err) {
-    console.error('Failed to fetch hosts list:', err);
-    return hostsCache || [];
+    console.error('Failed to fetch hosts list:', err)
+    // Return cached data if available, even if stale
+    return hostsCache || []
   }
 }
 
 export function getHostFromCache(id: number): Host | undefined {
-  if (!hostsCache) return undefined;
-  return hostsCache.find((h) => h.id === id);
+  if (!hostsCache) return undefined
+  return hostsCache.find((h) => h.id === id)
 }
 
-export async function fetchHostById(id: number | string): Promise<Host | null> {
-  const hostId = Number(id);
-  if (!Number.isFinite(hostId)) return null;
+// Fetch single host using the full list (API has no /:id route)
+export async function fetchHostById(
+  id: number | string,
+): Promise<Host | null> {
+  const hostId = Number(id)
+  if (!Number.isFinite(hostId)) return null
 
   try {
+    // Use cached list if fresh
     if (
       hostsCache &&
       cacheTimestamp &&
       Date.now() - cacheTimestamp < CACHE_DURATION
     ) {
-      const cached = hostsCache.find((h) => h.id === hostId);
-      if (cached) return cached;
+      const cached = hostsCache.find((h) => h.id === hostId)
+      if (cached) return cached
     }
 
-    const allHosts = await fetchHosts();
-    const host = allHosts.find((h) => h.id === hostId);
-    return host || null;
+    // Otherwise fetch all hosts
+    const allHosts = await fetchHosts()
+    const host = allHosts.find((h) => h.id === hostId)
+    return host || null
   } catch (err) {
-    console.error('fetchHostById error:', err);
-    const fallback = getHostFromCache(hostId);
-    return fallback ?? null;
+    console.error('fetchHostById error:', err)
+    const fallback = getHostFromCache(hostId)
+    return fallback ?? null
   }
-}
-
-export function invalidateCache(): void {
-  hostsCache = null;
-  cacheTimestamp = null;
-}
-
-export async function preloadCache(): Promise<void> {
-  await fetchHosts();
 }

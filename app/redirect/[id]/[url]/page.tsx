@@ -3,14 +3,15 @@
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
-import { Icon } from '@/components/ui/Icon';
+import { useState, useEffect } from 'react';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 
 export default function Page() {
   const params = useParams() || {};
   const searchParams = useSearchParams();
+  const router = useRouter();
 
+  const idParam = params.id ?? '';
   const urlParam = params.url ?? '';
   const url = urlParam ? atob(decodeURIComponent(urlParam as string)) : '';
 
@@ -22,27 +23,6 @@ export default function Page() {
   const [countdown, setCountdown] = useState(5);
   const [isRedirecting, setIsRedirecting] = useState(true);
 
-  const handleAutoRedirect = useCallback(() => {
-    let targetUrl = url;
-    try {
-      const urlObj = new URL(url);
-      urlObj.searchParams.append('ref', 'freehosts.space');
-      targetUrl = urlObj.toString();
-    } catch {
-      targetUrl = url + (url.includes('?') ? '&ref=freehosts.space' : '?ref=freehosts.space');
-    }
-
-    window.open(targetUrl, '_blank', 'noopener,noreferrer');
-    
-    setTimeout(() => {
-      if (returnTo) {
-        window.location.href = `/hosts/${returnTo}`;
-      } else {
-        window.location.href = '/hosts';
-      }
-    }, 1000);
-  }, [url, returnTo]);
-
   useEffect(() => {
     if (!isRedirecting) return;
 
@@ -50,6 +30,7 @@ export default function Page() {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timer);
+          // Automatically redirect after countdown finishes
           handleAutoRedirect();
           return 0;
         }
@@ -58,9 +39,10 @@ export default function Page() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isRedirecting, handleAutoRedirect]);
+  }, [isRedirecting]);
 
   function handleRedirect(e?: React.MouseEvent) {
+    // Only open in new tab if triggered by user interaction
     if (e) {
       e.preventDefault();
       
@@ -73,10 +55,36 @@ export default function Page() {
         targetUrl = url + (url.includes('?') ? '&ref=freehosts.space' : '?ref=freehosts.space');
       }
 
+      // Open in new tab (this should work since it's user-initiated)
       window.open(targetUrl, '_blank', 'noopener,noreferrer');
     }
 
+    // Stop the countdown
     setIsRedirecting(false);
+  }
+
+  function handleAutoRedirect() {
+    // Automatically open in new tab after countdown
+    let targetUrl = url;
+    try {
+      const urlObj = new URL(url);
+      urlObj.searchParams.append('ref', 'freehosts.space');
+      targetUrl = urlObj.toString();
+    } catch {
+      targetUrl = url + (url.includes('?') ? '&ref=freehosts.space' : '?ref=freehosts.space');
+    }
+
+    // Open in new tab (should work since it's triggered by timer from user-initiated page load)
+    window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    
+    // Also provide fallback navigation to hosts page
+    setTimeout(() => {
+      if (returnTo) {
+        window.location.href = `/hosts/${returnTo}`;
+      } else {
+        window.location.href = '/hosts';
+      }
+    }, 1000);
   }
 
 
@@ -91,7 +99,7 @@ export default function Page() {
       <div className="redirect-container">
         <div className="redirect-box">
           <div className="redirect-icon">
-            <Icon icon={['fas', 'arrow-right']} />
+            <i className="fas fa-arrow-right"></i>
           </div>
           <h2 className="redirect-title">Redirecting...</h2>
           <p className="redirect-text">Connecting to</p>
@@ -116,20 +124,22 @@ export default function Page() {
               rel="noopener noreferrer"
               onClick={(e) => handleRedirect(e)}
             >
-              <Icon icon={['fas', 'external-link-alt']} /> Open Link
+              <i className="fas fa-external-link-alt"></i> Open Link
             </a>
 
             <button
               className="redirect-cancel-btn"
               onClick={() => {
                 if (returnTo) {
+                  // Force a full page reload to ensure proper data fetching
                   window.location.href = `/hosts/${returnTo}`;
                 } else {
+                  // Force a full page reload to ensure proper state reset
                   window.location.href = '/hosts';
                 }
               }}
             >
-              <Icon icon={['fas', 'arrow-left']} /> Back
+              <i className="fas fa-arrow-left"></i> Back
             </button>
 
             <button
@@ -137,14 +147,14 @@ export default function Page() {
               onClick={handleCancel}
               disabled={!isRedirecting}
             >
-              <Icon icon={['fas', 'times']} /> Cancel
+              <i className="fas fa-times"></i> Cancel
             </button>
           </div>
 
           {!isRedirecting && (
             <div id="redirect-focus-error">
               <div style={{ color: '#10b981', fontWeight: 600, marginBottom: 'var(--space-sm)' }}>
-                <Icon icon={['fas', 'check-circle']} /> Redirect Completed
+                <i className="fas fa-check-circle"></i> Redirect Completed
               </div>
               <p style={{ color: 'var(--muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>
                 The link has been opened in a new tab. You can now return to the hosts list.

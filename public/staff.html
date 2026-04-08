@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Staff — FreeHosts</title>
+  <meta name="description"
+    content="Meet the FreeHosts team: owners, developers, moderators, and host publishers of this community-curated free hosting directory." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://freehosts.space/staff" />
+  <meta name="theme-color" content="#071028" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="FreeHosts" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://freehosts.space/staff" />
+  <meta property="og:title" content="Staff | FreeHosts" />
+  <meta property="og:description"
+    content="Meet the FreeHosts team: owners, developers, moderators, and host publishers of this free hosting directory." />
+  <meta property="og:image" content="https://freehosts.space/Src/Images/social-preview.png" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:image:alt" content="FreeHosts — Discover Free Hosting" />
+
+
+  <meta name="twitter:card" content="Src/Images/social-preview.png" />
+  <meta name="twitter:title" content="Staff | FreeHosts" />
+  <meta name="twitter:description"
+    content="Meet the FreeHosts team: owners, developers, moderators, and host publishers of this free hosting directory." />
+  <meta name="twitter:image" content="Src/Images/social-preview.png" />
+  <meta name="twitter:image:alt" content="FreeHosts — Discover Free Hosting" />
+  <meta name="twitter:site" content="@freehosts_" />
+  <meta name="twitter:creator" content="@freehosts_" />
+
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="https://freehosts.space/sitemap.xml" />
+
+  <link rel="preload" href="Src/css/styles.css" as="style" />
+  <link rel="stylesheet" href="https://font-awesome.icons.cdn.codelabworks.is-cool.dev/css/all.css" />
+  <link rel="stylesheet" href="/Src/css/styles.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://freehosts.space/#website",
+        "url": "https://freehosts.space/",
+        "name": "FreeHosts",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://freehosts.space/hosts?search={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://freehosts.space/#organization",
+        "name": "FreeHosts",
+        "url": "https://freehosts.space/",
+        "logo": "https://freehosts.space/Src/Images/icon.png",
+        "sameAs": [
+          "https://x.com/freehosts_",
+          "https://www.instagram.com/freehosts/",
+          "https://github.com/freehostsofficial",
+          "https://discord.gg/QbeZ3b5CQd"
+        ],
+        "description": "FreeHosts is a community-curated directory of free hosting providers and services."
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://freehosts.space/staff#webpage",
+        "url": "https://freehosts.space/staff",
+        "name": "Staff — FreeHosts",
+        "isPartOf": { "@id": "https://freehosts.space/#website" },
+        "inLanguage": "en",
+        "description": "Meet the FreeHosts team: owners, developers, moderators, and host publishers."
+      },
+    ]
+  }
+  </script>
+  <style>
+    .staff-hero {
+      text-align: center;
+      padding: var(--space-2xl) 0;
+      position: relative;
+    }
+
+    .staff-hero-icon {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-4xl);
+      color: white;
+      margin: 0 auto var(--space-lg);
+      box-shadow: var(--shadow-xl);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .staff-hero h1 {
+      font-size: var(--font-size-4xl);
+      font-weight: 800;
+      margin-bottom: var(--space-md);
+      color: var(--text);
+    }
+
+    .staff-hero p {
+      font-size: var(--font-size-lg);
+      color: var(--muted);
+      max-width: 60ch;
+      margin: 0 auto;
+    }
+
+    .staff-filters {
+      display: flex;
+      justify-content: flex-start;
+      gap: var(--space-sm);
+      margin: var(--space-xl) 0;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .filter-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .staff-section {
+      margin-bottom: var(--space-2xl);
+    }
+
+    .staff-section-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-md);
+      border-bottom: 2px solid var(--border);
+    }
+
+    .staff-section-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--border-radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-xl);
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .staff-section-icon.leadership {
+      background: linear-gradient(135deg, #4299e1, #667eea);
+    }
+
+    .staff-section-icon.development {
+      background: linear-gradient(135deg, #9b8cff, #e1a7ff);
+    }
+
+    .staff-section-icon.community {
+      background: linear-gradient(135deg, #ed8936, #dd6b20);
+    }
+
+    .staff-section-icon.hosting {
+      background: linear-gradient(135deg, #ed8936, #ecc94b);
+    }
+
+    .staff-section-title {
+      flex: 1;
+    }
+
+    .staff-section-title h2 {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 var(--space-xs);
+    }
+
+    .staff-section-title p {
+      font-size: var(--font-size-sm);
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .staff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    .staff-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-md);
+      background: var(--card);
+      padding: var(--space-xl);
+      border-radius: var(--border-radius);
+      border: 2px solid var(--border);
+      text-align: center;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .staff-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .staff-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--accent);
+    }
+
+    .staff-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .staff-avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-2xl);
+      color: white;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .staff-avatar::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .staff-card:hover .staff-avatar::after {
+      opacity: 0.3;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    .staff-info h3 {
+      margin: 0 0 var(--space-xs);
+      font-size: var(--font-size-lg);
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .staff-roles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      justify-content: center;
+    }
+
+    .staff-role {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: var(--space-xs) var(--space-md);
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      border-radius: var(--border-radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Staff Modal/Popup */
+    .staff-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-lg);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .staff-modal.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .staff-modal-content {
+      background: var(--card);
+      border-radius: var(--border-radius);
+      border: 2px solid var(--border);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-xl);
+      animation: slideUp 0.3s ease;
+      position: relative;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .staff-modal-header {
+      position: sticky;
+      top: 0;
+      background: var(--card);
+      padding: var(--space-xl);
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+      z-index: 1;
+    }
+
+    .staff-modal-close {
+      position: absolute;
+      top: var(--space-lg);
+      right: var(--space-lg);
+      background: var(--bg);
+      border: 2px solid var(--border);
+      color: var(--muted);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: var(--font-size-base);
+      padding: 0;
+    }
+
+    .staff-modal-close i {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .staff-modal-close:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+      transform: rotate(90deg);
+    }
+
+    .staff-modal-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-3xl);
+      color: white;
+      box-shadow: var(--shadow-lg);
+      flex-shrink: 0;
+    }
+
+    .staff-modal-info h2 {
+      margin: 0 0 var(--space-xs);
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .staff-modal-info .staff-roles {
+      justify-content: flex-start;
+    }
+
+    .staff-modal-body {
+      padding: var(--space-xl);
+    }
+
+    .staff-modal-section {
+      margin-bottom: var(--space-xl);
+    }
+
+    .staff-modal-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .staff-modal-section h3 {
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 0 var(--space-md);
+    }
+
+    .staff-modal-about {
+      font-size: var(--font-size-base);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .staff-modal-links {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .staff-modal-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--border-radius-sm);
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .staff-modal-link:hover {
+      border-color: var(--accent);
+      background: var(--card);
+      transform: translateX(4px);
+    }
+
+    .staff-modal-link-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: var(--font-size-lg);
+      flex-shrink: 0;
+    }
+
+    .staff-modal-link-text {
+      flex: 1;
+    }
+
+    .staff-modal-link-text strong {
+      display: block;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .staff-modal-link-text span {
+      font-size: var(--font-size-xs);
+      color: var(--muted);
+    }
+
+    .join-team-section {
+      background: var(--card);
+      padding: var(--space-2xl);
+      border-radius: var(--border-radius);
+      border: 2px solid var(--border);
+      text-align: center;
+      margin-top: var(--space-2xl);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .join-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-3xl);
+      color: white;
+      margin: 0 auto var(--space-lg);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .join-team-section h2 {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: var(--space-md);
+    }
+
+    .join-team-section p {
+      font-size: var(--font-size-base);
+      color: var(--muted);
+      max-width: 60ch;
+      margin: 0 auto var(--space-lg);
+      line-height: 1.7;
+    }
+
+    .join-benefits {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-xl) 0;
+      text-align: left;
+    }
+
+    .benefit-item {
+      display: flex;
+      align-items: start;
+      gap: var(--space-sm);
+      padding: var(--space-md);
+      background: var(--bg);
+      border-radius: var(--border-radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .benefit-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: var(--font-size-sm);
+      flex-shrink: 0;
+    }
+
+    .benefit-text {
+      flex: 1;
+    }
+
+    .benefit-text strong {
+      display: block;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: var(--space-xs);
+    }
+
+    .benefit-text span {
+      font-size: var(--font-size-xs);
+      color: var(--muted);
+    }
+
+    .join-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-md) var(--space-xl);
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: white;
+      text-decoration: none;
+      border-radius: var(--border-radius-sm);
+      font-weight: 600;
+      font-size: var(--font-size-base);
+      transition: all 0.3s;
+      box-shadow: var(--shadow-md);
+    }
+
+    .join-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: var(--space-2xl);
+      color: var(--muted);
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--border);
+      border-left-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto var(--space-md);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .error-state {
+      text-align: center;
+      padding: var(--space-2xl);
+      background: var(--card);
+      border-radius: var(--border-radius);
+      border: 2px solid var(--border);
+    }
+
+    .error-icon {
+      font-size: var(--font-size-4xl);
+      color: #ef4444;
+      margin-bottom: var(--space-md);
+    }
+
+    @media (max-width: 768px) {
+      .staff-hero h1 {
+        font-size: var(--font-size-3xl);
+      }
+
+      .staff-filters {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .staff-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .staff-section-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .join-benefits {
+        grid-template-columns: 1fr;
+      }
+
+      .staff-modal-header {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <button id="sidebarToggle" class="icon-btn mobile-only" aria-label="Open menu"><i
+          class="fa-solid fa-bars"></i></button>
+      <a class="logo" href="/" aria-label="FreeHosts Home"><i class="fa-solid fa-hands-holding-circle"></i>
+        FreeHosts</a>
+      <nav class="nav" role="navigation" aria-label="Main">
+        <div class="nav-item">
+          <a href="hosts" class="nav-link">
+            <i class="fa-solid fa-server"></i> Hosts
+          </a>
+        </div>
+
+        <div class="nav-item">
+          <a href="/#features" class="nav-link">
+            <i class="fa-solid fa-list-check"></i> Features
+          </a>
+        </div>
+
+        <div class="nav-item">
+          <span class="nav-link has-dropdown">
+            <i class="fa-solid fa-upload"></i> Submit Host
+            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+          </span>
+          <div class="dropdown-menu">
+            <a href="submit-host">
+              <i class="fa-solid fa-plus"></i> Submit a Host
+            </a>
+            <a href="submit-layout">
+              <i class="fa-solid fa-pencil"></i> Submit Layout
+            </a>
+            <a href="submission-rules">
+              <i class="fa-solid fa-list-check"></i> Submission Rules
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item">
+          <span class="nav-link has-dropdown">
+            <i class="fa-solid fa-book"></i> Resources
+            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+          </span>
+          <div class="dropdown-menu">
+            <a href="about">
+              <i class="fa-solid fa-circle-info"></i> About
+            </a>
+            <a href="staff" class="active">
+              <i class="fa-solid fa-users"></i> Staff
+            </a>
+            <a href="faq">
+              <i class="fa-solid fa-question-circle"></i> FAQ
+            </a>
+            <a href="server-rules">
+              <i class="fa-solid fa-shield"></i> Server Rules
+            </a>
+            <a href="other-free-hosts">
+              <i class="fa-solid fa-link"></i> Other Free Hosts
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item">
+          <span class="nav-link has-dropdown">
+            <i class="fa-solid fa-gavel"></i> Legal
+            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+          </span>
+          <div class="dropdown-menu">
+            <a href="tos">
+              <i class="fa-solid fa-file-contract"></i> Terms of Service
+            </a>
+            <a href="privacy-policy">
+              <i class="fa-solid fa-lock"></i> Privacy Policy
+            </a>
+          </div>
+        </div>
+      </nav>
+      <div class="actions" id="headerActionsStaff">
+        <button data-theme-toggle class="icon-btn" aria-pressed="false" aria-label="Toggle theme"><i
+            class="fa-solid fa-moon"></i></button>
+        <a class="btn primary" href="https://discord.gg/QbeZ3b5CQd" id="discordBtnStaff" target="_blank"
+          rel="noopener"><i class="fa-brands fa-discord"></i> Join Discord</a>
+      </div>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar" aria-hidden="true">
+    <div class="sidebar-top">
+      <a class="logo" href="/"><i class="fa-solid fa-hands-holding-circle"></i> FreeHosts</a>
+      <button id="sidebarClose" class="icon-btn" aria-label="Close menu"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <nav class="sidebar-nav" role="navigation">
+      <a href="hosts" class="sidebar-link">
+        <i class="fa-solid fa-server"></i> Hosts
+      </a>
+
+      <a href="/#features" class="sidebar-link">
+        <i class="fa-solid fa-list-check"></i> Features
+      </a>
+
+      <div class="sidebar-dropdown">
+        <button class="sidebar-dropdown-toggle" type="button">
+          <i class="fa-solid fa-upload"></i>
+          <span>Submit Host</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="sidebar-dropdown-menu">
+          <a href="submit-host">
+            <i class="fa-solid fa-plus"></i> Submit a Host
+          </a>
+          <a href="submit-layout">
+            <i class="fa-solid fa-pencil"></i> Submit Layout
+          </a>
+          <a href="submission-rules">
+            <i class="fa-solid fa-list-check"></i> Submission Rules
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-dropdown">
+        <button class="sidebar-dropdown-toggle" type="button">
+          <i class="fa-solid fa-book"></i>
+          <span>Resources</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="sidebar-dropdown-menu">
+          <a href="about">
+            <i class="fa-solid fa-circle-info"></i> About
+          </a>
+          <a href="staff" class="active">
+            <i class="fa-solid fa-users"></i> Staff
+          </a>
+          <a href="faq">
+            <i class="fa-solid fa-question-circle"></i> FAQ
+          </a>
+          <a href="server-rules">
+            <i class="fa-solid fa-shield"></i> Server Rules
+          </a>
+          <a href="other-free-hosts">
+            <i class="fa-solid fa-link"></i> Other Free Hosts
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-dropdown">
+        <button class="sidebar-dropdown-toggle" type="button">
+          <i class="fa-solid fa-gavel"></i>
+          <span>Legal</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="sidebar-dropdown-menu">
+          <a href="tos">
+            <i class="fa-solid fa-file-contract"></i> Terms of Service
+          </a>
+          <a href="privacy-policy">
+            <i class="fa-solid fa-lock"></i> Privacy Policy
+          </a>
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <a class="btn primary full" id="discordBtnSidebar" href="https://discord.gg/QbeZ3b5CQd" target="_blank"
+        rel="noopener"><i class="fa-brands fa-discord"></i> Join Discord</a>
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay" tabindex="-1" aria-hidden="true"></div>
+
+  <main class="wrap staff-page">
+    <!-- Hero Section -->
+    <section class="staff-hero">
+      <div class="staff-hero-icon">
+        <i class="fa-solid fa-users"></i>
+      </div>
+      <h1>Meet Our Team</h1>
+      <p>Dedicated volunteers who help run, maintain, and grow the FreeHosts community.</p>
+    </section>
+
+    <!-- Filter Buttons -->
+    <div class="staff-filters">
+      <button class="filter-btn active" data-filter="all">
+        <i class="fa-solid fa-th"></i>
+        All Team
+      </button>
+      <button class="filter-btn" data-filter="owner">
+        <i class="fa-solid fa-crown"></i>
+        Owner
+      </button>
+      <button class="filter-btn" data-filter="administrator">
+        <i class="fa-solid fa-user-tie"></i>
+        Administrator
+      </button>
+      <button class="filter-btn" data-filter="developer">
+        <i class="fa-solid fa-code"></i>
+        Developer
+      </button>
+      <button class="filter-btn" data-filter="moderator">
+        <i class="fa-solid fa-shield-halved"></i>
+        Moderator
+      </button>
+      <button class="filter-btn" data-filter="helper">
+        <i class="fa-solid fa-hands-helping"></i>
+        Helper
+      </button>
+      <button class="filter-btn" data-filter="host-publisher">
+        <i class="fa-solid fa-upload"></i>
+        Host Publisher
+      </button>
+      <button class="filter-btn" data-filter="hosting-provider">
+        <i class="fa-solid fa-server"></i>
+        Hosting Provider
+      </button>
+    </div>
+
+    <!-- Staff Container -->
+    <div id="staffContainer">
+      <!-- Loading State -->
+      <div class="loading-state" id="loadingState">
+        <div class="loading-spinner"></div>
+        <p>Loading team members...</p>
+      </div>
+    </div>
+
+    <!-- Join Team Section -->
+    <section class="join-team-section">
+      <div class="join-icon">
+        <i class="fa-solid fa-hand-sparkles"></i>
+      </div>
+      <h2>Want to Join the Team?</h2>
+      <p>
+        We're always looking for passionate volunteers to help grow and improve FreeHosts.
+        Whether you're interested in curation, moderation, development, or community support,
+        there's a place for you here.
+      </p>
+
+      <div class="join-benefits">
+        <div class="benefit-item">
+          <div class="benefit-icon">
+            <i class="fa-solid fa-heart"></i>
+          </div>
+          <div class="benefit-text">
+            <strong>Make an Impact</strong>
+            <span>Help thousands find the right hosting</span>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div class="benefit-text">
+            <strong>Join Community</strong>
+            <span>Work with passionate volunteers</span>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div class="benefit-text">
+            <strong>Learn & Grow</strong>
+            <span>Gain experience and skills</span>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <div class="benefit-text">
+            <strong>Recognition</strong>
+            <span>Get credited for your work</span>
+          </div>
+        </div>
+      </div>
+
+      <a href="https://discord.gg/QbeZ3b5CQd" class="join-cta" target="_blank" rel="noopener">
+        <i class="fa-brands fa-discord"></i>
+        Join Our Discord
+      </a>
+    </section>
+  </main>
+
+  <!-- Staff Modal -->
+  <div class="staff-modal" id="staffModal">
+    <div class="staff-modal-content">
+      <div class="staff-modal-header">
+        <button class="staff-modal-close" id="modalClose" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="staff-modal-avatar" id="modalAvatar"></div>
+        <div class="staff-modal-info">
+          <h2 id="modalName"></h2>
+          <div class="staff-roles" id="modalRoles"></div>
+        </div>
+      </div>
+      <div class="staff-modal-body">
+        <div class="staff-modal-section" id="modalAboutSection" style="display: none;">
+          <h3>About</h3>
+          <p class="staff-modal-about" id="modalAbout"></p>
+        </div>
+        <div class="staff-modal-section" id="modalLinksSection" style="display: none;">
+          <h3>Links</h3>
+          <div class="staff-modal-links" id="modalLinks"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="wrap footer-content">
+      <div class="footer-section footer-brand">
+        <div class="footer-logo">
+          <i class="fa-solid fa-hands-holding-circle"></i>
+          <span>FreeHosts</span>
+        </div>
+        <p class="footer-tagline">Discover free hosting that just works.</p>
+        <div class="social-links">
+          <a href="https://discord.gg/QbeZ3b5CQd" target="_blank" rel="noopener" aria-label="Discord">
+            <i class="fa-brands fa-discord"></i>
+          </a>
+          <a href="https://x.com/freehosts_" target="_blank" rel="noopener" aria-label="Twitter">
+            <i class="fa-brands fa-twitter"></i>
+          </a>
+          <a href="https://www.instagram.com/freehosts/" target="_blank" rel="noopener" aria-label="Instagram">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          <a href="https://github.com/freehostsofficial" target="_blank" rel="noopener" aria-label="GitHub">
+            <i class="fa-brands fa-github"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-section-title">Explore</h4>
+        <ul class="footer-list">
+          <li><a href="/">Home</a></li>
+          <li><a href="/hosts">Browse Hosts</a></li>
+          <li><a href="/about">About Us</a></li>
+          <li><a href="/staff">Our Team</a></li>
+          <li><a href="/faq">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-section-title">Submit</h4>
+        <ul class="footer-list">
+          <li><a href="/submit-host">Submit a Host</a></li>
+          <li><a href="/submit-layout">Submit Layout</a></li>
+          <li><a href="/submission-rules">Submission Rules</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-section-title">Legal</h4>
+        <ul class="footer-list">
+          <li><a href="/tos">Terms of Service</a></li>
+          <li><a href="/privacy-policy">Privacy Policy</a></li>
+          <li><a href="/server-rules">Server Rules</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-section-title">Contact</h4>
+        <ul class="footer-list">
+          <li><a href="mailto:support@freehosts.space"><i class="fa-solid fa-envelope"></i> support@freehosts.space</a>
+          </li>
+          <li><a href="https://discord.gg/QbeZ3b5CQd" target="_blank" rel="noopener"><i
+                class="fa-brands fa-discord"></i> Join Discord</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="wrap footer-bottom">
+      <div class="copyright">© 2023–<span id="year"></span> FreeHosts. All rights reserved.</div>
+      <div class="footer-bottom-links">
+        <a href="/tos">Terms</a>
+        <span class="separator">•</span>
+        <a href="/privacy-policy">Privacy</a>
+        <span class="separator">•</span>
+        <a href="mailto:support@freehosts.space">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/Src/js/script.js" defer></script>
+  <script>
+    // Escape HTML helper
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    // Staff data structure - organized by specific roles
+    let staffByRole = {
+      owner: [],
+      administrator: [],
+      developer: [],
+      moderator: [],
+      helper: [],
+      'host-publisher': [],
+      'hosting-provider': []
+    };
+
+    let rawStaffData = {};
+
+    // Role configuration - only the roles we want to display
+    const roleConfig = {
+      'owner': { icon: 'fa-solid fa-crown', class: 'owner', priority: 1, displayName: 'Owner' },
+      'co-owner': { icon: 'fa-solid fa-crown', class: 'owner', priority: 1, displayName: 'Owner', filterKey: 'owner' },
+      'coowner': { icon: 'fa-solid fa-crown', class: 'owner', priority: 1, displayName: 'Owner', filterKey: 'owner' },
+      'administrator': { icon: 'fa-solid fa-user-tie', class: 'admin', priority: 2, displayName: 'Administrator' },
+      'admin': { icon: 'fa-solid fa-user-tie', class: 'admin', priority: 2, displayName: 'Administrator', filterKey: 'administrator' },
+      'developer': { icon: 'fa-solid fa-code', class: 'developer', priority: 3, displayName: 'Developer' },
+      'dev': { icon: 'fa-solid fa-code', class: 'developer', priority: 3, displayName: 'Developer', filterKey: 'developer' },
+      'moderator': { icon: 'fa-solid fa-shield-halved', class: 'moderator', priority: 4, displayName: 'Moderator' },
+      'helper': { icon: 'fa-solid fa-hands-helping', class: 'helper', priority: 5, displayName: 'Helper' },
+      'host publisher': { icon: 'fa-solid fa-upload', class: 'publisher', priority: 6, displayName: 'Host Publisher' },
+      'publisher': { icon: 'fa-solid fa-upload', class: 'publisher', priority: 6, displayName: 'Host Publisher', filterKey: 'host-publisher' },
+      'hosting provider': { icon: 'fa-solid fa-server', class: 'hosting-provider', priority: 7, displayName: 'Hosting Provider' },
+      'provider': { icon: 'fa-solid fa-server', class: 'hosting-provider', priority: 7, displayName: 'Hosting Provider', filterKey: 'hosting-provider' }
+    };
+
+    function categorizeRole(roleLower) {
+      for (const [key, config] of Object.entries(roleConfig)) {
+        if (roleLower.includes(key)) {
+          return config;
+        }
+      }
+      return null; // Don't display roles not in our config
+    }
+
+    // Render staff sections
+    function renderStaff(filter = 'all') {
+      const container = document.getElementById('staffContainer');
+      container.innerHTML = '';
+
+      const sections = {
+        owner: { title: 'Owners', desc: 'Founders and leaders of FreeHosts', icon: 'leadership' },
+        administrator: { title: 'Administrators', desc: 'Team administrators managing operations', icon: 'leadership' },
+        developer: { title: 'Developers', desc: 'Building and maintaining our platform', icon: 'development' },
+        moderator: { title: 'Moderators', desc: 'Community moderators keeping things safe', icon: 'community' },
+        helper: { title: 'Helpers', desc: 'Support team helping our community', icon: 'community' },
+        'host-publisher': { title: 'Host Publishers', desc: 'Contributors managing host listings', icon: 'hosting' },
+        'hosting-provider': { title: 'Hosting Providers', desc: 'Partners providing hosting services', icon: 'hosting' }
+      };
+
+      // Collect all staff members that should be shown
+      let staffToShow = {};
+
+      if (filter === 'all') {
+        // Show all staff members organized by their primary role
+        Object.keys(sections).forEach(roleKey => {
+          staffToShow[roleKey] = [...staffByRole[roleKey]];
+        });
+      } else {
+        // When filtering, only show the section for the filtered role
+        // Find all members who have this role (across all staff)
+        const matchingMembers = [];
+
+        Object.values(rawStaffData).forEach((member, idx) => {
+          const username = Object.keys(rawStaffData)[idx];
+          const roles = Array.isArray(member.roles) ? member.roles : [member.roles];
+
+          // Check if this member has the filtered role
+          const hasFilteredRole = roles.some(role => {
+            const roleLower = String(role).trim().toLowerCase();
+            const roleInfo = categorizeRole(roleLower);
+            if (!roleInfo) return false;
+            const filterKey = roleInfo.filterKey || roleInfo.displayName.toLowerCase().replace(' ', '-');
+            return filterKey === filter;
+          });
+
+          if (hasFilteredRole) {
+            // Find this member's full data from staffByRole
+            let foundMember = null;
+            Object.values(staffByRole).forEach(categoryMembers => {
+              const m = categoryMembers.find(cm => cm.username === username);
+              if (m) foundMember = m;
+            });
+
+            if (foundMember) {
+              matchingMembers.push(foundMember);
+            }
+          }
+        });
+
+        // Put all matching members in the filtered section
+        if (matchingMembers.length > 0) {
+          staffToShow[filter] = matchingMembers;
+        }
+      }
+
+      // Render sections
+      Object.keys(sections).forEach(roleKey => {
+        if (staffToShow[roleKey] && staffToShow[roleKey].length > 0) {
+          const section = document.createElement('div');
+          section.className = 'staff-section';
+          section.dataset.category = roleKey;
+
+          const sectionInfo = sections[roleKey];
+          section.innerHTML = `
+            <div class="staff-section-header">
+              <div class="staff-section-icon ${sectionInfo.icon}">
+                <i class="${getIconForRole(roleKey)}"></i>
+              </div>
+              <div class="staff-section-title">
+                <h2>${sectionInfo.title}</h2>
+                <p>${sectionInfo.desc}</p>
+              </div>
+            </div>
+            <div class="staff-grid" id="grid-${roleKey}"></div>
+          `;
+
+          container.appendChild(section);
+
+          const grid = document.getElementById(`grid-${roleKey}`);
+
+          staffToShow[roleKey].forEach((member, index) => {
+            const card = document.createElement('div');
+            card.className = 'staff-card';
+            card.style.animationDelay = (index * 0.1) + 's';
+            card.dataset.username = member.username;
+
+            const rolesHTML = member.roles.map(role =>
+              `<div class="staff-role">
+                <i class="${role.icon}" style="font-size: 10px;"></i>
+                ${escapeHtml(role.displayName)}
+              </div>`
+            ).join('');
+
+            card.innerHTML = `
+              <div class="staff-avatar ${member.primaryIconClass}">
+                <i class="${member.primaryIcon}"></i>
+              </div>
+              <div class="staff-info">
+                <h3>${escapeHtml(member.name)}</h3>
+                <div class="staff-roles">
+                  ${rolesHTML}
+                </div>
+              </div>
+            `;
+
+            card.addEventListener('click', () => openStaffModal(member.username));
+            grid.appendChild(card);
+          });
+        }
+      });
+
+      if (container.innerHTML === '') {
+        container.innerHTML = '<div class="error-state"><p class="muted">No staff members found in this category.</p></div>';
+      }
+    }
+
+    function getIconForRole(roleKey) {
+      const icons = {
+        owner: 'fa-solid fa-crown',
+        administrator: 'fa-solid fa-user-tie',
+        developer: 'fa-solid fa-code',
+        moderator: 'fa-solid fa-shield-halved',
+        helper: 'fa-solid fa-hands-helping',
+        'host-publisher': 'fa-solid fa-upload',
+        'hosting-provider': 'fa-solid fa-server'
+      };
+      return icons[roleKey] || 'fa-solid fa-users';
+    }
+
+    // Open staff modal
+    function openStaffModal(username) {
+      const member = rawStaffData[username];
+      if (!member) return;
+
+      const modal = document.getElementById('staffModal');
+      const modalAvatar = document.getElementById('modalAvatar');
+      const modalName = document.getElementById('modalName');
+      const modalRoles = document.getElementById('modalRoles');
+      const modalAbout = document.getElementById('modalAbout');
+      const modalAboutSection = document.getElementById('modalAboutSection');
+      const modalLinks = document.getElementById('modalLinks');
+      const modalLinksSection = document.getElementById('modalLinksSection');
+
+      // Get primary role info
+      const roles = Array.isArray(member.roles) ? member.roles : [member.roles];
+      const processedRoles = [];
+
+      roles.forEach(r => {
+        const roleLower = String(r).trim().toLowerCase();
+        const roleInfo = categorizeRole(roleLower);
+        if (roleInfo) {
+          processedRoles.push({ name: r, ...roleInfo });
+        }
+      });
+
+      processedRoles.sort((a, b) => a.priority - b.priority);
+
+      if (processedRoles.length === 0) return;
+
+      const primaryRole = processedRoles[0];
+
+      // Set avatar
+      modalAvatar.innerHTML = `<i class="${primaryRole.icon}"></i>`;
+      modalAvatar.style.background = `linear-gradient(135deg, var(--accent), var(--accent-2))`;
+
+      // Set name
+      modalName.textContent = member.name || username;
+
+      // Set roles
+      modalRoles.innerHTML = processedRoles.map(role =>
+        `<div class="staff-role">
+          <i class="${role.icon}" style="font-size: 10px;"></i>
+          ${escapeHtml(role.displayName)}
+        </div>`
+      ).join('');
+
+      // Set about
+      if (member.about) {
+        modalAbout.textContent = member.about;
+        modalAboutSection.style.display = 'block';
+      } else {
+        modalAboutSection.style.display = 'none';
+      }
+
+      // Set links
+      const links = member.links || {};
+      const hasLinks = Object.keys(links).some(key => links[key]);
+
+      if (hasLinks) {
+        const linkIconMap = {
+          github: { icon: 'fa-brands fa-github', label: 'GitHub Profile' },
+          website: { icon: 'fa-solid fa-globe', label: 'Website' },
+          discord: { icon: 'fa-brands fa-discord', label: 'Discord' },
+          twitter: { icon: 'fa-brands fa-twitter', label: 'Twitter' },
+          linkedin: { icon: 'fa-brands fa-linkedin', label: 'LinkedIn' }
+        };
+
+        modalLinks.innerHTML = '';
+        Object.entries(links).forEach(([key, value]) => {
+          if (value) {
+            const linkInfo = linkIconMap[key] || { icon: 'fa-solid fa-link', label: key };
+            const link = document.createElement('a');
+            link.className = 'staff-modal-link';
+            link.href = value;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.innerHTML = `
+              <div class="staff-modal-link-icon">
+                <i class="${linkInfo.icon}"></i>
+              </div>
+              <div class="staff-modal-link-text">
+                <strong>${linkInfo.label}</strong>
+                <span>${escapeHtml(value)}</span>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square" style="color: var(--muted);"></i>
+            `;
+            modalLinks.appendChild(link);
+          }
+        });
+        modalLinksSection.style.display = 'block';
+      } else {
+        modalLinksSection.style.display = 'none';
+      }
+
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close modal
+    function closeStaffModal() {
+      const modal = document.getElementById('staffModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('modalClose').addEventListener('click', closeStaffModal);
+    document.getElementById('staffModal').addEventListener('click', (e) => {
+      if (e.target.id === 'staffModal') {
+        closeStaffModal();
+      }
+    });
+
+    // Load staff data
+    fetch('/Src/data/staff.json', { cache: 'no-cache' })
+      .then(r => {
+        if (!r.ok) throw new Error('Failed to load staff');
+        return r.json();
+      })
+      .then(data => {
+        rawStaffData = data;
+
+        // Process and categorize staff
+        Object.keys(data).forEach(username => {
+          const member = data[username];
+          const roles = Array.isArray(member.roles) ? member.roles : [member.roles];
+
+          const processedRoles = [];
+          roles.forEach(role => {
+            const roleLower = String(role).trim().toLowerCase();
+            const roleInfo = categorizeRole(roleLower);
+            if (roleInfo) {
+              processedRoles.push({ name: role, ...roleInfo });
+            }
+          });
+
+          if (processedRoles.length === 0) return; // Skip members with no valid roles
+
+          processedRoles.sort((a, b) => a.priority - b.priority);
+          const primaryRole = processedRoles[0];
+
+          const memberData = {
+            username: username,
+            name: member.name || username,
+            roles: processedRoles,
+            primaryIcon: primaryRole.icon,
+            primaryIconClass: primaryRole.class,
+            about: member.about,
+            links: member.links
+          };
+
+          // Add to primary role category for organization
+          const primaryFilterKey = primaryRole.filterKey || primaryRole.displayName.toLowerCase().replace(' ', '-');
+          if (staffByRole[primaryFilterKey]) {
+            staffByRole[primaryFilterKey].push(memberData);
+          }
+        });
+
+        // Sort each category by name
+        Object.keys(staffByRole).forEach(roleKey => {
+          staffByRole[roleKey].sort((a, b) => {
+            return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+          });
+        });
+
+        // Render staff
+        renderStaff('all');
+      })
+      .catch(err => {
+        console.error('Staff loading error:', err);
+        document.getElementById('staffContainer').innerHTML = `
+          <div class="error-state">
+            <div class="error-icon"><i class="fa-solid fa-exclamation-triangle"></i></div>
+            <p style="color: var(--text); font-weight: 600; margin-bottom: var(--space-sm);">Unable to Load Team</p>
+            <p class="muted">Staff list is not available right now. Please try again later.</p>
+          </div>
+        `;
+      });
+
+    // Filter functionality
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderStaff(btn.dataset.filter);
+      });
+    });
+
+    // Update year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeStaffModal();
+      }
+    });
+  </script>
+</body>
+
+</html>

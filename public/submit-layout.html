@@ -1,0 +1,2546 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>Layout Builder — FreeHosts</title>
+    <meta
+      name="description"
+      content="Build hosting layouts with our easy-to-use layout builder tool."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#071028" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      href="https://font-awesome.icons.cdn.codelabworks.is-cool.dev/css/all.css"
+    />
+    <link rel="stylesheet" href="Src/css/styles.css" />
+    <link
+      rel="sitemap"
+      type="application/xml"
+      title="Sitemap"
+      href="https://freehosts.space/sitemap.xml"
+    />
+    <meta
+      property="og:image"
+      content="https://freehosts.space/Src/Images/social-preview.png"
+    />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="720" />
+
+    <style>
+      .builder-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0;
+      }
+
+      .builder-hero {
+        text-align: center;
+        margin-bottom: var(--space-xl);
+        padding: var(--space-2xl) var(--space-xl);
+        background: linear-gradient(
+          135deg,
+          rgba(66, 153, 225, 0.1),
+          rgba(102, 126, 234, 0.1)
+        );
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .builder-hero::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(66, 153, 225, 0.1) 0%,
+          transparent 70%
+        );
+        animation: rotate 20s linear infinite;
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .builder-hero > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .builder-title {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        margin-bottom: var(--space-md);
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.2;
+      }
+
+      .builder-subtitle {
+        font-size: var(--font-size-lg);
+        color: var(--muted);
+        margin-bottom: var(--space-md);
+        line-height: 1.6;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .builder-stats {
+        display: flex;
+        justify-content: center;
+        gap: var(--space-xl);
+        margin-top: var(--space-lg);
+        flex-wrap: wrap;
+      }
+
+      .builder-stat {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        color: var(--muted);
+        font-size: var(--font-size-sm);
+      }
+
+      .builder-stat i {
+        color: var(--accent);
+        font-size: var(--font-size-lg);
+      }
+
+      .builder-layout {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xl);
+        margin: 0 var(--space-xl);
+      }
+
+      .form-card {
+        background: var(--card);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-lg);
+        padding: var(--space-xl);
+      }
+
+      .form-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+        padding-bottom: var(--space-lg);
+        border-bottom: 2px solid var(--border);
+      }
+
+      .form-icon {
+        font-size: var(--font-size-2xl);
+        margin-right: var(--space-md);
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        border-radius: var(--border-radius);
+        color: white;
+        box-shadow: 0 8px 16px rgba(66, 153, 225, 0.3);
+      }
+
+      .form-title {
+        font-size: var(--font-size-2xl);
+        font-weight: 700;
+        margin: 0;
+        color: var(--text);
+      }
+
+      .form-subtitle {
+        font-size: var(--font-size-sm);
+        color: var(--muted);
+        margin-top: var(--space-xs);
+      }
+
+      .form-section {
+        margin-bottom: var(--space-xl);
+      }
+
+      .section-label {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        font-weight: 700;
+        font-size: var(--font-size-lg);
+        color: var(--text);
+        margin-bottom: var(--space-lg);
+        padding-bottom: var(--space-sm);
+        border-bottom: 2px solid var(--border);
+      }
+
+      .form-group {
+        margin-bottom: var(--space-lg);
+      }
+
+      .form-label {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        font-weight: 600;
+        margin-bottom: var(--space-sm);
+        color: var(--text);
+        font-size: var(--font-size-sm);
+      }
+
+      .form-label i {
+        color: var(--muted);
+        font-size: var(--font-size-xs);
+      }
+
+      .form-input,
+      .form-textarea,
+      .form-select {
+        width: 100%;
+        padding: var(--space-md);
+        border: 2px solid var(--border);
+        border-radius: var(--border-radius-sm);
+        background: var(--background-secondary);
+        color: var(--text);
+        font-family: inherit;
+        font-size: var(--font-size-base);
+        transition: all 0.3s;
+      }
+
+      .form-textarea {
+        min-height: 100px;
+        resize: vertical;
+        font-family: "Courier New", monospace;
+      }
+
+      .form-input:focus,
+      .form-textarea:focus,
+      .form-select:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        background: var(--card);
+      }
+
+      .required {
+        color: #ef4444;
+        font-weight: 700;
+      }
+
+      .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+      }
+
+      .radio-option {
+        display: flex;
+        align-items: center;
+        padding: var(--space-md);
+        background: var(--background-secondary);
+        border: 2px solid var(--border);
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .radio-option:hover {
+        border-color: var(--accent);
+        background: var(--card);
+      }
+
+      .radio-option input[type="radio"] {
+        margin-right: var(--space-sm);
+        cursor: pointer;
+      }
+
+      .radio-option input[type="radio"]:checked + label {
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+      }
+
+      .checkbox-option {
+        display: flex;
+        align-items: center;
+        padding: var(--space-md);
+        background: var(--background-secondary);
+        border: 2px solid var(--border);
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .checkbox-option:hover {
+        border-color: var(--accent);
+        background: var(--card);
+      }
+
+      .checkbox-option input[type="checkbox"] {
+        margin-right: var(--space-sm);
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+      }
+
+      .spec-plans {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-lg);
+      }
+
+      .spec-plan-card {
+        background: linear-gradient(
+          135deg,
+          rgba(66, 153, 225, 0.05),
+          rgba(102, 126, 234, 0.05)
+        );
+        border-radius: var(--border-radius-sm);
+        padding: var(--space-lg);
+        border: 1px solid var(--border);
+      }
+
+      .spec-plan-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-md);
+      }
+
+      .spec-plan-name {
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .btn-remove {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        padding: var(--space-xs) var(--space-sm);
+        border-radius: var(--border-radius-sm);
+        font-size: var(--font-size-xs);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-remove:hover {
+        background: rgba(239, 68, 68, 0.2);
+      }
+
+      .btn-add {
+        background: rgba(72, 187, 120, 0.1);
+        color: #48bb78;
+        border: 2px solid rgba(72, 187, 120, 0.3);
+        padding: var(--space-md);
+        border-radius: var(--border-radius-sm);
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-sm);
+      }
+
+      .btn-add:hover {
+        background: rgba(72, 187, 120, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .spec-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-md);
+      }
+
+      .form-actions {
+        display: flex;
+        gap: var(--space-md);
+        margin-top: var(--space-xl);
+        padding-top: var(--space-lg);
+        border-top: 2px solid var(--border);
+      }
+
+      .btn-reset {
+        flex: 1;
+        background: var(--background-secondary);
+        color: var(--text);
+        border: 2px solid var(--border);
+      }
+
+      .btn-reset:hover {
+        background: var(--border);
+        transform: translateY(-2px);
+      }
+
+      .btn-generate {
+        flex: 2;
+      }
+
+      .btn-generate:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-generate:disabled:hover {
+        transform: none;
+      }
+
+      .preview-card {
+        background: var(--card);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        margin-top: var(--space-xl);
+      }
+
+      .preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--space-lg);
+        border-bottom: 2px solid var(--border);
+        background: linear-gradient(
+          135deg,
+          rgba(66, 153, 225, 0.05),
+          rgba(102, 126, 234, 0.05)
+        );
+      }
+
+      .preview-title {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        font-weight: 700;
+        font-size: var(--font-size-lg);
+        margin: 0;
+        color: var(--text);
+      }
+
+      .preview-title i {
+        color: var(--accent);
+      }
+
+      .preview-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-xs);
+        padding: var(--space-xs) var(--space-md);
+        background: rgba(72, 187, 120, 0.1);
+        color: #48bb78;
+        border-radius: var(--border-radius-sm);
+        font-size: var(--font-size-xs);
+        font-weight: 600;
+      }
+
+      .copy-notification {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        background: var(--card);
+        border: 2px solid var(--border);
+        border-radius: var(--border-radius);
+        padding: var(--space-lg) var(--space-xl);
+        box-shadow: var(--shadow-xl);
+        z-index: 10000;
+        opacity: 0;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        font-weight: 600;
+      }
+
+      .copy-notification.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .copy-notification i {
+        font-size: var(--font-size-xl);
+      }
+
+      .copy-notification.success {
+        border-color: #48bb78;
+        color: #48bb78;
+      }
+
+      .copy-notification.error {
+        border-color: #ef4444;
+        color: #ef4444;
+      }
+
+      .help-text {
+        font-size: var(--font-size-xs);
+        color: var(--muted);
+        margin-top: var(--space-xs);
+        display: flex;
+        align-items: start;
+        gap: var(--space-xs);
+        line-height: 1.4;
+      }
+
+      .help-text i {
+        margin-top: 2px;
+        font-size: 10px;
+      }
+
+      .add-plan-container {
+        display: flex;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-lg);
+      }
+
+      .add-plan-container .form-select {
+        flex: 1;
+      }
+
+      .add-plan-container .btn-add {
+        width: auto;
+        padding: var(--space-md) var(--space-lg);
+      }
+
+      .other-plans-checkbox {
+        margin-bottom: var(--space-lg);
+      }
+
+      .other-plans-card {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 193, 7, 0.05),
+          rgba(255, 152, 0, 0.05)
+        );
+        border: 1px solid rgba(255, 193, 7, 0.3);
+      }
+
+      .other-plans-card .spec-plan-name {
+        color: #ff9800;
+      }
+
+      .plan-list {
+        font-size: var(--font-size-sm);
+        color: var(--muted);
+        margin-top: var(--space-xs);
+      }
+
+      /* Discord Message Preview Styles */
+      .discord-preview {
+        font-family: "gg sans", "Noto Sans", "Helvetica Neue", Helvetica, Arial,
+          sans-serif;
+        font-size: 16px;
+        line-height: 1.375;
+        color: #dcddde;
+        background: #36393f;
+        border-radius: 8px;
+        padding: 16px;
+        min-height: 200px;
+        overflow-y: auto;
+        max-height: 500px;
+      }
+
+      .discord-message {
+        display: flex;
+        padding: 2px 48px 2px 0;
+        position: relative;
+      }
+
+      .discord-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 16px;
+        flex-shrink: 0;
+        background: #5865f2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .discord-message-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .discord-message-header {
+        display: flex;
+        align-items: baseline;
+        margin-bottom: 4px;
+      }
+
+      .discord-username {
+        font-weight: 500;
+        color: white;
+        font-size: 1rem;
+      }
+
+      .discord-timestamp {
+        color: #72767d;
+        font-size: 0.75rem;
+        margin-left: 8px;
+      }
+
+      .discord-message-text {
+        word-wrap: break-word;
+        white-space: pre-wrap;
+      }
+
+      .discord-divider {
+        height: 1px;
+        background: #42454a;
+        margin: 8px 0;
+      }
+
+      .discord-emoji {
+        font-size: 1.375rem;
+        margin-right: 4px;
+        vertical-align: middle;
+      }
+
+      .discord-bold {
+        font-weight: 600;
+        color: white;
+      }
+
+      .discord-inline-code {
+        background: #2f3136;
+        border-radius: 3px;
+        padding: 0.2em;
+        font-family: "Consolas", "Courier New", monospace;
+        font-size: 0.875rem;
+        color: #e9e9e9;
+      }
+
+      .discord-checkbox {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #72767d;
+        border-radius: 3px;
+        margin-right: 6px;
+        text-align: center;
+        line-height: 12px;
+        font-size: 12px;
+        vertical-align: middle;
+      }
+
+      .discord-checkbox.checked {
+        background: #3ba55c;
+        border-color: #3ba55c;
+        color: white;
+      }
+
+      .discord-link {
+        color: #00aff4;
+        text-decoration: none;
+      }
+
+      .discord-link:hover {
+        text-decoration: underline;
+      }
+
+      .discord-blockquote {
+        border-left: 4px solid #4f545c;
+        margin: 4px 0;
+        padding-left: 12px;
+        color: #b9bbbe;
+      }
+
+      .discord-list {
+        margin: 4px 0;
+        padding-left: 24px;
+      }
+
+      .discord-list-item {
+        margin: 2px 0;
+      }
+
+      .discord-renewal-toggle {
+        color: #00aff4;
+        cursor: pointer;
+        font-weight: 500;
+        margin-top: 4px;
+        display: inline-block;
+      }
+
+      .discord-renewal-toggle:hover {
+        text-decoration: underline;
+      }
+
+      .discord-renewal-content {
+        margin-top: 8px;
+        padding-left: 8px;
+        border-left: 2px solid #4f545c;
+        display: none;
+      }
+
+      .discord-renewal-content.show {
+        display: block;
+      }
+
+      .message-preview {
+        background: #2f3136;
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 20px;
+        border: 1px solid #40444b;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .message-preview-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #b9bbbe;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .message-preview-title i {
+        color: #7289da;
+      }
+
+      .message-preview-content {
+        font-family: "Consolas", "Courier New", monospace;
+        font-size: 13px;
+        line-height: 1.5;
+        color: #dcddde;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      .preview-container {
+        margin-top: 20px;
+      }
+
+      /* New styles for conditional fields */
+      .conditional-fields {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 193, 7, 0.05),
+          rgba(255, 152, 0, 0.05)
+        );
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        border-radius: var(--border-radius-sm);
+        padding: var(--space-lg);
+        margin-top: var(--space-md);
+        display: none;
+      }
+
+      .conditional-fields.show {
+        display: block;
+      }
+
+      .conditional-fields .form-label {
+        color: #ff9800;
+      }
+
+      .conditional-fields .form-input:focus {
+        border-color: #ff9800;
+        box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+      }
+
+      @media (max-width: 768px) {
+        .builder-hero {
+          padding: var(--space-xl) var(--space-md);
+        }
+
+        .builder-layout {
+          margin: 0 var(--space-md);
+        }
+
+        .form-card {
+          padding: var(--space-lg);
+        }
+
+        .spec-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+          flex-direction: column;
+        }
+
+        .builder-stats {
+          gap: var(--space-md);
+        }
+
+        .btn-reset,
+        .btn-generate {
+          width: 100%;
+        }
+
+        .add-plan-container {
+          flex-direction: column;
+        }
+
+        .discord-message {
+          padding-right: 16px;
+        }
+
+        .discord-avatar {
+          width: 32px;
+          height: 32px;
+          font-size: 14px;
+          margin-right: 12px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <button
+          id="sidebarToggle"
+          class="icon-btn mobile-only"
+          aria-label="Open menu"
+        >
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <a class="logo" href="/" aria-label="FreeHosts Home">
+          <i class="fa-solid fa-hands-holding-circle"></i> FreeHosts
+        </a>
+
+        <nav class="nav" role="navigation" aria-label="Main">
+          <div class="nav-item">
+            <a href="/hosts" class="nav-link">
+              <i class="fa-solid fa-server"></i> Hosts
+            </a>
+          </div>
+
+          <div class="nav-item">
+            <a href="/#features" class="nav-link">
+              <i class="fa-solid fa-list-check"></i> Features
+            </a>
+          </div>
+
+          <div class="nav-item">
+            <span class="nav-link has-dropdown">
+              <i class="fa-solid fa-upload"></i> Submit Host
+              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+            </span>
+            <div class="dropdown-menu">
+              <a href="/submit-host">
+                <i class="fa-solid fa-plus"></i> Submit a Host
+              </a>
+              <a href="/submit-layout">
+                <i class="fa-solid fa-pencil"></i> Submit Layout
+              </a>
+              <a href="/submission-rules">
+                <i class="fa-solid fa-list-check"></i> Submission Rules
+              </a>
+            </div>
+          </div>
+
+          <div class="nav-item">
+            <span class="nav-link has-dropdown">
+              <i class="fa-solid fa-book"></i> Resources
+              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+            </span>
+            <div class="dropdown-menu">
+              <a href="/about">
+                <i class="fa-solid fa-circle-info"></i> About
+              </a>
+              <a href="/staff"> <i class="fa-solid fa-users"></i> Staff </a>
+              <a href="/faq">
+                <i class="fa-solid fa-question-circle"></i> FAQ
+              </a>
+              <a href="/server-rules">
+                <i class="fa-solid fa-shield"></i> Server Rules
+              </a>
+            </div>
+          </div>
+
+          <div class="nav-item">
+            <span class="nav-link has-dropdown">
+              <i class="fa-solid fa-gavel"></i> Legal
+              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+            </span>
+            <div class="dropdown-menu">
+              <a href="/tos">
+                <i class="fa-solid fa-file-contract"></i> Terms of Service
+              </a>
+              <a href="/privacy-policy">
+                <i class="fa-solid fa-lock"></i> Privacy Policy
+              </a>
+            </div>
+          </div>
+        </nav>
+
+        <div class="actions" id="headerActions">
+          <button
+            data-theme-toggle
+            class="icon-btn"
+            aria-pressed="false"
+            aria-label="Toggle theme"
+          >
+            <i class="fa-solid fa-moon"></i>
+          </button>
+          <a
+            class="btn primary"
+            id="discordBtn"
+            href="https://discord.gg/QbeZ3b5CQd"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fa-brands fa-discord"></i> Join Discord
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <aside class="sidebar" id="sidebar" aria-hidden="true">
+      <div class="sidebar-top">
+        <a class="logo" href="/">
+          <i class="fa-solid fa-hands-holding-circle"></i> FreeHosts
+        </a>
+        <button id="sidebarClose" class="icon-btn" aria-label="Close menu">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav" role="navigation">
+        <a href="/hosts" class="sidebar-link">
+          <i class="fa-solid fa-server"></i> Hosts
+        </a>
+
+        <a href="/#features" class="sidebar-link">
+          <i class="fa-solid fa-list-check"></i> Features
+        </a>
+
+        <div class="sidebar-dropdown">
+          <button class="sidebar-dropdown-toggle" type="button">
+            <i class="fa-solid fa-upload"></i>
+            <span>Submit Host</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="sidebar-dropdown-menu">
+            <a href="/submit-host">
+              <i class="fa-solid fa-plus"></i> Submit a Host
+            </a>
+            <a href="/submit-layout">
+              <i class="fa-solid fa-pencil"></i> Submit Layout
+            </a>
+            <a href="/submission-rules">
+              <i class="fa-solid fa-list-check"></i> Submission Rules
+            </a>
+          </div>
+        </div>
+
+        <div class="sidebar-dropdown">
+          <button class="sidebar-dropdown-toggle" type="button">
+            <i class="fa-solid fa-book"></i>
+            <span>Resources</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="sidebar-dropdown-menu">
+            <a href="/about"> <i class="fa-solid fa-circle-info"></i> About </a>
+            <a href="/staff"> <i class="fa-solid fa-users"></i> Staff </a>
+            <a href="/faq"> <i class="fa-solid fa-question-circle"></i> FAQ </a>
+            <a href="/server-rules">
+              <i class="fa-solid fa-shield"></i> Server Rules
+            </a>
+          </div>
+        </div>
+
+        <div class="sidebar-dropdown">
+          <button class="sidebar-dropdown-toggle" type="button">
+            <i class="fa-solid fa-gavel"></i>
+            <span>Legal</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="sidebar-dropdown-menu">
+            <a href="/tos">
+              <i class="fa-solid fa-file-contract"></i> Terms of Service
+            </a>
+            <a href="/privacy-policy">
+              <i class="fa-solid fa-lock"></i> Privacy Policy
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a
+          class="btn primary full"
+          id="discordBtnSidebar"
+          href="https://discord.gg/QbeZ3b5CQd"
+          target="_blank"
+          rel="noopener"
+        >
+          <i class="fa-brands fa-discord"></i> Join Discord
+        </a>
+      </div>
+    </aside>
+
+    <div class="overlay" id="overlay" tabindex="-1" aria-hidden="true"></div>
+
+    <main>
+      <div class="builder-container">
+        <!-- Hero Section -->
+        <section class="builder-hero">
+          <h1 class="builder-title">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Discord Layout
+            Builder
+          </h1>
+          <p class="builder-subtitle">
+            Create Discord-formatted hosting layouts instantly. Perfect
+            formatting for Discord submissions with emojis and proper structure.
+          </p>
+          <div class="builder-stats">
+            <div class="builder-stat">
+              <i class="fa-solid fa-bolt"></i>
+              <span>Instant Generation</span>
+            </div>
+            <div class="builder-stat">
+              <i class="fa-solid fa-copy"></i>
+              <span>One-Click Copy</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Main Layout -->
+        <div class="builder-layout">
+          <!-- Form Section -->
+          <section class="form-card">
+            <div class="form-header">
+              <div class="form-icon">
+                <i class="fa-solid fa-edit"></i>
+              </div>
+              <div>
+                <h2 class="form-title">Build Your Layout</h2>
+                <p class="form-subtitle">Fill in the information below</p>
+              </div>
+            </div>
+
+            <form id="layoutBuilderForm">
+              <!-- Basic Information -->
+              <div class="form-section">
+                <div class="section-label">
+                  <span>📌</span>
+                  <span>Basic Information</span>
+                </div>
+
+                <div class="form-group">
+                  <label for="hostName" class="form-label">
+                    Host Name <span class="required">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="hostName"
+                    class="form-input"
+                    placeholder="e.g., Example Host"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="plans" class="form-label">
+                    Plans <span class="required">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="plans"
+                    class="form-input"
+                    placeholder="e.g., Nextjs, Javascript, Python, Node.js"
+                    required
+                  />
+                  <div class="help-text">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Comma separated list of plan names</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="targets" class="form-label">
+                    Targets <span class="required">*</span>
+                  </label>
+                  <div class="help-text">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Comma separated list of plan names</span>
+                  </div>
+                  <input
+                    type="text"
+                    id="targets"
+                    class="form-input"
+                    placeholder="e.g., Coding, Gaming"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="locales" class="form-label">
+                    Locales / Languages <span class="required">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="locales"
+                    class="form-input"
+                    placeholder="e.g., en, es"
+                    required
+                  />
+                </div>
+                    <div class="help-text">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Comma separated list of plan names</span>
+                  </div>
+              </div>
+
+              <!-- Specs Configuration -->
+              <div class="form-section">
+                <div class="section-label">
+                  <span>🧩</span>
+                  <span>Specifications</span>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label"
+                    >Spec Type <span class="required">*</span></label
+                  >
+                  <div class="radio-group">
+                    <label class="radio-option">
+                      <input
+                        type="radio"
+                        name="specType"
+                        value="same"
+                        checked
+                      />
+                      <span>Same specs for all plans</span>
+                    </label>
+                    <label class="radio-option">
+                      <input type="radio" name="specType" value="different" />
+                      <span>Different specs per target/plan</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Same Specs -->
+                <div id="sameSpecsContainer">
+                  <div class="spec-plan-card">
+                    <div class="spec-grid">
+                      <div class="form-group">
+                        <label for="sameRam" class="form-label">RAM</label>
+                        <input
+                          type="text"
+                          id="sameRam"
+                          class="form-input"
+                          placeholder="e.g., 4GB"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="sameCpu" class="form-label">CPU</label>
+                        <input
+                          type="text"
+                          id="sameCpu"
+                          class="form-input"
+                          placeholder="e.g., 2 vCores"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="sameDisk" class="form-label">Disk</label>
+                        <input
+                          type="text"
+                          id="sameDisk"
+                          class="form-input"
+                          placeholder="e.g., 40GB SSD"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Different Specs -->
+                <div id="differentSpecsContainer" style="display: none">
+                  <div class="form-group other-plans-checkbox">
+                    <label class="checkbox-option">
+                      <input type="checkbox" id="otherPlansCheckbox" />
+                      <span
+                        >All other plans not listed above share the same
+                        specs</span
+                      >
+                    </label>
+                  </div>
+
+                  <div class="add-plan-container">
+                    <select id="planSelect" class="form-select">
+                      <option value="">Select a plan to add specs...</option>
+                    </select>
+                    <button type="button" id="addPlanButton" class="btn-add">
+                      <i class="fa-solid fa-plus"></i> Add Plan
+                    </button>
+                  </div>
+
+                  <div class="spec-plans" id="specPlans"></div>
+                </div>
+              </div>
+
+              <!-- Links -->
+              <div class="form-section">
+                <div class="section-label">
+                  <span>🔗</span>
+                  <span>Links</span>
+                </div>
+
+                <div class="form-group">
+                  <label for="tosLink" class="form-label"
+                    >ToS Link <span class="required">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="tosLink"
+                    class="form-input"
+                    placeholder="https://example.com/tos"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="privacyLink" class="form-label"
+                    >Privacy Policy Link <span class="required">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="privacyLink"
+                    class="form-input"
+                    placeholder="https://example.com/privacy"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="planLink" class="form-label">Plan Link</label>
+                  <input
+                    type="text"
+                    id="planLink"
+                    class="form-input"
+                    placeholder="https://example.com/plan"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="websiteLink" class="form-label"
+                    >Website Link</label
+                  >
+                  <input
+                    type="text"
+                    id="websiteLink"
+                    class="form-input"
+                    placeholder="https://example.com"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="discordLink" class="form-label"
+                    >Discord Invite</label
+                  >
+                  <input
+                    type="text"
+                    id="discordLink"
+                    class="form-input"
+                    placeholder="https://discord.gg/invite"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="otherLinks" class="form-label">Other Links</label>
+                  <textarea
+                    id="otherLinks"
+                    class="form-textarea"
+                    placeholder="One per line, e.g.:&#10;Documentation: https://docs.example.com&#10;Support: https://support.example.com"
+                  ></textarea>
+                  <div class="help-text">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Format: Label: URL (one per line)</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Information -->
+              <div class="form-section">
+                <div class="section-label">
+                  <span>📄</span>
+                  <span>Information</span>
+                </div>
+
+                <div class="form-group">
+                  <label for="renewalStatus" class="form-label"
+                    >Renewal Required <span class="required">*</span></label
+                  >
+                  <select id="renewalStatus" class="form-select" required>
+                    <option value="">Select an option</option>
+                    <option value="yes">This host requires renewal</option>
+                    <option value="no">
+                      This host does not require renewal
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Conditional renewal fields (only shown when renewal is required) -->
+                <div id="renewalFieldsContainer" class="conditional-fields">
+                  <div class="form-group">
+                    <label for="renewalDuration" class="form-label">
+                      Renewal Duration <span class="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="renewalDuration"
+                      class="form-input"
+                      placeholder="e.g., 30 days"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="coinsNeeded" class="form-label">
+                      Coins Needed <span class="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="coinsNeeded"
+                      class="form-input"
+                      placeholder="e.g., 300 coins"
+                    />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="notes" class="form-label">Notes</label>
+                  <textarea
+                    id="notes"
+                    class="form-textarea"
+                    placeholder="Add any important notes about the host"
+                  ></textarea>
+                </div>
+              </div>
+
+              <!-- Checkboxes -->
+              <div class="form-section">
+                <div class="section-label">
+                  <span>☑️</span>
+                  <span>Verification</span>
+                </div>
+
+                <div class="checkbox-group">
+                  <label class="checkbox-option">
+                    <input type="checkbox" id="checkToS" checked />
+                    <span>I have included the ToS</span>
+                  </label>
+                  <label class="checkbox-option">
+                    <input type="checkbox" id="checkPrivacy" checked />
+                    <span>I have included the Privacy Policy</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="reset" class="btn btn-reset">
+                  <i class="fa-solid fa-rotate-left"></i> Reset Form
+                </button>
+                <button
+                  type="button"
+                  id="copyButton"
+                  class="btn primary btn-generate"
+                  disabled
+                >
+                  <i class="fa-solid fa-copy"></i> Copy Message
+                </button>
+              </div>
+
+              <!-- Message Preview at Bottom of Form -->
+              <div class="preview-container">
+                <div class="message-preview">
+                  <div class="message-preview-title">
+                    <i class="fa-solid fa-code"></i>
+                    <span>Message Preview (Raw Text)</span>
+                  </div>
+                  <div id="messagePreview" class="message-preview-content">
+                    Fill in the form to see the message preview here...
+                  </div>
+                </div>
+              </div>
+            </form>
+          </section>
+
+          <!-- Discord Preview Section -->
+          <section class="preview-card">
+            <div class="preview-header">
+              <h3 class="preview-title">
+                <i class="fa-solid fa-discord"></i>
+                Discord Message Preview
+              </h3>
+              <div
+                style="display: flex; gap: var(--space-sm); align-items: center"
+              >
+                <span id="previewBadge" class="preview-badge">
+                  <i class="fa-solid fa-circle"></i>
+                  Live
+                </span>
+                <div class="help-text" style="margin: 0; color: var(--accent)">
+                  <i class="fa-solid fa-sync-alt"></i>
+                  <span>Updates as you type</span>
+                </div>
+              </div>
+            </div>
+            <div id="discordPreview" class="discord-preview">
+              <div class="discord-message">
+                <div class="discord-avatar">FH</div>
+                <div class="discord-message-content">
+                  <div class="discord-message-header">
+                    <span class="discord-username">FreeHosts Bot</span>
+                    <span class="discord-timestamp">Today at 12:00 PM</span>
+                  </div>
+                  <div class="discord-message-text">
+                    <span class="discord-emoji">📌</span>
+                    <span class="discord-bold">Host Submission</span><br />
+                    <br />
+                    <span class="discord-bold">Host Name</span><br />
+                    <div class="discord-blockquote">[Host Name]</div>
+                    <span class="discord-bold">Plans</span><br />
+                    <div class="discord-blockquote">[Plans]</div>
+                    <span class="discord-bold">Targets</span><br />
+                    <div class="discord-blockquote">[Targets]</div>
+                    <span class="discord-bold">Locales / Languages</span><br />
+                    <div class="discord-blockquote">[Locales]</div>
+                    <div class="discord-divider"></div>
+                    <span class="discord-emoji">🧩</span>
+                    <span class="discord-bold">Specifications</span><br />
+                    • [Specs will appear here]<br />
+                    <div class="discord-divider"></div>
+                    <br />
+                    <span class="discord-emoji">🔗</span>
+                    <span class="discord-bold">Links</span><br />
+                    <span class="discord-bold">ToS:</span> [ToS Link]<br />
+                    <span class="discord-bold">Privacy Policy:</span> [Privacy
+                    Policy Link]<br />
+                    <br />
+                    <div class="discord-divider"></div>
+                    <span class="discord-emoji">📄</span>
+                    <span class="discord-bold">Information</span><br />
+                    • Renewal Required: [Select an option]<br />
+                    <div
+                      class="discord-renewal-toggle"
+                      onclick="toggleRenewalDetails(this)"
+                    >
+                      [Click to show renewal details]
+                    </div>
+                    <div class="discord-renewal-content">
+                      This host requires renewal<br />
+                    </div>
+                    <br />
+                    <div class="discord-divider"></div>
+                    <span class="discord-emoji">☑️</span>
+                    <span class="discord-bold">Verification</span><br />
+                    <span class="discord-checkbox checked">✓</span> I have
+                    included the ToS<br />
+                    <span class="discord-checkbox checked">✓</span> I have
+                    included the Privacy Policy<br />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-content">
+        <div class="footer-section footer-brand">
+          <div class="footer-logo">
+            <i class="fa-solid fa-hands-holding-circle"></i>
+            <span>FreeHosts</span>
+          </div>
+          <p class="footer-tagline">Discover free hosting that just works.</p>
+          <div class="social-links">
+            <a
+              href="https://discord.gg/QbeZ3b5CQd"
+              target="_blank"
+              rel="noopener"
+              aria-label="Discord"
+            >
+              <i class="fa-brands fa-discord"></i>
+            </a>
+            <a
+              href="https://x.com/freehosts_"
+              target="_blank"
+              rel="noopener"
+              aria-label="Twitter"
+            >
+              <i class="fa-brands fa-twitter"></i>
+            </a>
+            <a
+              href="https://www.instagram.com/freehosts/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Instagram"
+            >
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a
+              href="https://github.com/freehostsofficial"
+              target="_blank"
+              rel="noopener"
+              aria-label="GitHub"
+            >
+              <i class="fa-brands fa-github"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-section">
+          <h4 class="footer-section-title">Explore</h4>
+          <ul class="footer-list">
+            <li><a href="/">Home</a></li>
+            <li><a href="/hosts">Browse Hosts</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/staff">Our Team</a></li>
+            <li><a href="/faq">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4 class="footer-section-title">Submit</h4>
+          <ul class="footer-list">
+            <li><a href="/submit-host">Submit a Host</a></li>
+            <li><a href="/submit-layout">Submit Layout</a></li>
+            <li><a href="/submission-rules">Submission Rules</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4 class="footer-section-title">Legal</h4>
+          <ul class="footer-list">
+            <li><a href="/tos">Terms of Service</a></li>
+            <li><a href="/privacy-policy">Privacy Policy</a></li>
+            <li><a href="/server-rules">Server Rules</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4 class="footer-section-title">Contact</h4>
+          <ul class="footer-list">
+            <li>
+              <a href="mailto:support@freehosts.space"
+                ><i class="fa-solid fa-envelope"></i> support@freehosts.space</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://discord.gg/QbeZ3b5CQd"
+                target="_blank"
+                rel="noopener"
+                ><i class="fa-brands fa-discord"></i> Join Discord</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="wrap footer-bottom">
+        <div class="copyright">
+          © 2023–<span id="year"></span> FreeHosts. All rights reserved.
+        </div>
+        <div class="footer-bottom-links">
+          <a href="/tos">Terms</a>
+          <span class="separator">•</span>
+          <a href="/privacy-policy">Privacy</a>
+          <span class="separator">•</span>
+          <a href="mailto:support@freehosts.space">Contact</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/Src/js/script.js" defer></script>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      // Store added plans and all plans
+      let addedPlans = new Set();
+      let allPlans = [];
+      let updateTimeout = null;
+
+      // Toggle renewal details in Discord preview
+      function toggleRenewalDetails(element) {
+        const content = element.nextElementSibling;
+        if (content.classList.contains("show")) {
+          content.classList.remove("show");
+          element.textContent = "[Click to show renewal details]";
+        } else {
+          content.classList.add("show");
+          element.textContent = "[Click to hide renewal details]";
+        }
+      }
+
+      // Toggle renewal fields based on renewal status
+      document
+        .getElementById("renewalStatus")
+        .addEventListener("change", function () {
+          const renewalFieldsContainer = document.getElementById(
+            "renewalFieldsContainer"
+          );
+          const renewalDuration = document.getElementById("renewalDuration");
+          const coinsNeeded = document.getElementById("coinsNeeded");
+
+          if (this.value === "yes") {
+            renewalFieldsContainer.classList.add("show");
+            renewalDuration.required = true;
+            coinsNeeded.required = true;
+          } else {
+            renewalFieldsContainer.classList.remove("show");
+            renewalDuration.required = false;
+            coinsNeeded.required = false;
+            renewalDuration.value = "";
+            coinsNeeded.value = "";
+          }
+          debouncedUpdatePreview();
+        });
+
+      // Initialize renewal fields based on default value
+      document.addEventListener("DOMContentLoaded", function () {
+        // With the new dropdown, default value is empty, so no fields should show initially
+        const renewalFieldsContainer = document.getElementById(
+          "renewalFieldsContainer"
+        );
+        const renewalDuration = document.getElementById("renewalDuration");
+        const coinsNeeded = document.getElementById("coinsNeeded");
+
+        renewalFieldsContainer.classList.remove("show");
+        renewalDuration.required = false;
+        coinsNeeded.required = false;
+      });
+
+      // Toggle spec type
+      document.querySelectorAll('input[name="specType"]').forEach((radio) => {
+        radio.addEventListener("change", function () {
+          if (this.value === "same") {
+            document.getElementById("sameSpecsContainer").style.display =
+              "block";
+            document.getElementById("differentSpecsContainer").style.display =
+              "none";
+          } else {
+            document.getElementById("sameSpecsContainer").style.display =
+              "none";
+            document.getElementById("differentSpecsContainer").style.display =
+              "block";
+            updatePlanSelect();
+          }
+          debouncedUpdatePreview();
+        });
+      });
+
+      // Update plan select dropdown
+      function updatePlanSelect() {
+        const planSelect = document.getElementById("planSelect");
+        const currentSelected = planSelect.value;
+
+        // Get all plans from input
+        const plansInput = document.getElementById("plans").value.trim();
+        allPlans = plansInput
+          .split(",")
+          .map((name) => name.trim())
+          .filter((name) => name);
+
+        // Clear existing options except first
+        while (planSelect.options.length > 1) {
+          planSelect.remove(1);
+        }
+
+        // Add available plans (not already added)
+        allPlans.forEach((plan) => {
+          if (!addedPlans.has(plan)) {
+            const option = document.createElement("option");
+            option.value = plan;
+            option.textContent = plan;
+            planSelect.appendChild(option);
+          }
+        });
+
+        // Update other plans checkbox text
+        updateOtherPlansText();
+      }
+
+      // Update other plans text
+      function updateOtherPlansText() {
+        const otherPlans = allPlans.filter((plan) => !addedPlans.has(plan));
+        const checkboxLabel = document.querySelector(
+          'label[for="otherPlansCheckbox"] span'
+        );
+
+        if (otherPlans.length > 0) {
+          checkboxLabel.textContent = `All other plans (${otherPlans.join(
+            ", "
+          )}) share the same specs`;
+          document.getElementById("otherPlansCheckbox").disabled = false;
+        } else {
+          checkboxLabel.textContent =
+            "All other plans not listed above share the same specs";
+          document.getElementById("otherPlansCheckbox").disabled = true;
+          document.getElementById("otherPlansCheckbox").checked = false;
+        }
+      }
+
+      // Add plan button click
+      document
+        .getElementById("addPlanButton")
+        .addEventListener("click", function () {
+          const planSelect = document.getElementById("planSelect");
+          const selectedPlan = planSelect.value;
+
+          if (!selectedPlan) {
+            showCopyNotification("Please select a plan first!", true);
+            return;
+          }
+
+          addPlanCard(selectedPlan);
+          addedPlans.add(selectedPlan);
+
+          // Clear selection and update dropdown
+          planSelect.value = "";
+          updatePlanSelect();
+
+          showCopyNotification(`Added ${selectedPlan} spec card`, false);
+          debouncedUpdatePreview();
+        });
+
+      // Add plan card
+      function addPlanCard(planName) {
+        const container = document.getElementById("specPlans");
+        const planCard = document.createElement("div");
+        planCard.className = "spec-plan-card";
+        planCard.setAttribute("data-plan-name", planName);
+
+        planCard.innerHTML = `
+        <div class="spec-plan-header">
+          <div style="flex: 1;">
+            <label class="form-label" style="margin-bottom: var(--space-sm);">
+              <i class="fa-solid fa-tag"></i>
+              Plan Name
+            </label>
+            <input type="text" class="form-input spec-plan-name-input" 
+                   value="${planName}" 
+                   data-original-name="${planName}">
+            <div class="plan-list">Plan from: ${planName}</div>
+          </div>
+          <button type="button" class="btn-remove remove-plan">
+            <i class="fa-solid fa-trash"></i> Remove
+          </button>
+        </div>
+        <div class="spec-grid">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa-solid fa-memory"></i>
+              RAM
+            </label>
+            <input type="text" class="form-input plan-ram" placeholder="e.g., 4GB">
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa-solid fa-microchip"></i>
+              CPU
+            </label>
+            <input type="text" class="form-input plan-cpu" placeholder="e.g., 2 vCores">
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fa-solid fa-hard-drive"></i>
+              Disk
+            </label>
+            <input type="text" class="form-input plan-disk" placeholder="e.g., 40GB SSD">
+          </div>
+        </div>
+      `;
+
+        container.appendChild(planCard);
+
+        // Add event listeners for live preview
+        const inputs = planCard.querySelectorAll("input");
+        inputs.forEach((input) => {
+          input.addEventListener("input", () => debouncedUpdatePreview());
+        });
+
+        // Add event listener for plan name editing
+        const nameInput = planCard.querySelector(".spec-plan-name-input");
+        nameInput.addEventListener("input", function () {
+          const originalName = this.getAttribute("data-original-name");
+          const newName = this.value.trim();
+          const planList = this.parentElement.querySelector(".plan-list");
+
+          if (newName && newName !== originalName) {
+            planList.textContent = `Originally: ${originalName}`;
+            this.style.color = "#ff9800";
+          } else {
+            planList.textContent = `Plan from: ${originalName}`;
+            this.style.color = "";
+          }
+          debouncedUpdatePreview();
+        });
+
+        // Add event listener for remove button
+        const removeButton = planCard.querySelector(".remove-plan");
+        removeButton.addEventListener("click", function () {
+          const card = this.closest(".spec-plan-card");
+          const planName = card.getAttribute("data-plan-name");
+          addedPlans.delete(planName);
+          card.remove();
+          updatePlanSelect();
+          showCopyNotification(`Removed ${planName} spec card`, false);
+          debouncedUpdatePreview();
+        });
+      }
+
+      // Plans input change listener
+      document.getElementById("plans").addEventListener("input", function () {
+        if (
+          document.querySelector('input[name="specType"]:checked').value ===
+          "different"
+        ) {
+          updatePlanSelect();
+
+          // Update existing spec cards if their original plan no longer exists
+          const specCards = document.querySelectorAll(".spec-plan-card");
+          specCards.forEach((card) => {
+            const originalName = card
+              .querySelector(".spec-plan-name-input")
+              ?.getAttribute("data-original-name");
+            if (originalName && !allPlans.includes(originalName)) {
+              const planList = card.querySelector(".plan-list");
+              planList.textContent = `Plan removed from list`;
+              planList.style.color = "#ef4444";
+            }
+          });
+        }
+        debouncedUpdatePreview();
+      });
+
+      // Other plans checkbox change
+      document
+        .getElementById("otherPlansCheckbox")
+        .addEventListener("change", function () {
+          const container = document.getElementById("specPlans");
+          const otherPlansCard = container.querySelector(".other-plans-card");
+
+          if (this.checked) {
+            if (!otherPlansCard) {
+              const otherPlans = allPlans.filter(
+                (plan) => !addedPlans.has(plan)
+              );
+              if (otherPlans.length > 0) {
+                const otherCard = document.createElement("div");
+                otherCard.className = "spec-plan-card other-plans-card";
+                otherCard.innerHTML = `
+              <div class="spec-plan-header">
+                <div style="flex: 1;">
+                  <label class="form-label" style="margin-bottom: var(--space-sm);">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span class="spec-plan-name">All Other Plans</span>
+                  </label>
+                  <div class="plan-list">Includes: ${otherPlans.join(
+                    ", "
+                  )}</div>
+                </div>
+              </div>
+              <div class="spec-grid">
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="fa-solid fa-memory"></i>
+                    RAM
+                  </label>
+                  <input type="text" class="form-input plan-ram" placeholder="e.g., 4GB">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="fa-solid fa-microchip"></i>
+                    CPU
+                  </label>
+                  <input type="text" class="form-input plan-cpu" placeholder="e.g., 2 vCores">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    <i class="fa-solid fa-hard-drive"></i>
+                    Disk
+                  </label>
+                  <input type="text" class="form-input plan-disk" placeholder="e.g., 40GB SSD">
+                </div>
+              </div>
+            `;
+                container.appendChild(otherCard);
+
+                // Add event listeners for live preview
+                const inputs = otherCard.querySelectorAll("input");
+                inputs.forEach((input) => {
+                  input.addEventListener("input", () =>
+                    debouncedUpdatePreview()
+                  );
+                });
+              }
+            }
+          } else {
+            if (otherPlansCard) {
+              otherPlansCard.remove();
+            }
+          }
+          debouncedUpdatePreview();
+        });
+
+      // Update both previews
+      function updatePreview() {
+        const hostName = document.getElementById("hostName").value.trim();
+        const plans = document.getElementById("plans").value.trim();
+        const targets = document.getElementById("targets").value.trim();
+        const locales = document.getElementById("locales").value.trim();
+        const tosLink = document.getElementById("tosLink").value.trim();
+        const privacyLink = document.getElementById("privacyLink").value.trim();
+        const planLink = document.getElementById("planLink").value.trim();
+        const websiteLink = document.getElementById("websiteLink").value.trim();
+        const discordLink = document.getElementById("discordLink").value.trim();
+        const otherLinks = document.getElementById("otherLinks").value.trim();
+        const renewalStatus = document.getElementById("renewalStatus").value;
+        const renewalDuration = document
+          .getElementById("renewalDuration")
+          .value.trim();
+        const coinsNeeded = document.getElementById("coinsNeeded").value.trim();
+        const notes = document.getElementById("notes").value.trim();
+        const checkToS = document.getElementById("checkToS").checked;
+        const checkPrivacy = document.getElementById("checkPrivacy").checked;
+
+        // Check if all required fields are filled
+        const allRequiredFilled = checkAllRequiredFields();
+        document.getElementById("copyButton").disabled = !allRequiredFilled;
+
+        // Build the raw text message preview
+        let rawText =
+          "============================================================\n";
+        rawText += "📌 Host Submission\n";
+        rawText += "**Host Name**\n";
+        rawText += `> ${hostName || "[Host Name]"}\n`;
+        rawText += "**Plans**\n";
+        rawText += `> ${plans || "[Plans]"}\n`;
+        rawText += "**Targets**\n";
+        rawText += `> ${targets || "[Targets]"}\n`;
+        rawText += "**Locales / Languages**\n";
+        rawText += `> ${locales || "[Locales]"}\n`;
+        rawText +=
+          "------------------------------------------------------------\n";
+
+        // Specs section
+        const specType = document.querySelector(
+          'input[name="specType"]:checked'
+        ).value;
+
+        rawText += "🧩 Specifications\n";
+        if (specType === "same") {
+          const ram = document.getElementById("sameRam").value.trim();
+          const cpu = document.getElementById("sameCpu").value.trim();
+          const disk = document.getElementById("sameDisk").value.trim();
+
+          if (ram || cpu || disk) {
+            if (ram) rawText += `• RAM: ${ram}\n`;
+            if (cpu) rawText += `• CPU: ${cpu}\n`;
+            if (disk) rawText += `• Disk: ${disk}\n`;
+          } else {
+            rawText += "• [Specs will appear here]\n";
+          }
+        } else {
+          const specCards = document.querySelectorAll(
+            ".spec-plan-card:not(.other-plans-card)"
+          );
+          const otherPlansCard = document.querySelector(".other-plans-card");
+
+          if (specCards.length === 0 && !otherPlansCard) {
+            rawText += '• [Add plans using the "Add Plan" button above]\n';
+          } else {
+            specCards.forEach((card) => {
+              const planName =
+                card.querySelector(".spec-plan-name-input").value.trim() ||
+                card.getAttribute("data-plan-name");
+              const ram = card.querySelector(".plan-ram").value.trim();
+              const cpu = card.querySelector(".plan-cpu").value.trim();
+              const disk = card.querySelector(".plan-disk").value.trim();
+
+              if (planName) {
+                rawText += `**${planName}:**\n`;
+                if (ram) rawText += `• RAM: ${ram}\n`;
+                if (cpu) rawText += `• CPU: ${cpu}\n`;
+                if (disk) rawText += `• Disk: ${disk}\n`;
+              }
+            });
+
+            // Other plans specs
+            if (otherPlansCard) {
+              const ram = otherPlansCard
+                .querySelector(".plan-ram")
+                .value.trim();
+              const cpu = otherPlansCard
+                .querySelector(".plan-cpu")
+                .value.trim();
+              const disk = otherPlansCard
+                .querySelector(".plan-disk")
+                .value.trim();
+              const otherPlans = allPlans.filter(
+                (plan) => !addedPlans.has(plan)
+              );
+
+              if (otherPlans.length > 0) {
+                rawText += `**All Other Plans (${otherPlans.join(", ")}):**\n`;
+                if (ram) rawText += `• RAM: ${ram}\n`;
+                if (cpu) rawText += `• CPU: ${cpu}\n`;
+                if (disk) rawText += `• Disk: ${disk}\n`;
+              }
+            }
+          }
+        }
+
+        rawText +=
+          "------------------------------------------------------------\n\n";
+        rawText += "🔗 Links\n";
+        rawText += `**ToS:** ${tosLink || "[ToS Link]"}\n`;
+        rawText += `**Privacy Policy:** ${
+          privacyLink || "[Privacy Policy Link]"
+        }\n`;
+        if (planLink) rawText += `**Plan Link:** ${planLink}\n`;
+        if (websiteLink) rawText += `**Website Link:** ${websiteLink}\n`;
+        if (discordLink) rawText += `**Discord Invite:** ${discordLink}\n`;
+
+        if (otherLinks) {
+          const links = otherLinks.split("\n").filter((l) => l.trim());
+          links.forEach((link) => {
+            rawText += `${link}\n`;
+          });
+        }
+
+        rawText +=
+          "------------------------------------------------------------\n";
+        rawText += "📄 Information\n";
+
+        // Handle renewal status display
+        let renewalStatusDisplay = "[Select an option]";
+        if (renewalStatus === "yes") {
+          renewalStatusDisplay = "YES";
+        } else if (renewalStatus === "no") {
+          renewalStatusDisplay = "NO";
+        }
+        rawText += `• Renewal Required: ${renewalStatusDisplay}\n`;
+
+        // Add renewal details only if renewal is required
+        if (renewalStatus === "yes") {
+          if (renewalDuration)
+            rawText += `• Renewal Duration: ${renewalDuration}\n`;
+          if (coinsNeeded) rawText += `• Coins Needed: ${coinsNeeded}\n`;
+        }
+
+        if (notes) rawText += `• Notes: ${notes}\n`;
+
+        rawText +=
+          "------------------------------------------------------------\n";
+        rawText += "☑️ Verification\n";
+        rawText += `[${checkToS ? "✔" : " "}] I have included the ToS\n`;
+        rawText += `[${
+          checkPrivacy ? "✔" : " "
+        }] I have included the Privacy Policy\n`;
+
+        // Update raw text preview
+        document.getElementById("messagePreview").textContent = rawText;
+
+        // Update Discord preview
+        updateDiscordPreview(
+          hostName,
+          plans,
+          targets,
+          locales,
+          tosLink,
+          privacyLink,
+          planLink,
+          websiteLink,
+          discordLink,
+          otherLinks,
+          renewalStatus,
+          renewalDuration,
+          coinsNeeded,
+          notes,
+          checkToS,
+          checkPrivacy
+        );
+      }
+
+      // Check all required fields
+      function checkAllRequiredFields() {
+        const requiredFields = [
+          "hostName",
+          "plans",
+          "targets",
+          "locales",
+          "tosLink",
+          "privacyLink",
+          "renewalStatus",
+        ];
+
+        // Check basic required fields
+        for (const fieldId of requiredFields) {
+          const field = document.getElementById(fieldId);
+          if (!field.value.trim()) {
+            return false;
+          }
+        }
+
+        // Check renewal fields if renewal is required
+        const renewalStatus = document.getElementById("renewalStatus").value;
+        if (renewalStatus === "yes") {
+          const renewalDuration = document
+            .getElementById("renewalDuration")
+            .value.trim();
+          const coinsNeeded = document
+            .getElementById("coinsNeeded")
+            .value.trim();
+
+          if (!renewalDuration || !coinsNeeded) {
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      // Update Discord preview
+      function updateDiscordPreview(
+        hostName,
+        plans,
+        targets,
+        locales,
+        tosLink,
+        privacyLink,
+        planLink,
+        websiteLink,
+        discordLink,
+        otherLinks,
+        renewalStatus,
+        renewalDuration,
+        coinsNeeded,
+        notes,
+        checkToS,
+        checkPrivacy
+      ) {
+        const previewContainer = document.getElementById("discordPreview");
+        const messageContent = previewContainer.querySelector(
+          ".discord-message-text"
+        );
+
+        if (!messageContent) return;
+
+        let html = "";
+
+        // Title
+        html += `<span class="discord-emoji">📌</span> <span class="discord-bold">Host Submission</span><br>`;
+        html += `<br>`;
+
+        // Basic info
+        html += `<span class="discord-bold">Host Name</span><br>`;
+        html += `<div class="discord-blockquote">${
+          hostName || "[Host Name]"
+        }</div>`;
+        html += `<span class="discord-bold">Plans</span><br>`;
+        html += `<div class="discord-blockquote">${plans || "[Plans]"}</div>`;
+        html += `<span class="discord-bold">Targets</span><br>`;
+        html += `<div class="discord-blockquote">${
+          targets || "[Targets]"
+        }</div>`;
+        html += `<span class="discord-bold">Locales / Languages</span><br>`;
+        html += `<div class="discord-blockquote">${
+          locales || "[Locales]"
+        }</div>`;
+        html += `<div class="discord-divider"></div>`;
+
+        // Specs
+        html += `<span class="discord-emoji">🧩</span> <span class="discord-bold">Specifications</span><br>`;
+
+        const specType = document.querySelector(
+          'input[name="specType"]:checked'
+        ).value;
+        if (specType === "same") {
+          const ram = document.getElementById("sameRam").value.trim();
+          const cpu = document.getElementById("sameCpu").value.trim();
+          const disk = document.getElementById("sameDisk").value.trim();
+
+          if (ram || cpu || disk) {
+            if (ram) html += `• RAM: ${ram}<br>`;
+            if (cpu) html += `• CPU: ${cpu}<br>`;
+            if (disk) html += `• Disk: ${disk}<br>`;
+          } else {
+            html += `• [Specs will appear here]<br>`;
+          }
+        } else {
+          const specCards = document.querySelectorAll(
+            ".spec-plan-card:not(.other-plans-card)"
+          );
+          const otherPlansCard = document.querySelector(".other-plans-card");
+
+          if (specCards.length === 0 && !otherPlansCard) {
+            html += `• [Add plans using the "Add Plan" button above]<br>`;
+          } else {
+            specCards.forEach((card) => {
+              const planName =
+                card.querySelector(".spec-plan-name-input").value.trim() ||
+                card.getAttribute("data-plan-name");
+              const ram = card.querySelector(".plan-ram").value.trim();
+              const cpu = card.querySelector(".plan-cpu").value.trim();
+              const disk = card.querySelector(".plan-disk").value.trim();
+
+              if (planName) {
+                html += `<span class="discord-bold">${planName}:</span><br>`;
+                if (ram) html += `• RAM: ${ram}<br>`;
+                if (cpu) html += `• CPU: ${cpu}<br>`;
+                if (disk) html += `• Disk: ${disk}<br>`;
+              }
+            });
+
+            // Other plans specs
+            if (otherPlansCard) {
+              const ram = otherPlansCard
+                .querySelector(".plan-ram")
+                .value.trim();
+              const cpu = otherPlansCard
+                .querySelector(".plan-cpu")
+                .value.trim();
+              const disk = otherPlansCard
+                .querySelector(".plan-disk")
+                .value.trim();
+              const otherPlans = allPlans.filter(
+                (plan) => !addedPlans.has(plan)
+              );
+
+              if (otherPlans.length > 0) {
+                html += `<span class="discord-bold">All Other Plans (${otherPlans.join(
+                  ", "
+                )}):</span><br>`;
+                if (ram) html += `• RAM: ${ram}<br>`;
+                if (cpu) html += `• CPU: ${cpu}<br>`;
+                if (disk) html += `• Disk: ${disk}<br>`;
+              }
+            }
+          }
+        }
+
+        html += `<div class="discord-divider"></div>`;
+        html += `<br>`;
+
+        // Links
+        html += `<span class="discord-emoji">🔗</span> <span class="discord-bold">Links</span><br>`;
+        html += `<span class="discord-bold">ToS:</span> ${
+          tosLink || "[ToS Link]"
+        }<br>`;
+        html += `<span class="discord-bold">Privacy Policy:</span> ${
+          privacyLink || "[Privacy Policy Link]"
+        }<br>`;
+        if (planLink)
+          html += `<span class="discord-bold">Plan Link:</span> ${planLink}<br>`;
+        if (websiteLink)
+          html += `<span class="discord-bold">Website Link:</span> ${websiteLink}<br>`;
+        if (discordLink)
+          html += `<span class="discord-bold">Discord Invite:</span> ${discordLink}<br>`;
+
+        if (otherLinks) {
+          const links = otherLinks.split("\n").filter((l) => l.trim());
+          links.forEach((link) => {
+            html += `${link}<br>`;
+          });
+        }
+
+        html += `<br>`;
+        html += `<div class="discord-divider"></div>`;
+
+        // Information
+        html += `<span class="discord-emoji">📄</span> <span class="discord-bold">Information</span><br>`;
+
+        // Handle renewal status display
+        let renewalStatusDisplay = "[Select an option]";
+        if (renewalStatus === "yes") {
+          renewalStatusDisplay = "YES";
+        } else if (renewalStatus === "no") {
+          renewalStatusDisplay = "NO";
+        }
+        html += `• Renewal Required: ${renewalStatusDisplay}<br>`;
+
+        // Renewal details (hidden by default) - only show if renewal is required
+        if (renewalStatus === "yes") {
+          let renewalDetails = "";
+          if (renewalDuration)
+            renewalDetails += `• Renewal Duration: ${renewalDuration}<br>`;
+          if (coinsNeeded)
+            renewalDetails += `• Coins Needed: ${coinsNeeded}<br>`;
+
+          html += `<div class="discord-renewal-toggle" onclick="toggleRenewalDetails(this)">[Click to show renewal details]</div>`;
+          html += `<div class="discord-renewal-content">`;
+          html += `This host requires renewal<br>`;
+          if (renewalDuration)
+            html += `• Renewal Duration: ${renewalDuration}<br>`;
+          if (coinsNeeded) html += `• Coins Needed: ${coinsNeeded}<br>`;
+          html += `</div>`;
+        }
+
+        if (notes) html += `• Notes: ${notes}<br>`;
+
+        html += `<br>`;
+        html += `<div class="discord-divider"></div>`;
+
+        // Verification
+        html += `<span class="discord-emoji">☑️</span> <span class="discord-bold">Verification</span><br>`;
+        html += `<span class="discord-checkbox ${checkToS ? "checked" : ""}">${
+          checkToS ? "✓" : ""
+        }</span> I have included the ToS<br>`;
+        html += `<span class="discord-checkbox ${
+          checkPrivacy ? "checked" : ""
+        }">${
+          checkPrivacy ? "✓" : ""
+        }</span> I have included the Privacy Policy<br>`;
+
+        messageContent.innerHTML = html;
+
+        // Show missing required fields warning
+        const missingFields = getMissingRequiredFields();
+        if (missingFields.length > 0) {
+          const warningDiv = document.createElement("div");
+          warningDiv.className = "discord-blockquote";
+          warningDiv.style.color = "#faa81a";
+          warningDiv.style.marginTop = "16px";
+          warningDiv.innerHTML = `⚠️ <span class="discord-bold">Missing required fields:</span> ${missingFields.join(
+            ", "
+          )}`;
+          messageContent.appendChild(warningDiv);
+        }
+      }
+
+      // Get missing required fields
+      function getMissingRequiredFields() {
+        const missingFields = [];
+
+        // Check basic required fields
+        if (!document.getElementById("hostName").value.trim())
+          missingFields.push("Host Name");
+        if (!document.getElementById("plans").value.trim())
+          missingFields.push("Plans");
+        if (!document.getElementById("targets").value.trim())
+          missingFields.push("Targets");
+        if (!document.getElementById("locales").value.trim())
+          missingFields.push("Locales");
+        if (!document.getElementById("tosLink").value.trim())
+          missingFields.push("ToS Link");
+        if (!document.getElementById("privacyLink").value.trim())
+          missingFields.push("Privacy Policy Link");
+
+        // Check renewal status
+        const renewalStatus = document.getElementById("renewalStatus").value;
+        if (!renewalStatus) {
+          missingFields.push("Renewal Required");
+        } else if (renewalStatus === "yes") {
+          if (!document.getElementById("renewalDuration").value.trim())
+            missingFields.push("Renewal Duration");
+          if (!document.getElementById("coinsNeeded").value.trim())
+            missingFields.push("Coins Needed");
+        }
+
+        return missingFields;
+      }
+
+      // Debounced update preview function
+      function debouncedUpdatePreview() {
+        if (updateTimeout) {
+          clearTimeout(updateTimeout);
+        }
+
+        updateTimeout = setTimeout(() => {
+          updatePreview();
+        }, 300);
+      }
+
+      // Set up event listeners for all form inputs
+      const formInputs = document.querySelectorAll(
+        "#layoutBuilderForm input, #layoutBuilderForm textarea, #layoutBuilderForm select"
+      );
+      formInputs.forEach((input) => {
+        input.addEventListener("input", debouncedUpdatePreview);
+        input.addEventListener("change", debouncedUpdatePreview);
+      });
+
+      // Set up event listeners for checkboxes and radios
+      const checkboxes = document.querySelectorAll(
+        '#layoutBuilderForm input[type="checkbox"], #layoutBuilderForm input[type="radio"]'
+      );
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", debouncedUpdatePreview);
+      });
+
+      // Copy layout button
+      document
+        .getElementById("copyButton")
+        .addEventListener("click", function () {
+          if (this.disabled) {
+            showCopyNotification(
+              "Please fill in all required fields first!",
+              true
+            );
+            return;
+          }
+
+          const layoutText =
+            document.getElementById("messagePreview").textContent;
+
+          if (!layoutText || layoutText.includes("Fill in the form")) {
+            showCopyNotification("Fill in some fields first!", true);
+            return;
+          }
+
+          navigator.clipboard
+            .writeText(layoutText)
+            .then(() => {
+              showCopyNotification("Message copied to clipboard!", false);
+            })
+            .catch((err) => {
+              showCopyNotification("Failed to copy", true);
+            });
+        });
+
+      // Show notification
+      function showCopyNotification(message, isError = false) {
+        const existingNotification =
+          document.querySelector(".copy-notification");
+        if (existingNotification) {
+          existingNotification.remove();
+        }
+
+        const notification = document.createElement("div");
+        notification.className =
+          "copy-notification " + (isError ? "error" : "success");
+
+        const icon = document.createElement("i");
+        icon.className = isError
+          ? "fa-solid fa-circle-exclamation"
+          : "fa-solid fa-circle-check";
+
+        const text = document.createElement("span");
+        text.textContent = message;
+
+        notification.appendChild(icon);
+        notification.appendChild(text);
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.classList.add("show");
+        }, 10);
+
+        setTimeout(() => {
+          notification.classList.remove("show");
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 300);
+        }, 2500);
+      }
+
+      // Form reset
+      document
+        .getElementById("layoutBuilderForm")
+        .addEventListener("reset", function () {
+          document.getElementById("messagePreview").textContent =
+            "Fill in the form to see the message preview here...";
+          document.getElementById("copyButton").disabled = true;
+
+          const previewContainer = document.getElementById("discordPreview");
+          const messageContent = previewContainer.querySelector(
+            ".discord-message-text"
+          );
+
+          if (messageContent) {
+            messageContent.innerHTML = `
+          <span class="discord-emoji">📌</span> <span class="discord-bold">Host Submission</span><br>
+          <br>
+          <span class="discord-bold">Host Name</span><br>
+          <div class="discord-blockquote">[Host Name]</div>
+          <span class="discord-bold">Plans</span><br>
+          <div class="discord-blockquote">[Plans]</div>
+          <span class="discord-bold">Targets</span><br>
+          <div class="discord-blockquote">[Targets]</div>
+          <span class="discord-bold">Locales / Languages</span><br>
+          <div class="discord-blockquote">[Locales]</div>
+          <div class="discord-divider"></div>
+          <span class="discord-emoji">🧩</span> <span class="discord-bold">Specifications</span><br>
+          • [Specs will appear here]<br>
+          <div class="discord-divider"></div>
+          <br>
+          <span class="discord-emoji">🔗</span> <span class="discord-bold">Links</span><br>
+          <span class="discord-bold">ToS:</span> [ToS Link]<br>
+          <span class="discord-bold">Privacy Policy:</span> [Privacy Policy Link]<br>
+          <br>
+          <div class="discord-divider"></div>
+          <span class="discord-emoji">📄</span> <span class="discord-bold">Information</span><br>
+          • Renewal Required: [Select an option]<br>
+          <div class="discord-renewal-toggle" onclick="toggleRenewalDetails(this)">[Click to show renewal details]</div>
+          <div class="discord-renewal-content">
+            This host requires renewal<br>
+          </div>
+          <br>
+          <div class="discord-divider"></div>
+          <span class="discord-emoji">☑️</span> <span class="discord-bold">Verification</span><br>
+          <span class="discord-checkbox checked">✓</span> I have included the ToS<br>
+          <span class="discord-checkbox checked">✓</span> I have included the Privacy Policy<br>
+        `;
+          }
+
+          document.getElementById("differentSpecsContainer").style.display =
+            "none";
+          document.getElementById("sameSpecsContainer").style.display = "block";
+
+          // Clear added plans
+          addedPlans.clear();
+          document.getElementById("specPlans").innerHTML = "";
+          document.getElementById("otherPlansCheckbox").checked = false;
+          updatePlanSelect();
+
+          // Reset renewal fields
+          const renewalFieldsContainer = document.getElementById(
+            "renewalFieldsContainer"
+          );
+          renewalFieldsContainer.classList.remove("show");
+          document.getElementById("renewalDuration").required = false;
+          document.getElementById("coinsNeeded").required = false;
+        });
+
+      // Initialize the form and start live preview
+      updatePlanSelect();
+      updatePreview();
+    </script>
+  </body>
+</html>
+  

@@ -1,0 +1,208 @@
+name: Update Sitemap
+
+on:
+  schedule:
+    - cron: '0 2 * * 1' # Weekly on Monday at 2 AM UTC
+  workflow_dispatch:
+
+jobs:
+  update-sitemap:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout website branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: website
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Generate and update sitemap & robots.txt
+        run: |
+          cat <<'JS' > generate-sitemap.js
+          const https = require('https');
+          const fs = require('fs');
+          const path = require('path');
+
+          const SITE_URL = 'https://freehosts.space';
+          const API_URL = 'https://api.freehosts.space';
+
+          function fetchHosts() {
+            return new Promise((resolve, reject) => {
+              https.get(API_URL + '/api/hosts?limit=500', (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                  try {
+                    const jsonData = JSON.parse(data);
+                    resolve(jsonData.data || []);
+                  } catch (e) {
+                    reject(e);
+                  }
+                });
+              }).on('error', reject);
+            });
+          }
+
+          // Recursively find all .html files (skip common ignored dirs)
+          function findHtmlFiles(dir) {
+            let results = [];
+            let list;
+            try {
+              list = fs.readdirSync(dir);
+            } catch (e) {
+              return results;
+            }
+            for (const file of list) {
+              const filePath = path.join(dir, file);
+              let stat;
+              try {
+                stat = fs.statSync(filePath);
+              } catch (e) {
+                continue;
+              }
+              if (stat.isDirectory()) {
+                const skip = ['node_modules', '.git', 'api', 'admin', 'private', '_includes', '_layouts', 'partials'];
+                if (!skip.includes(file)) {
+                  results = results.concat(findHtmlFiles(filePath));
+                }
+              } else if (file.toLowerCase().endsWith('.html')) {
+                results.push(filePath);
+              }
+            }
+            return results;
+          }
+
+          function generateSitemap(hosts) {
+            const today = new Date().toISOString().split('T')[0];
+
+            // Get relative, normalized paths
+            const htmlFiles = findHtmlFiles('.')
+              .map(f => path.relative(process.cwd(), f).replace(/\\/g, '/'));
+
+            const urlSet = new Set();
+
+            htmlFiles.forEach(rel => {
+              // Convert index.html -> '/', other .html -> '/path'
+              let urlPath = '/' + rel.replace(/index\.html$/i, '').replace(/\.html$/i, '');
+              // Normalize repeated slashes and trailing slash rules
+              urlPath = urlPath.replace(/\/+/g, '/');
+              if (urlPath !== '/' && urlPath.endsWith('/')) {
+                urlPath = urlPath.slice(0, -1); // drop trailing slash for pretty URLs
+              }
+              if (urlPath === '') urlPath = '/';
+              urlSet.add(urlPath);
+            });
+
+            // Add host-specific URLs from API
+            hosts.forEach(host => {
+              if (host && host.id !== undefined && host.id !== null) {
+                urlSet.add(`/hosts?id=${host.id}`);
+              }
+            });
+
+            // Build sitemap XML
+            let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+                          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+            for (const p of Array.from(urlSet).sort()) {
+              sitemap += `  <url>\n` +
+                         `    <loc>${SITE_URL}${p}</loc>\n` +
+                         `    <lastmod>${today}</lastmod>\n` +
+                         `    <changefreq>weekly</changefreq>\n` +
+                         `    <priority>0.8</priority>\n` +
+                         `  </url>\n`;
+            }
+
+            sitemap += '</urlset>\n';
+            return sitemap;
+          }
+
+          function generateRobotsTxt() {
+            return [
+              'User-agent: *',
+              'Allow: /',
+              '',
+              '# Block API endpoints and admin pages',
+              'Disallow: /api/',
+              'Disallow: /admin/',
+              'Disallow: /private/',
+              'Disallow: /cgi-bin/',
+              '',
+              `Sitemap: ${SITE_URL}/sitemap.xml`,
+              ''
+            ].join('\n');
+          }
+
+          async function main() {
+            try {
+              console.log('📡 Fetching hosts from API...');
+              const hosts = await fetchHosts();
+              console.log('📝 Found ' + (Array.isArray(hosts) ? hosts.length : 0) + ' hosts');
+
+              const sitemap = generateSitemap(Array.isArray(hosts) ? hosts : []);
+              const robots = generateRobotsTxt();
+
+              let currentSitemap = '';
+              let currentRobots = '';
+
+              try { currentSitemap = fs.readFileSync('public/sitemap.xml', 'utf8'); } catch {}
+              try { currentRobots = fs.readFileSync('public/robots.txt', 'utf8'); } catch {}
+
+              let changesMade = false;
+
+              if (currentSitemap !== sitemap) {
+                fs.writeFileSync('sitemap.xml', sitemap);
+                console.log('✅ Sitemap updated');
+                changesMade = true;
+              } else {
+                console.log('ℹ️ Sitemap unchanged');
+              }
+
+              if (currentRobots !== robots) {
+                fs.writeFileSync('robots.txt', robots);
+                console.log('✅ Robots.txt updated');
+                changesMade = true;
+              } else {
+                console.log('ℹ️ Robots.txt unchanged');
+              }
+
+              if (!changesMade) {
+                console.log('🚫 No changes detected');
+              }
+            } catch (err) {
+              console.error('❌ Error:', err && err.message ? err.message : err);
+              process.exit(1);
+            }
+          }
+
+          main();
+          JS
+
+          # Run the script
+          node generate-sitemap.js
+
+          # Remove the temporary script so it won't be staged/committed
+          rm -f generate-sitemap.js
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git add -A
+          if git diff --staged --quiet; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push if changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "🤖 Auto-update: Sitemap & robots.txt $(date +'%Y-%m-%d')"
+          git push origin website

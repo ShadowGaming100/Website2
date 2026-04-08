@@ -1,4 +1,4 @@
-
+/* Reset and Base Styles */
 *,
 .feature-card h3,
 .staff-body h3 {
@@ -137,7 +137,7 @@ main {
     border: 0
 }
 
-
+/* Header Styles */
 .site-header {
     position: sticky;
     top: 0;
@@ -185,7 +185,7 @@ main {
     gap: var(--space-sm)
 }
 
-
+/* Desktop Navigation Styles */
 .nav-item {
     position: relative;
 }
@@ -215,7 +215,7 @@ main {
     transform: translateY(-1px);
 }
 
-
+/* Dropdown Arrow Styles - FIXED */
 .dropdown-arrow {
     margin-left: var(--space-xs);
     font-size: 0.65rem;
@@ -227,7 +227,7 @@ main {
     transform: rotate(180deg);
 }
 
-
+/* Dropdown Menu Styles */
 .dropdown-menu {
     position: absolute;
     top: 100%;
@@ -352,7 +352,7 @@ main {
     width: 100%
 }
 
-
+/* Sidebar Styles */
 .blobs,
 .overlay {
     inset: 0;
@@ -448,7 +448,7 @@ html[data-theme=light] .sidebar {
     text-align: center;
 }
 
-
+/* Sidebar Dropdown Styles */
 .sidebar-dropdown {
     display: flex;
     flex-direction: column;
@@ -531,7 +531,7 @@ html[data-theme=light] .sidebar {
     padding-top: var(--space-lg)
 }
 
-
+/* Hero Section */
 .hero {
     padding: var(--space-2xl) 0;
     position: relative
@@ -649,7 +649,7 @@ html[data-theme=light] .sidebar {
     color: var(--muted)
 }
 
-
+/* Discord Widget */
 .discord-widget {
     margin-top: var(--space-lg);
     max-width: 420px;
@@ -704,7 +704,7 @@ html[data-theme=light] .sidebar {
     color: var(--accent)
 }
 
-
+/* Terminal Animation */
 .terminal-body,
 .terminal-title {
     font-family: 'Courier New', monospace
@@ -933,7 +933,7 @@ html[data-theme=light] .sidebar {
     color: #ffbd2e
 }
 
-
+/* Sections */
 .section {
     padding: var(--space-2xl) 0
 }
@@ -987,7 +987,7 @@ html[data-theme=light] .sidebar {
     margin: 0
 }
 
-
+/* Footer Styles */
 .site-footer {
     padding: var(--space-2xl) 0 var(--space-lg);
     border-top: 1px solid var(--border);
@@ -1126,7 +1126,7 @@ html[data-theme=light] .sidebar {
     color: var(--border);
 }
 
-
+/* Preview Card */
 .preview-card,
 .staff-card {
     border-radius: var(--border-radius)
@@ -1167,7 +1167,7 @@ html[data-theme=light] .sidebar {
     gap: var(--space-sm)
 }
 
-
+/* Staff Page Styles */
 .staff-grid,
 hr {
     margin: var(--space-xl) 0
@@ -1343,7 +1343,7 @@ hr {
     animation-delay: 1s
 }
 
-
+/* Search and Host Listing Styles */
 #sidebarToggle {
     display: none
 }
@@ -1734,7 +1734,7 @@ hr {
     text-align: center
 }
 
-
+/* Modal Styles */
 .modal,
 .modal-header {
     padding: var(--space-lg)
@@ -2138,7 +2138,7 @@ html[data-theme=light] .rating-section {
     margin-bottom: var(--space-md)
 }
 
-
+/* Mobile Responsiveness */
 @media (max-width:1024px) {
     .hero-inner {
         flex-direction: column;
@@ -2398,7 +2398,7 @@ html[data-theme=light] .rating-section {
     }
 }
 
-
+/* Accessibility and Preferences */
 @media (-webkit-min-device-pixel-ratio:2),
 (min-resolution:192dpi) {
 

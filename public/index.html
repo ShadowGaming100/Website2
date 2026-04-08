@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>FreeHosts — Free Hosting for Anything You Build</title>
+  <meta name="description"
+    content="Find reliable free hosting for websites, bots, apps, and Discord communities. Join our community directory to discover no-cost hosting solutions." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://freehosts.space/" />
+  <meta name="theme-color" content="#071028" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="FreeHosts" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://freehosts.space/" />
+  <meta property="og:title" content="FreeHosts — Free Hosting for Websites, Bots & Apps" />
+  <meta property="og:description"
+    content="Find reliable free hosting for websites, bots, apps, and Discord communities. Join our community directory to discover no-cost hosting solutions." />
+  <meta property="og:image" content="https://freehosts.space/Src/Images/social-preview.png" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:image:alt" content="FreeHosts — Discover Free Hosting" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="FreeHosts — Free Hosting for Websites, Bots & Apps" />
+  <meta name="twitter:description"
+    content="Find reliable free hosting for websites, bots, apps, and Discord communities. Join our community directory to discover no-cost hosting solutions." />
+  <meta name="twitter:image" content="https://freehosts.space/Src/Images/social-preview.png" />
+  <meta name="twitter:image:alt" content="FreeHosts — Discover Free Hosting" />
+  <meta name="twitter:site" content="@freehosts_" />
+  <meta name="twitter:creator" content="@freehosts_" />
+
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="https://freehosts.space/sitemap.xml" />
+
+  <!-- Stylesheets -->
+  <link rel="preload" href="Src/css/styles.css" as="style" />
+  <link rel="stylesheet" href="https://font-awesome.icons.cdn.codelabworks.is-cool.dev/css/all.css" />
+  <link rel="stylesheet" href="/Src/css/styles.css" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://freehosts.space/#website",
+        "url": "https://freehosts.space/",
+        "name": "FreeHosts",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://freehosts.space/hosts?search={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://freehosts.space/#organization",
+        "name": "FreeHosts",
+        "url": "https://freehosts.space/",
+        "logo": "https://freehosts.space/Src/Images/icon.png",
+        "sameAs": [
+          "https://x.com/freehosts_",
+          "https://www.instagram.com/freehosts/",
+          "https://github.com/freehostsofficial",
+          "https://discord.gg/QbeZ3b5CQd"
+        ],
+        "description": "FreeHosts is a community-curated directory of free hosting providers and services."
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://freehosts.space/#homepage",
+        "url": "https://freehosts.space/",
+        "name": "FreeHosts — Discover Free Hosting",
+        "isPartOf": { "@id": "https://freehosts.space/#website" },
+        "inLanguage": "en",
+        "description": "FreeHosts helps developers, students, and makers discover and compare reliable free hosting for websites, bots, and more."
+      }
+    ]
+  }
+  </script>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <button id="sidebarToggle" class="icon-btn mobile-only" aria-label="Open menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <a class="logo" href="/" aria-label="FreeHosts Home">
+        <i class="fa-solid fa-hands-holding-circle"></i> FreeHosts
+      </a>
+
+      <nav class="nav" role="navigation" aria-label="Main">
+        <div class="nav-item">
+          <a href="hosts" class="nav-link">
+            <i class="fa-solid fa-server"></i> Hosts
+          </a>
+        </div>
+
+        <div class="nav-item">
+          <a href="/#features" class="nav-link">
+            <i class="fa-solid fa-list-check"></i> Features
+          </a>
+        </div>
+
+        <div class="nav-item">
+          <span class="nav-link has-dropdown">
+            <i class="fa-solid fa-upload"></i> Submit Host
+            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+          </span>
+          <div class="dropdown-menu">
+            <a href="submit-host">
+              <i class="fa-solid fa-plus"></i> Submit a Host
+            </a>
+            <a href="submit-layout">
+              <i class="fa-solid fa-pencil"></i> Submit Layout
+            </a>
+            <a href="submission-rules">
+              <i class="fa-solid fa-list-check"></i> Submission Rules
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item">
+          <span class="nav-link has-dropdown">
+            <i class="fa-solid fa-book"></i> Resources
+            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+          </span>
+          <div class="dropdown-menu">
+            <a href="about">
+              <i class="fa-solid fa-circle-info"></i> About
+            </a>
+            <a href="staff">
+              <i class="fa-solid fa-users"></i> Staff
+            </a>
+            <a href="faq">
+              <i class="fa-solid fa-question-circle"></i> FAQ
+            </a>
+            <a href="server-rules">
+              <i class="fa-solid fa-shield"></i> Server Rules
+            </a>
+            <a href="other-free-hosts">
+              <i class="fa-solid fa-link"></i> Other Free Hosts
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item">
+          <span class="nav-link has-dropdown">
+            <i class="fa-solid fa-gavel"></i> Legal
+            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+          </span>
+          <div class="dropdown-menu">
+            <a href="tos">
+              <i class="fa-solid fa-file-contract"></i> Terms of Service
+            </a>
+            <a href="privacy-policy">
+              <i class="fa-solid fa-lock"></i> Privacy Policy
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="actions" id="headerActions">
+        <button data-theme-toggle class="icon-btn" aria-pressed="false" aria-label="Toggle theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <a class="btn primary" id="discordBtn" href="https://discord.gg/QbeZ3b5CQd" target="_blank" rel="noopener">
+          <i class="fa-brands fa-discord"></i> Join Discord
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar" aria-hidden="true">
+    <div class="sidebar-top">
+      <a class="logo" href="/">
+        <i class="fa-solid fa-hands-holding-circle"></i> FreeHosts
+      </a>
+      <button id="sidebarClose" class="icon-btn" aria-label="Close menu">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav" role="navigation">
+      <a href="hosts" class="sidebar-link">
+        <i class="fa-solid fa-server"></i> Hosts
+      </a>
+
+      <a href="/#features" class="sidebar-link">
+        <i class="fa-solid fa-list-check"></i> Features
+      </a>
+
+      <div class="sidebar-dropdown">
+        <button class="sidebar-dropdown-toggle" type="button">
+          <i class="fa-solid fa-upload"></i>
+          <span>Submit Host</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="sidebar-dropdown-menu">
+          <a href="submit-host">
+            <i class="fa-solid fa-plus"></i> Submit a Host
+          </a>
+          <a href="submit-layout">
+            <i class="fa-solid fa-pencil"></i> Submit Layout
+          </a>
+          <a href="submission-rules">
+            <i class="fa-solid fa-list-check"></i> Submission Rules
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-dropdown">
+        <button class="sidebar-dropdown-toggle" type="button">
+          <i class="fa-solid fa-book"></i>
+          <span>Resources</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="sidebar-dropdown-menu">
+          <a href="about">
+            <i class="fa-solid fa-circle-info"></i> About
+          </a>
+          <a href="staff">
+            <i class="fa-solid fa-users"></i> Staff
+          </a>
+          <a href="faq">
+            <i class="fa-solid fa-question-circle"></i> FAQ
+          </a>
+          <a href="server-rules">
+            <i class="fa-solid fa-shield"></i> Server Rules
+          </a>
+          <a href="other-free-hosts">
+            <i class="fa-solid fa-link"></i> Other Free Hosts
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-dropdown">
+        <button class="sidebar-dropdown-toggle" type="button">
+          <i class="fa-solid fa-gavel"></i>
+          <span>Legal</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="sidebar-dropdown-menu">
+          <a href="tos">
+            <i class="fa-solid fa-file-contract"></i> Terms of Service
+          </a>
+          <a href="privacy-policy">
+            <i class="fa-solid fa-lock"></i> Privacy Policy
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a class="btn primary full" id="discordBtnSidebar" href="https://discord.gg/QbeZ3b5CQd" target="_blank"
+        rel="noopener">
+        <i class="fa-brands fa-discord"></i> Join Discord
+      </a>
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay" tabindex="-1" aria-hidden="true"></div>
+
+  <main>
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="blobs" aria-hidden="true">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+      </div>
+
+      <div class="wrap hero-inner">
+        <div class="hero-left">
+          <h1 id="hero-title" class="hero-title">
+            Discover free hosting that just works.
+            <span class="typed-wrap" aria-hidden="true"><span class="typed" id="typedText"></span><span class="cursor"
+                id="typedCursor">|</span></span>
+          </h1>
+          <p class="lead">Community-curated directory — find reliable, zero-cost hosting for experiments, learning, or
+            small projects.</p>
+
+          <div class="hero-cta">
+            <a href="about" class="btn large"><i class="fa-solid fa-circle-info"></i> About FreeHosts</a>
+            <a href="#" class="btn ghost" id="joinCommunity"><i class="fa-solid fa-comments"></i> Join the community</a>
+          </div>
+
+          <div class="hero-stats" aria-hidden="true">
+            <div class="stat">
+              <div class="num" id="hostsCount">100+</div>
+              <div class="label">Hosts listed</div>
+            </div>
+            <div class="stat">
+              <div class="num">400+</div>
+              <div class="label">Community members</div>
+            </div>
+            <div class="stat">
+              <div class="num">100+</div>
+              <div class="label">Reviews</div>
+            </div>
+          </div>
+
+          <div class="discord-widget" id="discordWidget" aria-live="polite">
+            <div class="dw-row">
+              <div class="dw-left">
+                <div class="dw-title" id="discordName"><i class="fa-brands fa-discord"></i> Discord</div>
+                <div class="dw-sub" id="discordStatus">Loading server info…</div>
+              </div>
+              <div class="dw-right">
+                <div class="dw-count" id="discordCount">—</div>
+                <button class="btn small" id="discordInvite" style="display:none"><i class="fa-solid fa-door-open"></i>
+                  Join</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="hero-right" aria-hidden="true">
+          <div class="terminal-3d" aria-hidden="true">
+            <div class="terminal-header">
+              <span class="term-dot red"></span>
+              <span class="term-dot yellow"></span>
+              <span class="term-dot green"></span>
+              <div class="terminal-title">terminal@freehosts:~</div>
+            </div>
+            <div class="terminal-body" id="terminalBody">
+              <div class="terminal-line">
+                <span class="terminal-prompt">user@freehosts:~$</span>
+                <span class="terminal-command" id="terminalCommand"></span>
+                <span class="terminal-cursor">_</span>
+              </div>
+              <div class="terminal-output" id="terminalOutput"></div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+          (function () {
+            const commands = [
+              {
+                cmd: 'npm start',
+                output: `<span class="success">✓</span> Server initialized successfully
+
+<span class="success">✓</span> Connected to FreeHosts Community
+
+<span class="terminal-status">Status: <span class="status-online">Online</span><span class="status-cursor">▮</span></span>`
+              },
+              {
+                cmd: 'freehosts --info',
+                output: `<span class="info">╔══════════════════════════════╗
+║     FreeHosts Directory      ║
+╚══════════════════════════════╝</span>
+
+<span class="success">✓</span> Community-curated hosting lists
+<span class="success">✓</span> 100+ verified free hosting options
+<span class="success">✓</span> Real user reviews & ratings
+
+<span class="terminal-status">Status: <span class="status-online">Active</span><span class="status-cursor">▮</span></span>`
+              },
+              {
+                cmd: 'freehosts search --category bots',
+                output: `<span class="info">Searching directory...</span>
+
+<span class="success">✓</span> Found 30+ Discord bot hosting providers
+<span class="success">✓</span> Found 15+ Telegram bot hosts
+<span class="success">✓</span> All entries community-verified
+
+<span class="terminal-status">Status: <span class="status-online">Ready</span><span class="status-cursor">▮</span></span>`
+              },
+              {
+                cmd: 'community --stats',
+                output: `<span class="success">✓</span> 400+ active members joined
+
+<span class="success">✓</span> 100+ hosting reviews published
+
+<span class="success">✓</span> Platform updates daily
+
+<span class="terminal-status">Status: <span class="status-online">Growing</span><span class="status-cursor">▮</span></span>`
+              }
+            ];
+
+            let currentIndex = 0;
+            let isTyping = false;
+
+            function typeText(element, text, speed = 50) {
+              return new Promise((resolve) => {
+                let i = 0;
+                element.textContent = '';
+
+                function type() {
+                  if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                  } else {
+                    resolve();
+                  }
+                }
+                type();
+              });
+            }
+
+            async function runCommand() {
+              if (isTyping) return;
+              isTyping = true;
+
+              const cmd = commands[currentIndex];
+              const commandElement = document.getElementById('terminalCommand');
+              const outputElement = document.getElementById('terminalOutput');
+
+              outputElement.innerHTML = '';
+              await typeText(commandElement, cmd.cmd, 60);
+              await new Promise(resolve => setTimeout(resolve, 500));
+              outputElement.innerHTML = cmd.output;
+              await new Promise(resolve => setTimeout(resolve, 4000));
+
+              currentIndex = (currentIndex + 1) % commands.length;
+              isTyping = false;
+              setTimeout(runCommand, 1000);
+            }
+
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(runCommand, 1000);
+              });
+            } else {
+              setTimeout(runCommand, 1000);
+            }
+          })();
+        </script>
+      </div>
+    </section>
+
+    <section id="features" class="section features wrap">
+      <h2 class="section-title">Why people use FreeHosts</h2>
+      <p class="section-sub">Quick highlights — no fluff.</p>
+      <div class="cards-grid" aria-hidden="true">
+        <article class="feature-card">
+          <div class="icon"><i class="fa-solid fa-rocket"></i></div>
+          <h3>Fast discovery</h3>
+          <p>Find hosts by use-case quickly — deploy a demo in minutes.</p>
+        </article>
+        <article class="feature-card">
+          <div class="icon"><i class="fa-solid fa-hands-helping"></i></div>
+          <h3>Community tips</h3>
+          <p>User-contributed reviews and sample setups to get you started.</p>
+        </article>
+        <article class="feature-card">
+          <div class="icon"><i class="fa-solid fa-filter"></i></div>
+          <h3>Curated lists</h3>
+          <p>Hand-curated, up-to-date listings so you don't waste time.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="what-is-free-hosting" class="section wrap"
+      style="padding: 4rem 1rem; max-width: 900px; margin: 0 auto;">
+      <h2 class="section-title">What is Free Hosting?</h2>
+      <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem;">
+        Free hosting allows developers, students, and hobbyists to deploy websites, applications, Discord bots, and
+        community projects without paying for server infrastructure. These services provide computing resources at no
+        cost, making them ideal for learning, experimentation, and small-scale projects.
+      </p>
+      <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem;">
+        FreeHosts curates a comprehensive directory of verified free hosting providers. Our community reviews, staff
+        recommendations, and detailed feature lists help you join the right hosting platform and find the most reliable
+        options for your specific needs. Whether you need hosting lists for Discord bots or web apps, our community has
+        you covered.
+      </p>
+      <h3 style="font-size: 1.5rem; margin: 2rem 0 1rem;">Popular Free Hosting Categories</h3>
+      <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1rem;">
+        <strong>Website Hosting:</strong> Deploy static sites, blogs, portfolios, and landing pages with providers that
+        offer excellent performance through global CDN distribution. These services are ideal for frontend projects
+        built with HTML, CSS, JavaScript, or modern frameworks.
+      </p>
+      <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1rem;">
+        <strong>Application Hosting:</strong> Run Node.js, Python, Ruby, PHP, and other backend applications with full
+        server environments. Perfect for APIs, web apps, microservices, and full-stack projects that require dynamic
+        server-side processing.
+      </p>
+      <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1rem;">
+        <strong>Discord Bot Hosting:</strong> Host Discord bots, Telegram bots, Twitter bots, and other automated
+        services continuously. Many providers offer 24/7 uptime with sufficient resources for small to medium bot
+        projects that need constant availability. Join our community to discover hosting lists and features tailored for
+        Discord developers.
+      </p>
+      <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem;">
+        <strong>Database Hosting:</strong> Free database services including PostgreSQL, MongoDB, MySQL, and Redis.
+        Essential for applications requiring data persistence, user authentication, content management, and structured
+        data storage without hosting costs.
+      </p>
+      <h3 style="font-size: 1.5rem; margin: 2rem 0 1rem;">How to Choose Free Hosting - Join Our Community</h3>
+      <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1rem;">
+        Consider your project requirements when selecting a hosting provider. Evaluate factors like storage limits,
+        bandwidth allowances, computational resources, uptime guarantees, and deployment complexity. Read community
+        reviews on FreeHosts and join our Discord to learn from other developers' experiences with various hosting lists
+        and features.
+      </p>
+      <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1rem;">
+        Our staff regularly updates hosting lists and FAQ sections to help you make informed decisions. Join the
+        FreeHosts community to access curated lists, participate in discussions, and get support from experienced
+        developers who have tested these hosting solutions.
+      </p>
+      <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem;">
+        Most free hosting services have usage limitations but are generous enough for learning projects, prototypes,
+        personal websites, Discord bots, and small community applications. As your project grows, many providers offer
+        easy upgrade paths to paid tiers with enhanced features and resources.
+      </p>
+    </section>
+
+    <section id="about-teaser" class="section about wrap">
+      <h2 class="section-title">About FreeHosts</h2>
+      <p class="section-sub">Built by people who love the web — a friendly place to discover hosting options at zero
+        cost. <a href="about" class="btn ghost"><i class="fa-solid fa-circle-info"></i> Read more</a></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-content">
+      <div class="footer-section footer-brand">
+        <div class="footer-logo">
+          <i class="fa-solid fa-hands-holding-circle"></i>
+          <span>FreeHosts</span>
+        </div>
+        <p class="footer-tagline">Discover free hosting that just works.</p>
+        <div class="social-links">
+          <a href="https://discord.gg/QbeZ3b5CQd" target="_blank" rel="noopener" aria-label="Discord">
+            <i class="fa-brands fa-discord"></i>
+          </a>
+          <a href="https://x.com/freehosts_" target="_blank" rel="noopener" aria-label="Twitter">
+            <i class="fa-brands fa-twitter"></i>
+          </a>
+          <a href="https://www.instagram.com/freehosts/" target="_blank" rel="noopener" aria-label="Instagram">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          <a href="https://github.com/freehostsofficial" target="_blank" rel="noopener" aria-label="GitHub">
+            <i class="fa-brands fa-github"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-section-title">Explore</h4>
+        <ul class="footer-list">
+          <li><a href="/">Home</a></li>
+          <li><a href="/hosts">Browse Hosts</a></li>
+          <li><a href="/about">About Us</a></li>
+          <li><a href="/staff">Our Team</a></li>
+          <li><a href="/faq">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-section-title">Submit</h4>
+        <ul class="footer-list">
+          <li><a href="/submit-host">Submit a Host</a></li>
+          <li><a href="/submit-layout">Submit Layout</a></li>
+          <li><a href="/submission-rules">Submission Rules</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-section-title">Legal</h4>
+        <ul class="footer-list">
+          <li><a href="/tos">Terms of Service</a></li>
+          <li><a href="/privacy-policy">Privacy Policy</a></li>
+          <li><a href="/server-rules">Server Rules</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-section-title">Contact</h4>
+        <ul class="footer-list">
+          <li><a href="mailto:support@freehosts.space"><i class="fa-solid fa-envelope"></i> support@freehosts.space</a>
+          </li>
+          <li><a href="https://discord.gg/QbeZ3b5CQd" target="_blank" rel="noopener"><i
+                class="fa-brands fa-discord"></i> Join Discord</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="wrap footer-bottom">
+      <div class="copyright">© 2023–<span id="year"></span> FreeHosts. All rights reserved.</div>
+      <div class="footer-bottom-links">
+        <a href="/tos">Terms</a>
+        <span class="separator">•</span>
+        <a href="/privacy-policy">Privacy</a>
+        <span class="separator">•</span>
+        <a href="mailto:support@freehosts.space">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="previewCard" class="preview-card" aria-hidden="true"></div>
+
+  <script src="Src/js/script.js" defer></script>
+
+  <script>
+
+    // Update year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+  <script>
+    (function () {
+      const inviteCode = 'QbeZ3b5CQd';
+      const inviteApi = 'https://discord.com/api/v9/invites/' + encodeURIComponent(inviteCode) + '?with_counts=true&with_expiration=true';
+      const dwName = document.getElementById('discordName');
+      const dwSub = document.getElementById('discordStatus');
+      const dwCount = document.getElementById('discordCount');
+      const dwInviteBtn = document.getElementById('discordInvite');
+      const discordBtnHeader = document.getElementById('discordBtn');
+
+      function setDiscordFallback() {
+        if (dwName) dwName.textContent = 'Discord';
+        if (dwSub) dwSub.textContent = 'Server info unavailable';
+        if (dwCount) dwCount.textContent = '—';
+        if (dwInviteBtn) dwInviteBtn.style.display = 'none';
+        if (discordBtnHeader) discordBtnHeader.href = 'https://discord.gg/QbeZ3b5CQd';
+      }
+
+      function fetchWithTimeout(url, timeout = 7000) {
+        return Promise.race([
+          fetch(url, { cache: 'no-cache' }),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeout))
+        ]);
+      }
+
+      fetchWithTimeout(inviteApi, 8000)
+        .then(resp => { if (!resp.ok) throw new Error('Non-OK response'); return resp.json(); })
+        .then(data => {
+          const name = (data.guild && data.guild.name) || 'Discord';
+          let count = data.approximate_member_count ?? data.approximate_presence_count ?? (Array.isArray(data.members) ? data.members.length : null);
+          const inviteUrl = 'https://discord.gg/' + inviteCode;
+
+          if (dwName) dwName.textContent = name;
+          if (dwSub) dwSub.textContent = count !== null ? 'Live — join the server' : 'Live server info';
+          if (dwCount) dwCount.textContent = count !== null ? String(count) : '—';
+          if (dwInviteBtn) {
+            dwInviteBtn.style.display = 'inline-flex';
+            dwInviteBtn.addEventListener('click', () => window.open(inviteUrl, '_blank', 'noopener'));
+          }
+          if (discordBtnHeader) discordBtnHeader.href = inviteUrl;
+        })
+        .catch(() => {
+          const widgetApi = 'https://discord.com/api/guilds/1221389187719102514/widget.json';
+          fetchWithTimeout(widgetApi, 6000)
+            .then(r => { if (!r.ok) throw new Error('Widget fetch failed'); return r.json(); })
+            .then(wd => {
+              const name = wd.name || 'Discord';
+              let count = wd.presence_count ?? (Array.isArray(wd.members) ? wd.members.length : null);
+              const inviteUrl = wd.instant_invite || ('https://discord.gg/' + inviteCode);
+
+              if (dwName) dwName.textContent = name;
+              if (dwSub) dwSub.textContent = count !== null ? 'Live — join the server' : 'Live server info';
+              if (dwCount) dwCount.textContent = count !== null ? String(count) : '—';
+              if (dwInviteBtn) {
+                dwInviteBtn.style.display = 'inline-flex';
+                dwInviteBtn.addEventListener('click', () => window.open(inviteUrl, '_blank', 'noopener'));
+              }
+              if (discordBtnHeader) discordBtnHeader.href = inviteUrl;
+            })
+            .catch(() => setDiscordFallback());
+        });
+    })();
+  </script>
+
+</body>
+
+</html>

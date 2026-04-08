@@ -1,3 +1,4 @@
+// --- 1. Helper: Global Event Delegation ---
 function addGlobalListener(type, selector, callback) {
   document.addEventListener(type, (e) => {
     const target = e.target.closest(selector);
@@ -19,7 +20,9 @@ function escapeHtml(text) {
   });
 }
 
+// --- 2. Theme Management ---
 function getTheme() {
+  // Check LocalStorage first, then System preference
   return (
     localStorage.getItem("fh_theme") ||
     (window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -32,6 +35,7 @@ function setTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   document.documentElement.classList.add("theme-transition");
 
+  // Save to LocalStorage and Cookie (legacy support)
   localStorage.setItem("fh_theme", theme);
   const date = new Date();
   date.setTime(date.getTime() + 365 * 24 * 60 * 60 * 1000);
@@ -42,11 +46,13 @@ function setTheme(theme) {
     date.toUTCString() +
     ";path=/;SameSite=Lax";
 
+  // Update Icons
   const icons = document.querySelectorAll("[data-theme-toggle] i");
   icons.forEach((icon) => {
     icon.className = theme === "light" ? "fa-solid fa-sun" : "fa-solid fa-moon";
   });
 
+  // Update Buttons Accessibility
   const toggles = document.querySelectorAll("[data-theme-toggle]");
   toggles.forEach((btn) => {
     btn.setAttribute("aria-pressed", theme === "dark");
@@ -56,13 +62,16 @@ function setTheme(theme) {
     );
   });
 
+  // Trigger Snow Update if active
   if (typeof updateSnowTheme === "function") updateSnowTheme();
 
+  // Remove transition class after animation
   setTimeout(() => {
     document.documentElement.classList.remove("theme-transition");
   }, 220);
 }
 
+// Delegated Theme Toggle Listener
 addGlobalListener("click", "[data-theme-toggle]", (e) => {
   e.preventDefault();
   const current =
@@ -71,6 +80,7 @@ addGlobalListener("click", "[data-theme-toggle]", (e) => {
   setTheme(next);
 });
 
+// --- 3. Sidebar Logic ---
 function toggleSidebar(open) {
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("overlay");
@@ -91,6 +101,7 @@ function toggleSidebar(open) {
     if (overlay) {
       overlay.style.opacity = "0";
       overlay.style.pointerEvents = "none";
+      // Delay visibility hidden to allow fade out
       setTimeout(() => {
         overlay.style.visibility = "hidden";
       }, 300);
@@ -100,6 +111,7 @@ function toggleSidebar(open) {
   }
 }
 
+// Delegated Sidebar Listeners
 addGlobalListener("click", "#sidebarToggle", () => toggleSidebar(true));
 addGlobalListener("click", "#sidebarClose", () => toggleSidebar(false));
 addGlobalListener("click", "#overlay", () => toggleSidebar(false));
@@ -107,31 +119,31 @@ addGlobalListener("click", ".sidebar-link, .sidebar-dropdown-menu a", () =>
   toggleSidebar(false)
 );
 
+// Sidebar Dropdowns
 addGlobalListener("click", ".sidebar-dropdown-toggle", (e, btn) => {
   e.preventDefault();
   const dropdown = btn.closest(".sidebar-dropdown");
   const isOpen = dropdown.classList.contains("open");
 
+  // Close other dropdowns
   document.querySelectorAll(".sidebar-dropdown").forEach((d) => {
     if (d !== dropdown) d.classList.remove("open");
   });
 
+  // Toggle current
   if (!isOpen) dropdown.classList.add("open");
   else dropdown.classList.remove("open");
 });
 
-var _mtm = (window._mtm = window._mtm || []);
-_mtm.push({ "mtm.startTime": new Date().getTime(), event: "mtm.Start" });
-(function () {
-  var d = document,
-    g = d.createElement("script"),
-    s = d.getElementsByTagName("script")[0];
-  g.async = true;
-  g.src = "https://matomo.codelabworks.is-a.dev/js/container_au1DPBl0.js";
-  s.parentNode.insertBefore(g, s);
-})();
-
+  var _mtm = window._mtm = window._mtm || [];
+  _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+  (function() {
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src='https://matomo.codelabworks.is-a.dev/js/container_1680bbwg.js'; s.parentNode.insertBefore(g,s);
+  })();
+// --- 4. Animation & Interactivity Initialization ---
 function initPageLogic() {
+  // A. Scroll Animations (Intersection Observer)
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -147,6 +159,7 @@ function initPageLogic() {
     .querySelectorAll(".feature-card, .staff-card")
     .forEach((el) => observer.observe(el));
 
+  // B. Staff Loading Logic
   const staffGrid = document.getElementById("staffGrid");
   if (staffGrid && !staffGrid.hasAttribute("data-loaded")) {
     staffGrid.setAttribute("data-loaded", "true");
@@ -158,11 +171,12 @@ function initPageLogic() {
           role: data[name],
         }));
 
-        staffGrid.innerHTML = "";
+        staffGrid.innerHTML = ""; // Clear existing
         entries.forEach((member, index) => {
           const div = document.createElement("div");
           div.className = "staff-card";
           div.style.animationDelay = index * 0.1 + "s";
+          // Simple icon logic
           let icon = "fa-user",
             role = member.role.toLowerCase();
           if (role.includes("owner")) icon = "fa-crown";
@@ -175,12 +189,13 @@ function initPageLogic() {
                 <div class="role">${escapeHtml(member.role)}</div>
             </div>`;
           staffGrid.appendChild(div);
-          observer.observe(div);
+          observer.observe(div); // Observe new elements
         });
       })
       .catch((e) => console.error(e));
   }
 
+  // C. Typing Effect 
   const typedEl = document.getElementById("typedText");
   if (typedEl && !typedEl.dataset.typing) {
     typedEl.dataset.typing = "true";
@@ -195,7 +210,7 @@ function initPageLogic() {
       isDeleting = false;
 
     function type() {
-      if (!document.getElementById("typedText")) return;
+      if (!document.getElementById("typedText")) return; // Stop if page changed
       const currentWord = words[i % words.length];
       if (isDeleting) {
         typedEl.textContent = currentWord.substring(0, charIndex - 1);
@@ -219,20 +234,23 @@ function initPageLogic() {
     type();
   }
 
+  // D. Copyright Year
   const yearSpans = document.querySelectorAll(
     "#year, #year2, #year3, #copyright span"
   );
   const currentYear = new Date().getFullYear();
   yearSpans.forEach((span) => (span.textContent = currentYear));
-}
-
+};
+// Expose function globally
 window.initPageLogic = initPageLogic;
 
+// --- 5. Snow Effect ---
 function createSnowEffect() {
+  // Expose function globally so it can be called from Next.js
   window.createSnowEffect = createSnowEffect;
   
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (new Date().getMonth() !== 11) return;
+  if (new Date().getMonth() !== 11) return; // Only December
   if (document.getElementById("snow-container")) return;
 
   const container = document.createElement("div");
@@ -271,9 +289,10 @@ function updateSnowTheme() {
     c.style.display = "block";
   }
 }
-
+// Expose function globally
 window.updateSnowTheme = updateSnowTheme;
 
+// --- 6. Preview Card Listeners ---
 addGlobalListener("click", ".preview-link", (e, link) => {
   e.preventDefault();
   const card = document.getElementById("previewCard");
@@ -312,12 +331,15 @@ addGlobalListener("click", "#closePreview", () => {
   if (card) card.style.display = "none";
 });
 
+// --- 7. Execution ---
 (function () {
   const t = getTheme();
   document.documentElement.setAttribute("data-theme", t);
+  // Set initial icon state if icon exists immediately
   window.addEventListener("DOMContentLoaded", () => setTheme(t));
 })();
 
+// Initialize Logic on Load
 document.addEventListener("DOMContentLoaded", () => {
   window.initPageLogic();
   createSnowEffect();

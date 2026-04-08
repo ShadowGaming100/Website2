@@ -1,63 +1,61 @@
-import type { NextConfig } from 'next';
-
-const nextConfig: NextConfig = {
-  reactStrictMode: true,
-
-  images: {
-    formats: ['image/avif', 'image/webp'],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'freehosts.space',
-      },
-      {
-        protocol: 'https',
-        hostname: 'api.freehosts.space',
-      },
-      {
-        protocol: 'https',
-        hostname: 'discord.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'placehold.co',
-      },
-      {
-        protocol: 'https',
-        hostname: 'flagcdn.com',
-      },
-    ],
-    dangerouslyAllowSVG: true,
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-  },
-
-  transpilePackages: ['@fortawesome/fontawesome-svg-core'],
-
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
-  },
-
-  async headers() {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  async rewrites() {
     return [
       {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-        ],
+        source: '/',
+        destination: '/index.html',
       },
-    ];
-  },
-};
+      {
+        source: '/tos',
+        destination: '/tos.html',
+      },
+      {
+        source: '/about',
+        destination: '/about.html',
+      },
+      {
+        source: '/staff',
+        destination: '/staff.html',
+      },
+      {
+        source: '/faq',
+        destination: '/faq.html',
+      },
+      {
+        source: '/privacy-policy',
+        destination: '/privacy-policy.html',
+      },
+      {
+        source: '/server-rules',
+        destination: '/server-rules.html',
+      },
+      {
+        source: '/submission-rules',
+        destination: '/submission-rules.html',
+      },
+      {
+        source: '/submit-host',
+        destination: '/submit-host.html',
+      },
+      {
+        source: '/submit-layout',
+        destination: '/submit-layout.html',
+      },
+      {
+        source: '/other-free-hosts',
+        destination: '/other-free-hosts.html',
+      },
+      // {
+      //   source: '/hosts',
+      //   destination: '/hosts.html',
+      // },
+      {
+        source: '/_not-found',
+        destination: '/404.html',
+      },
+    ]
+  }
+}
 
-export default nextConfig;
+module.exports = nextConfig

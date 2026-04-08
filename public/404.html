@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>404 — Page not found — FreeHosts</title>
+  <meta name="description" content="Page not found — FreeHosts" />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#071028" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="https://font-awesome.icons.cdn.codelabworks.is-cool.dev/css/all.css">
+  <link rel="stylesheet" href="/Src/css/styles.css" />
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="https://freehosts.space/sitemap.xml">
+  <meta property="og:image" content="https://freehosts.space/Src/Images/social-preview.png" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+
+  <style>
+    .error-hero {
+      text-align: center;
+      padding: var(--space-2xl) 0;
+      position: relative;
+    }
+
+    .error-hero-icon {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-4xl);
+      color: white;
+      margin: 0 auto var(--space-lg);
+      box-shadow: var(--shadow-xl);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .error-card {
+      background: var(--card);
+      padding: var(--space-2xl);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-xl);
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .error-title {
+      font-size: var(--font-size-3xl);
+      font-weight: 800;
+      margin-bottom: var(--space-md);
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .error-message {
+      font-size: var(--font-size-lg);
+      color: var(--muted);
+      margin-bottom: var(--space-xl);
+      line-height: 1.6;
+    }
+
+    .error-actions {
+      display: flex;
+      gap: var(--space-md);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .error-bg-blob {
+      position: absolute;
+      right: -10%;
+      bottom: -10%;
+      width: 50%;
+      height: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.1;
+      pointer-events: none;
+      animation: pulse 6s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.1;
+      }
+
+      50% {
+        transform: scale(1.1);
+        opacity: 0.15;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .error-title {
+        font-size: var(--font-size-2xl);
+      }
+
+      .error-message {
+        font-size: var(--font-size-base);
+      }
+
+      .error-card {
+        padding: var(--space-xl);
+        margin: 0 var(--space-md);
+      }
+
+      .error-actions {
+        flex-direction: column;
+      }
+
+      .error-actions .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <button id="sidebarToggle" class="icon-btn mobile-only" aria-label="Open menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <a class="logo" href="/" aria-label="FreeHosts Home">
+        <i class="fa-solid fa-hands-holding-circle"></i> FreeHosts
+      </a>
+
+      <nav class="nav" role="navigation" aria-label="Main">
+        <div class="nav-item">
+          <a href="/hosts" class="nav-link">
+            <i class="fa-solid fa-server"></i> Hosts
+          </a>
+        </div>
+
+        <div class="nav-item">
+          <a href="/#features" class="nav-link">
+            <i class="fa-solid fa-list-check"></i> Features
+          </a>
+        </div>
+
+        <div class="nav-item">
+          <span class="nav-link has-dropdown">
+            <i class="fa-solid fa-upload"></i> Submit Host
+            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+          </span>
+          <div class="dropdown-menu">
+            <a href="/submit-host">
+              <i class="fa-solid fa-plus"></i> Submit a Host
+            </a>
+            <a href="submit-layout">
+              <i class="fa-solid fa-pencil"></i> Submit Layout
+            </a>
+            <a href="/submission-rules">
+              <i class="fa-solid fa-list-check"></i> Submission Rules
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item">
+          <span class="nav-link has-dropdown">
+            <i class="fa-solid fa-book"></i> Resources
+            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+          </span>
+          <div class="dropdown-menu">
+            <a href="/about">
+              <i class="fa-solid fa-circle-info"></i> About
+            </a>
+            <a href="staff">
+              <i class="fa-solid fa-users"></i> Staff
+            </a>
+            <a href="/faq">
+              <i class="fa-solid fa-question-circle"></i> FAQ
+            </a>
+            <a href="/server-rules">
+              <i class="fa-solid fa-shield"></i> Server Rules
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item">
+          <span class="nav-link has-dropdown">
+            <i class="fa-solid fa-gavel"></i> Legal
+            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+          </span>
+          <div class="dropdown-menu">
+            <a href="/tos">
+              <i class="fa-solid fa-file-contract"></i> Terms of Service
+            </a>
+            <a href="/privacy-policy">
+              <i class="fa-solid fa-lock"></i> Privacy Policy
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="actions" id="headerActions">
+        <button data-theme-toggle class="icon-btn" aria-pressed="false" aria-label="Toggle theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <a class="btn primary" id="discordBtn" href="https://discord.gg/QbeZ3b5CQd" target="_blank" rel="noopener">
+          <i class="fa-brands fa-discord"></i> Join Discord
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar" aria-hidden="true">
+    <div class="sidebar-top">
+      <a class="logo" href="/">
+        <i class="fa-solid fa-hands-holding-circle"></i> FreeHosts
+      </a>
+      <button id="sidebarClose" class="icon-btn" aria-label="Close menu">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav" role="navigation">
+      <a href="/hosts" class="sidebar-link">
+        <i class="fa-solid fa-server"></i> Hosts
+      </a>
+
+      <a href="/#features" class="sidebar-link">
+        <i class="fa-solid fa-list-check"></i> Features
+      </a>
+
+      <div class="sidebar-dropdown">
+        <button class="sidebar-dropdown-toggle" type="button">
+          <i class="fa-solid fa-upload"></i>
+          <span>Submit Host</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="sidebar-dropdown-menu">
+          <a href="/submit-host">
+            <i class="fa-solid fa-plus"></i> Submit a Host
+          </a>
+          <a href="/submit-layout">
+            <i class="fa-solid fa-pencil"></i> Submit Layout
+          </a>
+          <a href="/submission-rules">
+            <i class="fa-solid fa-list-check"></i> Submission Rules
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-dropdown">
+        <button class="sidebar-dropdown-toggle" type="button">
+          <i class="fa-solid fa-book"></i>
+          <span>Resources</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="sidebar-dropdown-menu">
+          <a href="about">
+            <i class="fa-solid fa-circle-info"></i> About
+          </a>
+          <a href="/staff">
+            <i class="fa-solid fa-users"></i> Staff
+          </a>
+          <a href="/faq">
+            <i class="fa-solid fa-question-circle"></i> FAQ
+          </a>
+          <a href="/server-rules">
+            <i class="fa-solid fa-shield"></i> Server Rules
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-dropdown">
+        <button class="sidebar-dropdown-toggle" type="button">
+          <i class="fa-solid fa-gavel"></i>
+          <span>Legal</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="sidebar-dropdown-menu">
+          <a href="/tos">
+            <i class="fa-solid fa-file-contract"></i> Terms of Service
+          </a>
+          <a href="/privacy-policy">
+            <i class="fa-solid fa-lock"></i> Privacy Policy
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a class="btn primary full" id="discordBtnSidebar" href="https://discord.gg/QbeZ3b5CQd" target="_blank"
+        rel="noopener">
+        <i class="fa-brands fa-discord"></i> Join Discord
+      </a>
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay" tabindex="-1" aria-hidden="true"></div>
+
+
+  <main class="wrap">
+    <section class="error-hero">
+      <div class="error-hero-icon">
+        <i class="fa-solid fa-compass"></i>
+      </div>
+      <div class="error-card">
+        <div class="error-bg-blob"></div>
+        <h1 class="error-title">404 — Page not found</h1>
+        <p class="error-message">We couldn't find the page you were looking for. It may have moved or the link might be
+          broken.</p>
+        <div class="error-actions">
+          <a class="btn primary" href="/">
+            <i class="fa-solid fa-home"></i> Back to Home
+          </a>
+          <a class="btn" href="/hosts">
+            <i class="fa-solid fa-server"></i> Browse Hosts
+          </a>
+          <a class="btn ghost" href="mailto:support@freehosts.space">
+            <i class="fa-solid fa-envelope"></i> Report Issue
+          </a>
+          <a class="btn" href="https://discord.gg/QbeZ3b5CQd" target="_blank" rel="noopener">
+            <i class="fa-brands fa-discord"></i> Join Discord
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-content">
+      <div class="footer-section footer-brand">
+        <div class="footer-logo">
+          <i class="fa-solid fa-hands-holding-circle"></i>
+          <span>FreeHosts</span>
+        </div>
+        <p class="footer-tagline">Discover free hosting that just works.</p>
+        <div class="social-links">
+          <a href="https://discord.gg/QbeZ3b5CQd" target="_blank" rel="noopener" aria-label="Discord">
+            <i class="fa-brands fa-discord"></i>
+          </a>
+          <a href="https://x.com/freehosts_" target="_blank" rel="noopener" aria-label="Twitter">
+            <i class="fa-brands fa-twitter"></i>
+          </a>
+          <a href="https://www.instagram.com/freehosts/" target="_blank" rel="noopener" aria-label="Instagram">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          <a href="https://github.com/freehostsofficial" target="_blank" rel="noopener" aria-label="GitHub">
+            <i class="fa-brands fa-github"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-section-title">Explore</h4>
+        <ul class="footer-list">
+          <li><a href="/">Home</a></li>
+          <li><a href="/hosts">Browse Hosts</a></li>
+          <li><a href="/about">About Us</a></li>
+          <li><a href="/staff">Our Team</a></li>
+          <li><a href="/faq">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-section-title">Submit</h4>
+        <ul class="footer-list">
+          <li><a href="/submit-host">Submit a Host</a></li>
+          <li><a href="/submit-layout">Submit Layout</a></li>
+          <li><a href="/submission-rules">Submission Rules</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-section-title">Legal</h4>
+        <ul class="footer-list">
+          <li><a href="/tos">Terms of Service</a></li>
+          <li><a href="/privacy-policy">Privacy Policy</a></li>
+          <li><a href="/server-rules">Server Rules</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-section-title">Contact</h4>
+        <ul class="footer-list">
+          <li><a href="mailto:support@freehosts.space"><i class="fa-solid fa-envelope"></i> support@freehosts.space</a>
+          </li>
+          <li><a href="https://discord.gg/QbeZ3b5CQd" target="_blank" rel="noopener"><i
+                class="fa-brands fa-discord"></i> Join Discord</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="wrap footer-bottom">
+      <div class="copyright">© 2023–<span id="year"></span> FreeHosts. All rights reserved.</div>
+      <div class="footer-bottom-links">
+        <a href="/tos">Terms</a>
+        <span class="separator">•</span>
+        <a href="/privacy-policy">Privacy</a>
+        <span class="separator">•</span>
+        <a href="mailto:support@freehosts.space">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/Src/js/script.js" defer></script>
+  <script>
+    document.getElementById('year404').textContent = new Date().getFullYear();
+  </script>
+</body>
+
+</html>
