@@ -44,7 +44,7 @@ function HostsLoading() {
             </div>
             <div className="hero-inner">
               <div className="hero-left">
-                <h1 id="hero-title">Free Hosting Directory</h1>
+                <h1 id="hero-title">Freee Hosting Directory</h1>
                 <p className="lead">Discover and compare the best free hosting providers for your projects.</p>
               </div>
             </div>
