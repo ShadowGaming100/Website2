@@ -139,7 +139,7 @@ export default function RootLayout({
   const year = new Date().getFullYear();
 
   return (
-    <html lang="en" data-scroll-behavior="smooth">
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <link
           rel="stylesheet"
@@ -343,7 +343,7 @@ export default function RootLayout({
 
           <div className="wrap footer-bottom">
             <div className="copyright">
-              © 2024-<span id="year">{year}</span> FreeHosts. All rights reserved.
+              © 2024-<span id="year" suppressHydrationWarning>{year}</span> FreeHosts. All rights reserved.
             </div>
             <div className="footer-bottom-links">
               <Link href="/tos">Terms</Link>

@@ -166,42 +166,6 @@ function initPageLogic() {
     .querySelectorAll(".feature-card, .staff-card")
     .forEach((el) => observer.observe(el));
 
-  // B. Staff Loading Logic
-  const staffGrid = document.getElementById("staffGrid");
-  if (staffGrid && !staffGrid.hasAttribute("data-loaded")) {
-    staffGrid.setAttribute("data-loaded", "true");
-    fetch("/Src/data/staff.json", { cache: "no-cache" })
-      .then((r) => (r.ok ? r.json() : Promise.reject("No staff")))
-      .then((data) => {
-        const entries = Object.keys(data).map((name) => ({
-          name,
-          role: data[name],
-        }));
-
-        staffGrid.innerHTML = ""; // Clear existing
-        entries.forEach((member, index) => {
-          const div = document.createElement("div");
-          div.className = "staff-card";
-          div.style.animationDelay = index * 0.1 + "s";
-          // Simple icon logic
-          let icon = "fa-user",
-            role = member.role.toLowerCase();
-          if (role.includes("owner")) icon = "fa-crown";
-          else if (role.includes("dev")) icon = "fa-code";
-
-          div.innerHTML = `
-            <div class="staff-icon"><i class="fa-solid ${icon}"></i></div>
-            <div class="staff-body">
-                <h3>${escapeHtml(member.name)}</h3>
-                <div class="role">${escapeHtml(member.role)}</div>
-            </div>`;
-          staffGrid.appendChild(div);
-          observer.observe(div); // Observe new elements
-        });
-      })
-      .catch((e) => console.error(e));
-  }
-
   // C. Typing Effect 
   const typedEl = document.getElementById("typedText");
   if (typedEl && !typedEl.dataset.typing) {
@@ -241,12 +205,6 @@ function initPageLogic() {
     type();
   }
 
-  // D. Copyright Year
-  const yearSpans = document.querySelectorAll(
-    "#year, #year2, #year3, #copyright span"
-  );
-  const currentYear = new Date().getFullYear();
-  yearSpans.forEach((span) => (span.textContent = currentYear));
 };
 // Expose function globally
 window.initPageLogic = initPageLogic;

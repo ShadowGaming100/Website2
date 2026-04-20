@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense, useRef, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { type Host } from '../../lib/cache'
+import Link from '@/components/NoPrefetchLink'
 
 // Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -88,10 +89,14 @@ function HostsLoading() {
 function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   const searchParams = useSearchParams()
   const [hosts] = useState<Host[]>(initialHosts)
-  const [currentPage, setCurrentPage] = useState(1)
-  const pageSize = 5
+  const [hasMounted, setHasMounted] = useState(false)
+  
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setHasMounted(true)
+  }, [])
 
-  // Initialize filters from URL parameters directly to avoid cascading renders
+  // Initialize filters from URL parameters directly
   const [currentFilters, setCurrentFilters] = useState(() => {
     return {
       search: searchParams.get('search') || '',
@@ -101,11 +106,18 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     }
   })
 
+  const [currentPage, setCurrentPage] = useState(() => {
+    const page = parseInt(searchParams.get('page') || '1')
+    return !isNaN(page) && page > 0 ? page : 1
+  })
+
   // Use debounced search to reduce unnecessary updates
   const debouncedSearch = useDebounce(currentFilters.search, 300)
 
   // Use ref to track if it's the component's mount phase
   const isMounted = useRef(false)
+
+  const pageSize = 5
 
   // Memoize Filter Options
   const locales = useMemo(() => {
@@ -198,10 +210,11 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     if (currentFilters.locale) params.set('locale', currentFilters.locale)
     if (currentFilters.target) params.set('target', currentFilters.target)
     if (currentFilters.sort && currentFilters.sort !== 'random') params.set('sort', currentFilters.sort)
+    if (currentPage > 1) params.set('page', currentPage.toString())
 
     const newURL = params.toString() ? `/hosts?${params.toString()}` : '/hosts'
     window.history.replaceState({}, '', newURL)
-  }, [debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort])
+  }, [debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, currentPage])
 
   const handleFilterChange = (filter: keyof typeof currentFilters, value: string) => {
     setCurrentFilters(prev => ({
@@ -226,7 +239,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     } else {
       isMounted.current = true
     }
-  }, [debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, updateURL])
+  }, [debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, currentPage, updateURL])
 
   const clearFilters = () => {
     setCurrentFilters({
@@ -276,7 +289,6 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     return nameMap[locale.toUpperCase()] || locale
   }
 
-  // Memoize expensive operations
   const currentPageHosts = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize
     const endIndex = Math.min(startIndex + pageSize, filteredHosts.length)
@@ -287,6 +299,11 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     currentFilters.search || currentFilters.locale || currentFilters.target,
     [currentFilters.search, currentFilters.locale, currentFilters.target]
   )
+
+  // Final check for hydration loading
+  if (!hasMounted) {
+    return <HostsLoading />
+  }
 
   return (
     <main id="main-content">
@@ -545,15 +562,12 @@ function HostCard({ host, isNew, formatSize, getLanguageName }: HostCardProps) {
         </div>
       </div>
       
-      <a 
+      <Link 
         href={`/hosts/${host.id}`} 
         className="view-details-btn"
-        onClick={() => {
-          window.location.href = `/hosts/${host.id}`;
-        }}
       >
         View Details
-      </a>
+      </Link>
     </div>
     
   )
