@@ -253,9 +253,6 @@ window.initPageLogic = initPageLogic;
 
 // --- 5. Snow Effect ---
 function createSnowEffect() {
-  // Expose function globally so it can be called from Next.js
-  window.createSnowEffect = createSnowEffect;
-  
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   if (new Date().getMonth() !== 11) return; // Only December
   if (document.getElementById("snow-container")) return;
@@ -287,6 +284,8 @@ function createSnowEffect() {
   }
   for (let i = 0; i < 50; i++) spawn();
 }
+// Expose function globally so it can be called from Next.js
+window.createSnowEffect = createSnowEffect;
 
 function updateSnowTheme() {
   const c = document.getElementById("snow-container");

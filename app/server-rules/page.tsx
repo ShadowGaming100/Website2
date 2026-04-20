@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import ConstructionPage from "../../components/ConstructionPage";
+import ServerRulesContent from "./ServerRulesContent";
 
 export const metadata: Metadata = {
-  title: "Server Rules Under Construction - FreeHosts",
+  title: "Server Rules - FreeHosts",
   description:
-    "The Server Rules page is currently under construction. Please check back later.",
-  robots: {
-    index: false,
-    follow: false,
-  },
+    "Read the official Discord server rules and community guidelines for FreeHosts. We maintain a safe, respectful, and productive environment for all members.",
+  robots: "index, follow",
   alternates: {
     canonical: "https://freehosts.space/server-rules",
   },
@@ -17,29 +14,24 @@ export const metadata: Metadata = {
     siteName: "FreeHosts",
     type: "website",
     url: "https://freehosts.space/server-rules",
-    title: "Server Rules Under Construction - FreeHosts",
+    title: "Community Guidelines & Server Rules - FreeHosts",
     description:
-      "The Server Rules page is currently under construction. Please check back later.",
+      "Our official server rules ensure a positive experience for everyone in the FreeHosts community. Review them here.",
     images: [
       {
         url: "https://freehosts.space/Src/Images/social-preview.png",
         width: 1280,
         height: 720,
-        alt: "FreeHosts - Server Rules Under Construction",
+        alt: "FreeHosts - Server Rules",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Server Rules Under Construction - FreeHosts",
+    title: "FreeHosts Discord Server Rules",
     description:
-      "The Server Rules page is currently under construction. Please check back later.",
-    images: [
-      {
-        url: "https://freehosts.space/Src/Images/social-preview.png",
-        alt: "FreeHosts - Server Rules Under Construction",
-      },
-    ],
+      "All members must follow our community guidelines to remain part of the FreeHosts network. See the full list of 18 rules.",
+    images: ["https://freehosts.space/Src/Images/social-preview.png"],
     site: "@freehosts_",
     creator: "@freehosts_",
   },
@@ -47,11 +39,8 @@ export const metadata: Metadata = {
 
 export default function ServerRulesPage() {
   return (
-    <ConstructionPage
-      icon="fa-shield"
-      title="Server Rules Under Construction"
-      message="We're working hard to bring you our complete server rules and guidelines. This page is currently being built and will be available soon."
-      progress={20}
-    />
+    <main className="wrap section">
+      <ServerRulesContent />
+    </main>
   );
 }

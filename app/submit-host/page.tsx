@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import ConstructionPage from "../../components/ConstructionPage";
+import SubmitHostClient from "./SubmitHostClient";
 
 export const metadata: Metadata = {
-  title: "Submit Host Under Construction - FreeHosts",
+  title: "Submit a Host - FreeHosts",
   description:
-    "The Submit Host page is currently under construction. Please check back later.",
-  robots: {
-    index: false,
-    follow: false,
-  },
+    "Learn how to submit your hosting service to the FreeHosts directory. Review our submission rules and use our layout builder for a fast listing.",
+  robots: "index, follow",
   alternates: {
     canonical: "https://freehosts.space/submit-host",
   },
@@ -17,41 +14,29 @@ export const metadata: Metadata = {
     siteName: "FreeHosts",
     type: "website",
     url: "https://freehosts.space/submit-host",
-    title: "Submit Host Under Construction - FreeHosts",
+    title: "Submit a Host to the FreeHosts Directory",
     description:
-      "The Submit Host page is currently under construction. Please check back later.",
+      "Join the community-curated directory of free hosting. Learn the submission process and get your host listed today.",
     images: [
       {
         url: "https://freehosts.space/Src/Images/social-preview.png",
         width: 1280,
         height: 720,
-        alt: "FreeHosts - Submit Host Under Construction",
+        alt: "FreeHosts - Submit a Host",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Submit Host Under Construction - FreeHosts",
+    title: "Submit a Host to FreeHosts",
     description:
-      "The Submit Host page is currently under construction. Please check back later.",
-    images: [
-      {
-        url: "https://freehosts.space/Src/Images/social-preview.png",
-        alt: "FreeHosts - Submit Host Under Construction",
-      },
-    ],
+      "Want to get your hosting service listed? Follow our guide and use our layout builder for a seamless submission experience.",
+    images: ["https://freehosts.space/Src/Images/social-preview.png"],
     site: "@freehosts_",
     creator: "@freehosts_",
   },
 };
 
 export default function SubmitHostPage() {
-  return (
-    <ConstructionPage
-      icon="fa-plus"
-      title="Submit Host Under Construction"
-      message="We're working hard to bring you our host submission form. This page is currently being built and will be available soon."
-      progress={10}
-    />
-  );
+  return <SubmitHostClient />;
 }

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import PrivacyPolicyContent from "./PrivacyPolicyContent";
 
 export const metadata: Metadata = {
   title: "Privacy Policy - FreeHosts",
@@ -27,14 +26,9 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPolicyPage() {
-  const content = readFileSync(
-    path.join(process.cwd(), "app", "privacy-policy", "privacy-policy-content.html"),
-    "utf8",
-  );
-
   return (
     <main>
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+      <PrivacyPolicyContent />
     </main>
   );
 }

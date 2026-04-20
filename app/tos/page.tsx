@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import TosContent from "./TosContent";
 
 export const metadata: Metadata = {
   title: "Terms of Service - FreeHosts",
@@ -27,14 +26,9 @@ export const metadata: Metadata = {
 };
 
 export default function TermsOfServicePage() {
-  const content = readFileSync(
-    path.join(process.cwd(), "app", "tos", "tos-content.html"),
-    "utf8",
-  );
-
   return (
     <main>
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+      <TosContent />
     </main>
   );
 }

@@ -86,7 +86,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   const initialLoad = useRef(true)
 
   // Function declarations before useEffect hooks
-  const populateFilterOptions = () => {
+  const populateFilterOptions = useCallback(() => {
     const uniqueLocales = new Set<string>()
     const uniqueTargets = new Set<string>()
 
@@ -107,7 +107,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
 
     setLocales(Array.from(uniqueLocales).sort())
     setTargets(Array.from(uniqueTargets).sort())
-  }
+  }, [hosts])
 
   // Helper functions - must be defined before use
   const parseCPUValue = (cpuStr?: string): number => {
@@ -135,7 +135,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     }
   }
 
-  const checkURLParams = () => {
+  const checkURLParams = useCallback(() => {
     const search = searchParams.get('search')
     const locale = searchParams.get('locale')
     const target = searchParams.get('target')
@@ -157,7 +157,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     }
 
     setCurrentFilters(newFilters)
-  }
+  }, [searchParams, currentFilters])
 
   const sortHosts = useCallback((hostsToSort: Host[], sortBy: string): Host[] => {
     return [...hostsToSort].sort((a, b) => {
@@ -249,7 +249,6 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     }))
   }
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     if (hosts.length > 0) {
       populateFilterOptions()
@@ -258,10 +257,9 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
         initialLoad.current = false
       }
     }
-  }, [hosts, currentFilters, populateFilterOptions, checkURLParams])
+  }, [hosts, populateFilterOptions, checkURLParams])
 
   // Use debounced search in filters
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     applyFilters()
   }, [hosts, debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, applyFilters])
@@ -426,20 +424,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
 
           {/* Hosts Grid */}
           <div id="hosts-container" className="hosts-grid">
-            {loading ? (
-              <div className="loading">
-                <div className="spinner"></div>
-                <p style={{ color: 'var(--muted)' }}>Loading hosts...</p>
-              </div>
-            ) : error ? (
-              <div className="error-state">
-                <div className="error-icon">
-                  <i className="fas fa-exclamation-triangle"></i>
-                </div>
-                <div className="error-title">Error</div>
-                <p style={{ color: 'var(--muted)' }}>{error}</p>
-              </div>
-            ) : filteredHosts.length === 0 ? (
+            {filteredHosts.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">
                   <i className="fas fa-search"></i>

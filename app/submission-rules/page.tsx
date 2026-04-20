@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import SubmissionRulesContent from "./SubmissionRulesContent";
 
 export const metadata: Metadata = {
   title: "Hosting Submission Rules - FreeHosts",
@@ -26,14 +25,9 @@ export const metadata: Metadata = {
 };
 
 export default function SubmissionRulesPage() {
-  const content = readFileSync(
-    path.join(process.cwd(), "app", "submission-rules", "submission-rules-content.html"),
-    "utf8",
-  );
-
   return (
     <main className="wrap">
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+      <SubmissionRulesContent />
     </main>
   );
 }

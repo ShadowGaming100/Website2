@@ -3,9 +3,9 @@ import Link from "@/components/NoPrefetchLink";
 import Script from "next/script";
 import RouteInitializer from "../components/RouteInitializer";
 
-import "./globals.css";
-import "./css/styles.css";
-import "./css/hosts.css";
+import "./src/css/globals.css";
+import "./src/css/styles.css";
+import "./src/css/hosts.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://freehosts.space"),
@@ -139,7 +139,7 @@ export default function RootLayout({
   const year = new Date().getFullYear();
 
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <head>
         <link
           rel="stylesheet"
@@ -343,7 +343,7 @@ export default function RootLayout({
 
           <div className="wrap footer-bottom">
             <div className="copyright">
-              © 2023-<span id="year">{year}</span> FreeHosts. All rights reserved.
+              © 2024-<span id="year">{year}</span> FreeHosts. All rights reserved.
             </div>
             <div className="footer-bottom-links">
               <Link href="/tos">Terms</Link>

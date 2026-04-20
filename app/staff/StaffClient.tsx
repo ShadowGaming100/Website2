@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { staffData, type StaffJsonMember } from "./data";
 
 type FilterKey =
   | "all"
@@ -11,13 +12,6 @@ type FilterKey =
   | "helper"
   | "host-publisher"
   | "hosting-provider";
-
-type StaffJsonMember = {
-  name?: string;
-  roles: string[] | string;
-  about?: string;
-  links?: Record<string, string>;
-};
 
 type RoleInfo = {
   icon: string;
@@ -39,15 +33,14 @@ type StaffMember = {
 const roleConfig: Record<string, RoleInfo> = {
   owner: { icon: "fa-solid fa-crown", className: "owner", priority: 1, displayName: "Owner", filterKey: "owner" },
   "co-owner": { icon: "fa-solid fa-crown", className: "owner", priority: 1, displayName: "Owner", filterKey: "owner" },
-  coowner: { icon: "fa-solid fa-crown", className: "owner", priority: 1, displayName: "Owner", filterKey: "owner" },
-  administrator: { icon: "fa-solid fa-user-tie", className: "admin", priority: 2, displayName: "Administrator", filterKey: "administrator" },
-  admin: { icon: "fa-solid fa-user-tie", className: "admin", priority: 2, displayName: "Administrator", filterKey: "administrator" },
-  developer: { icon: "fa-solid fa-code", className: "developer", priority: 3, displayName: "Developer", filterKey: "developer" },
-  dev: { icon: "fa-solid fa-code", className: "developer", priority: 3, displayName: "Developer", filterKey: "developer" },
+  administrator: { icon: "fa-solid fa-user-shield", className: "admin", priority: 2, displayName: "Administrator", filterKey: "administrator" },
+  admin: { icon: "fa-solid fa-user-shield", className: "admin", priority: 2, displayName: "Administrator", filterKey: "administrator" },
+  developer: { icon: "fa-solid fa-terminal", className: "developer", priority: 3, displayName: "Developer", filterKey: "developer" },
+  dev: { icon: "fa-solid fa-terminal", className: "developer", priority: 3, displayName: "Developer", filterKey: "developer" },
   moderator: { icon: "fa-solid fa-shield-halved", className: "moderator", priority: 4, displayName: "Moderator", filterKey: "moderator" },
   helper: { icon: "fa-solid fa-hands-helping", className: "helper", priority: 5, displayName: "Helper", filterKey: "helper" },
-  "host publisher": { icon: "fa-solid fa-upload", className: "publisher", priority: 6, displayName: "Host Publisher", filterKey: "host-publisher" },
-  publisher: { icon: "fa-solid fa-upload", className: "publisher", priority: 6, displayName: "Host Publisher", filterKey: "host-publisher" },
+  "host publisher": { icon: "fa-solid fa-newspaper", className: "publisher", priority: 6, displayName: "Host Publisher", filterKey: "host-publisher" },
+  publisher: { icon: "fa-solid fa-newspaper", className: "publisher", priority: 6, displayName: "Host Publisher", filterKey: "host-publisher" },
   "hosting provider": { icon: "fa-solid fa-server", className: "hosting-provider", priority: 7, displayName: "Hosting Provider", filterKey: "hosting-provider" },
   provider: { icon: "fa-solid fa-server", className: "hosting-provider", priority: 7, displayName: "Hosting Provider", filterKey: "hosting-provider" },
 };
@@ -92,9 +85,9 @@ function processStaff(data: Record<string, StaffJsonMember>) {
     .map<StaffMember | null>(([username, member]) => {
       const rawRoles = Array.isArray(member.roles) ? member.roles : [member.roles];
       const roles = rawRoles
-        .map((role) => categorizeRole(String(role)))
+        .map((role: string) => categorizeRole(String(role)))
         .filter((role): role is RoleInfo => Boolean(role))
-        .sort((a, b) => a.priority - b.priority);
+        .sort((a: RoleInfo, b: RoleInfo) => a.priority - b.priority);
 
       if (roles.length === 0) return null;
 
@@ -108,29 +101,13 @@ function processStaff(data: Record<string, StaffJsonMember>) {
       };
     })
     .filter((member): member is StaffMember => Boolean(member))
-    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+    .sort((a: StaffMember, b: StaffMember) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
 }
 
 export default function StaffClient() {
-  const [members, setMembers] = useState<StaffMember[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [members] = useState<StaffMember[]>(() => processStaff(staffData));
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
   const [selectedMember, setSelectedMember] = useState<StaffMember | null>(null);
-
-  useEffect(() => {
-    fetch("/Src/data/staff.json", { cache: "no-cache" })
-      .then((response) => {
-        if (!response.ok) throw new Error("Failed to load staff");
-        return response.json();
-      })
-      .then((data: Record<string, StaffJsonMember>) => {
-        setMembers(processStaff(data));
-        setError(false);
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, []);
 
   useEffect(() => {
     if (!selectedMember) return;
@@ -189,22 +166,7 @@ export default function StaffClient() {
         ))}
       </div>
 
-      {loading ? (
-        <div className="loading-state">
-          <div className="loading-spinner" />
-          <p>Loading team members...</p>
-        </div>
-      ) : error ? (
-        <div className="error-state">
-          <div className="error-icon"><i className="fa-solid fa-exclamation-triangle" /></div>
-          <p style={{ color: "var(--text)", fontWeight: 600, marginBottom: "var(--space-sm)" }}>
-            Unable to Load Team
-          </p>
-          <p className="muted">Staff list is not available right now. Please try again later.</p>
-        </div>
-      ) : (
-        <StaffSections grouped={grouped} onSelect={setSelectedMember} />
-      )}
+      <StaffSections grouped={grouped} onSelect={setSelectedMember} />
 
       <section className="join-team-section">
         <div className="join-icon">
@@ -289,8 +251,8 @@ function RoleBadges({ roles }: { roles: RoleInfo[] }) {
   return (
     <div className="staff-roles">
       {roles.map((role) => (
-        <span className="staff-role" key={`${role.filterKey}-${role.displayName}`}>
-          <i className={role.icon} style={{ fontSize: 10 }} />
+        <span className={`staff-role role-${role.className}`} key={`${role.filterKey}-${role.displayName}`}>
+          <i className={role.icon} />
           {role.displayName}
         </span>
       ))}

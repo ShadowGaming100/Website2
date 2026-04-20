@@ -10,7 +10,6 @@ export const metadata = {
   alternates: {
     canonical: 'https://freehosts.space/',
   },
-  themeColor: '#071028',
   openGraph: {
     locale: 'en_US',
     siteName: 'FreeHosts',
@@ -82,6 +81,10 @@ export const metadata = {
     }
   }
 }
+
+export const viewport = {
+  themeColor: '#071028',
+};
 
 export default async function HostsPage() {
   const hosts = await fetchHosts()
