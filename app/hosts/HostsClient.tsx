@@ -21,6 +21,32 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue
 }
 
+// Helper functions - defined outside component to avoid recreation and satisfy linting
+const parseCPUValue = (cpuStr?: string): number => {
+  if (!cpuStr) return 0
+  const percentMatch = cpuStr.match(/([\d.]+)%/)
+  if (percentMatch) return parseFloat(percentMatch[1]) / 100
+  const coreMatch = cpuStr.match(/([\d.]+)\s*(vCores|cores|core)/i)
+  if (coreMatch) return parseFloat(coreMatch[1])
+  const numberMatch = cpuStr.match(/([\d.]+)/)
+  return numberMatch ? parseFloat(numberMatch[1]) : 0
+}
+
+const parseMemoryToMB = (memoryStr?: string, memoryMB?: number): number => {
+  if (memoryMB) return memoryMB
+  if (!memoryStr) return 0
+  const match = memoryStr.match(/([\d.]+)\s*(GB|MB|TB)/i)
+  if (!match) return 0
+  const value = parseFloat(match[1])
+  const unit = match[3].toUpperCase()
+  switch (unit) {
+    case 'TB': return value * 1024 * 1024
+    case 'GB': return value * 1024
+    case 'MB': return value
+    default: return value
+  }
+}
+
 export default function HostsClient({ initialHosts }: { initialHosts: Host[] }) {
   return (
     <Suspense fallback={<HostsLoading />}>
@@ -62,36 +88,37 @@ function HostsLoading() {
 function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   const searchParams = useSearchParams()
   const [hosts] = useState<Host[]>(initialHosts)
-  const [filteredHosts, setFilteredHosts] = useState<Host[]>(initialHosts)
-  
-  const [currentFilters, setCurrentFilters] = useState({
-    search: '',
-    locale: '',
-    target: '',
-    sort: 'random'
-  })
-  
-  // Use debounced search to reduce unnecessary updates
-  const debouncedSearch = useDebounce(currentFilters.search, 300)
-  
   const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
   const pageSize = 5
 
-  // Filter options state
-  const [locales, setLocales] = useState<string[]>([])
-  const [targets, setTargets] = useState<string[]>([])
+  // Initialize filters from URL parameters directly to avoid cascading renders
+  const [currentFilters, setCurrentFilters] = useState(() => {
+    return {
+      search: searchParams.get('search') || '',
+      locale: searchParams.get('locale') || '',
+      target: searchParams.get('target') || '',
+      sort: searchParams.get('sort') || 'random'
+    }
+  })
 
-  // Use ref to track initial load
-  const initialLoad = useRef(true)
+  // Use debounced search to reduce unnecessary updates
+  const debouncedSearch = useDebounce(currentFilters.search, 300)
 
-  // Function declarations before useEffect hooks
-  const populateFilterOptions = useCallback(() => {
+  // Use ref to track if it's the component's mount phase
+  const isMounted = useRef(false)
+
+  // Memoize Filter Options
+  const locales = useMemo(() => {
     const uniqueLocales = new Set<string>()
-    const uniqueTargets = new Set<string>()
-
     hosts.forEach(host => {
       (host.locale || []).forEach(locale => uniqueLocales.add(locale))
+    })
+    return Array.from(uniqueLocales).sort()
+  }, [hosts])
+
+  const targets = useMemo(() => {
+    const uniqueTargets = new Set<string>()
+    hosts.forEach(host => {
       ;(host.targets || []).forEach(target => {
         if (target) {
           const targetList = target.split(',').map(t => t.trim())
@@ -104,60 +131,8 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
         }
       })
     })
-
-    setLocales(Array.from(uniqueLocales).sort())
-    setTargets(Array.from(uniqueTargets).sort())
+    return Array.from(uniqueTargets).sort()
   }, [hosts])
-
-  // Helper functions - must be defined before use
-  const parseCPUValue = (cpuStr?: string): number => {
-    if (!cpuStr) return 0
-    const percentMatch = cpuStr.match(/([\d.]+)%/)
-    if (percentMatch) return parseFloat(percentMatch[1]) / 100
-    const coreMatch = cpuStr.match(/([\d.]+)\s*(vCores|cores|core)/i)
-    if (coreMatch) return parseFloat(coreMatch[1])
-    const numberMatch = cpuStr.match(/([\d.]+)/)
-    return numberMatch ? parseFloat(numberMatch[1]) : 0
-  }
-
-  const parseMemoryToMB = (memoryStr?: string, memoryMB?: number): number => {
-    if (memoryMB) return memoryMB
-    if (!memoryStr) return 0
-    const match = memoryStr.match(/([\d.]+)\s*(GB|MB|TB)/i)
-    if (!match) return 0
-    const value = parseFloat(match[1])
-    const unit = match[3].toUpperCase()
-    switch (unit) {
-      case 'TB': return value * 1024 * 1024
-      case 'GB': return value * 1024
-      case 'MB': return value
-      default: return value
-    }
-  }
-
-  const checkURLParams = useCallback(() => {
-    const search = searchParams.get('search')
-    const locale = searchParams.get('locale')
-    const target = searchParams.get('target')
-    const sort = searchParams.get('sort')
-
-    const newFilters = { ...currentFilters }
-    
-    if (search !== null) {
-      newFilters.search = search
-    }
-    if (locale !== null) {
-      newFilters.locale = locale
-    }
-    if (target !== null) {
-      newFilters.target = target
-    }
-    if (sort !== null) {
-      newFilters.sort = sort
-    }
-
-    setCurrentFilters(newFilters)
-  }, [searchParams, currentFilters])
 
   const sortHosts = useCallback((hostsToSort: Host[], sortBy: string): Host[] => {
     return [...hostsToSort].sort((a, b) => {
@@ -181,17 +156,11 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     })
   }, [])
 
-  const updatePagination = (hostsList: Host[]) => {
-    const newTotalPages = Math.ceil(hostsList.length / pageSize)
-    setTotalPages(newTotalPages)
-    setCurrentPage(prev => Math.min(prev, Math.max(1, newTotalPages)))
-  }
+  // Filter logic
+  const filteredHosts = useMemo(() => {
+    if (hosts.length === 0) return []
 
-  // Optimize filter application
-  const applyFilters = useCallback(() => {
-    if (hosts.length === 0) return
-
-    let filtered = hosts.filter(host => {
+    const filtered = hosts.filter(host => {
       // Search filter with debounced value
       if (debouncedSearch) {
         const searchText = `${host.name} ${host.description || ''} ${host.info || ''} ${host.type || ''} ${(host.locale || []).join(' ')} ${(host.targets || []).join(' ')}`.toLowerCase()
@@ -217,11 +186,10 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     })
 
     // Sort hosts
-    filtered = sortHosts(filtered, currentFilters.sort)
-    setFilteredHosts(filtered)
-    setCurrentPage(1)
-    updatePagination(filtered)
-  }, [hosts, debouncedSearch, currentFilters, sortHosts])
+    return sortHosts(filtered, currentFilters.sort)
+  }, [hosts, debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, sortHosts])
+
+  const totalPages = useMemo(() => Math.ceil(filteredHosts.length / pageSize), [filteredHosts.length, pageSize])
 
   // Optimize URL updates
   const updateURL = useCallback(() => {
@@ -240,6 +208,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
       ...prev,
       [filter]: value
     }))
+    setCurrentPage(1)
   }
 
   const handleSortChange = (sort: string) => {
@@ -247,27 +216,15 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
       ...prev,
       sort
     }))
+    setCurrentPage(1)
   }
-
-  useEffect(() => {
-    if (hosts.length > 0) {
-      populateFilterOptions()
-      if (initialLoad.current) {
-        checkURLParams()
-        initialLoad.current = false
-      }
-    }
-  }, [hosts, populateFilterOptions, checkURLParams])
-
-  // Use debounced search in filters
-  useEffect(() => {
-    applyFilters()
-  }, [hosts, debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, applyFilters])
 
   // Only update URL when filters actually change (not during typing)
   useEffect(() => {
-    if (!initialLoad.current) {
+    if (isMounted.current) {
       updateURL()
+    } else {
+      isMounted.current = true
     }
   }, [debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, updateURL])
 
@@ -278,6 +235,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
       target: '',
       sort: 'random'
     })
+    setCurrentPage(1)
   }
 
   const goToPage = (page: number) => {

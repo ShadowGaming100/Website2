@@ -149,7 +149,7 @@ export default function SubmissionRulesContent() {
         <div className="category-content">
           <ul>
             <li>Public ToS and Privacy Policy required.</li>
-            <li>Must follow Discord's Terms of Service.</li>
+            <li>Must follow Discord&apos;s Terms of Service.</li>
             <li>Must follow all local and international laws.</li>
             <li>Must follow server rules.</li>
           </ul>
@@ -210,7 +210,7 @@ export default function SubmissionRulesContent() {
         <div className="category-content">
           <ul>
             <li>
-              State if plans auto-renew, manual renew, or don't renew.
+              State if plans auto-renew, manual renew, or don&apos;t renew.
             </li>
             <li>
               Include renewal frequency (how often renewals are allowed).

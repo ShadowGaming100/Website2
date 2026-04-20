@@ -196,7 +196,7 @@ export default function PrivacyPolicyContent() {
         </li>
         <li>
           <strong>Location Data.</strong> We collect location data such as
-          information about your device's location, which can be either precise
+          information about your device&apos;s location, which can be either precise
           or imprecise.
         </li>
       </ul>
@@ -241,9 +241,9 @@ export default function PrivacyPolicyContent() {
           being used so we can improve them.
         </li>
         <li>
-          <strong>To save or protect an individual's vital interest.</strong> We may
+          <strong>To save or protect an individual&apos;s vital interest.</strong> We may
           process your information when necessary to save or protect an
-          individual's vital interest, such as to prevent harm.
+          individual&apos;s vital interest, such as to prevent harm.
         </li>
       </ul>
 
@@ -447,8 +447,8 @@ export default function PrivacyPolicyContent() {
 
       <p>
         You can make such a request by contacting us by using the contact
-        details provided in the section "HOW CAN YOU CONTACT US ABOUT THIS
-        NOTICE?" below.
+        details provided in the section &quot;HOW CAN YOU CONTACT US ABOUT THIS
+        NOTICE?&quot; below.
       </p>
 
       <p>
@@ -462,7 +462,7 @@ export default function PrivacyPolicyContent() {
           consent to process your personal information, you have the right to
           withdraw your consent at any time. You can withdraw your consent at
           any time by contacting us by using the contact details provided in
-          the section "HOW CAN YOU CONTACT US ABOUT THIS NOTICE?" below.
+          the section &quot;HOW CAN YOU CONTACT US ABOUT THIS NOTICE?&quot; below.
         </p>
       </div>
 
@@ -485,7 +485,7 @@ export default function PrivacyPolicyContent() {
 
       <p>
         Most web browsers and some mobile operating systems and mobile
-        applications include a Do-Not-Track ('DNT') feature or setting you can
+        applications include a Do-Not-Track (&apos;DNT&apos;) feature or setting you can
         activate to signal your privacy preference not to have data about your
         online browsing activities monitored and collected. At this stage, no
         uniform technology standard for recognizing and implementing DNT
@@ -591,7 +591,7 @@ export default function PrivacyPolicyContent() {
 
       <p>
         We may update this Privacy Notice from time to time. The updated version
-        will be indicated by an updated "Revised" date at the top of this
+        will be indicated by an updated &quot;Revised&quot; date at the top of this
         Privacy Notice. If we make material changes to this Privacy Notice, we
         may notify you either by prominently posting a notice of such changes or
         by directly sending you a notification. We encourage you to review this

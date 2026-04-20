@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
 
+# Block API endpoints and admin pages
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /cgi-bin/
+
 Sitemap: https://freehosts.space/sitemap.xml
