@@ -3,15 +3,13 @@
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
-import { useParams, useSearchParams, useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
 
 export default function Page() {
   const params = useParams() || {};
   const searchParams = useSearchParams();
-  const router = useRouter();
 
-  const idParam = params.id ?? '';
   const urlParam = params.url ?? '';
   const url = urlParam ? atob(decodeURIComponent(urlParam as string)) : '';
 
@@ -19,51 +17,10 @@ export default function Page() {
   const linkType = searchParams?.get('linkType') || 'Website';
   const returnTo = searchParams?.get('returnTo');
 
-
   const [countdown, setCountdown] = useState(5);
   const [isRedirecting, setIsRedirecting] = useState(true);
 
-  useEffect(() => {
-    if (!isRedirecting) return;
-
-    const timer = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          // Automatically redirect after countdown finishes
-          handleAutoRedirect();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [isRedirecting]);
-
-  function handleRedirect(e?: React.MouseEvent) {
-    // Only open in new tab if triggered by user interaction
-    if (e) {
-      e.preventDefault();
-      
-      let targetUrl = url;
-      try {
-        const urlObj = new URL(url);
-        urlObj.searchParams.append('ref', 'freehosts.space');
-        targetUrl = urlObj.toString();
-      } catch {
-        targetUrl = url + (url.includes('?') ? '&ref=freehosts.space' : '?ref=freehosts.space');
-      }
-
-      // Open in new tab (this should work since it's user-initiated)
-      window.open(targetUrl, '_blank', 'noopener,noreferrer');
-    }
-
-    // Stop the countdown
-    setIsRedirecting(false);
-  }
-
-  function handleAutoRedirect() {
+  const handleAutoRedirect = useCallback(() => {
     // Automatically open in new tab after countdown
     let targetUrl = url;
     try {
@@ -85,7 +42,25 @@ export default function Page() {
         window.location.href = '/hosts';
       }
     }, 1000);
-  }
+  }, [url, returnTo]);
+
+  useEffect(() => {
+    if (!isRedirecting) return;
+
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          // Automatically redirect after countdown finishes
+          handleAutoRedirect();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isRedirecting, handleAutoRedirect]);
 
 
   function handleCancel() {
@@ -122,7 +97,7 @@ export default function Page() {
               className="redirect-link"
               target="_blank"
               rel="noopener noreferrer"
-              onClick={(e) => handleRedirect(e)}
+              onClick={() => handleAutoRedirect()}
             >
               <i className="fas fa-external-link-alt"></i> Open Link
             </a>

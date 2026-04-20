@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, Suspense, useRef, useMemo } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import Link from '@/components/NoPrefetchLink'
+import { useSearchParams } from 'next/navigation'
 import { type Host } from '../../lib/cache'
 
 // Debounce hook
@@ -61,12 +60,9 @@ function HostsLoading() {
 
 // Main content component that uses useSearchParams
 function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
-  const router = useRouter()
   const searchParams = useSearchParams()
-  const [hosts, setHosts] = useState<Host[]>(initialHosts)
+  const [hosts] = useState<Host[]>(initialHosts)
   const [filteredHosts, setFilteredHosts] = useState<Host[]>(initialHosts)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   
   const [currentFilters, setCurrentFilters] = useState({
     search: '',
@@ -89,28 +85,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   // Use ref to track initial load
   const initialLoad = useRef(true)
 
-  useEffect(() => {
-    if (hosts.length > 0) {
-      populateFilterOptions()
-      if (initialLoad.current) {
-        checkURLParams()
-        initialLoad.current = false
-      }
-    }
-  }, [hosts])
-
-  // Use debounced search in filters
-  useEffect(() => {
-    applyFilters()
-  }, [hosts, debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort])
-
-  // Only update URL when filters actually change (not during typing)
-  useEffect(() => {
-    if (!initialLoad.current) {
-      updateURL()
-    }
-  }, [debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort])
-
+  // Function declarations before useEffect hooks
   const populateFilterOptions = () => {
     const uniqueLocales = new Set<string>()
     const uniqueTargets = new Set<string>()
@@ -132,6 +107,32 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
 
     setLocales(Array.from(uniqueLocales).sort())
     setTargets(Array.from(uniqueTargets).sort())
+  }
+
+  // Helper functions - must be defined before use
+  const parseCPUValue = (cpuStr?: string): number => {
+    if (!cpuStr) return 0
+    const percentMatch = cpuStr.match(/([\d.]+)%/)
+    if (percentMatch) return parseFloat(percentMatch[1]) / 100
+    const coreMatch = cpuStr.match(/([\d.]+)\s*(vCores|cores|core)/i)
+    if (coreMatch) return parseFloat(coreMatch[1])
+    const numberMatch = cpuStr.match(/([\d.]+)/)
+    return numberMatch ? parseFloat(numberMatch[1]) : 0
+  }
+
+  const parseMemoryToMB = (memoryStr?: string, memoryMB?: number): number => {
+    if (memoryMB) return memoryMB
+    if (!memoryStr) return 0
+    const match = memoryStr.match(/([\d.]+)\s*(GB|MB|TB)/i)
+    if (!match) return 0
+    const value = parseFloat(match[1])
+    const unit = match[3].toUpperCase()
+    switch (unit) {
+      case 'TB': return value * 1024 * 1024
+      case 'GB': return value * 1024
+      case 'MB': return value
+      default: return value
+    }
   }
 
   const checkURLParams = () => {
@@ -156,6 +157,34 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     }
 
     setCurrentFilters(newFilters)
+  }
+
+  const sortHosts = useCallback((hostsToSort: Host[], sortBy: string): Host[] => {
+    return [...hostsToSort].sort((a, b) => {
+      switch (sortBy) {
+        case 'random':
+          return Math.random() - 0.5
+        case 'recent':
+          if (a.created_at && b.created_at) return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          return (b.id || 0) - (a.id || 0)
+        case 'name':
+          return (a.name || '').localeCompare(b.name || '')
+        case 'cpu':
+          return parseCPUValue(b.cpu) - parseCPUValue(a.cpu)
+        case 'ram':
+          return parseMemoryToMB(b.ram, b.ramMB) - parseMemoryToMB(a.ram, a.ramMB)
+        case 'storage':
+          return parseMemoryToMB(b.disk, b.diskMB) - parseMemoryToMB(a.disk, a.diskMB)
+        default:
+          return Math.random() - 0.5
+      }
+    })
+  }, [])
+
+  const updatePagination = (hostsList: Host[]) => {
+    const newTotalPages = Math.ceil(hostsList.length / pageSize)
+    setTotalPages(newTotalPages)
+    setCurrentPage(prev => Math.min(prev, Math.max(1, newTotalPages)))
   }
 
   // Optimize filter application
@@ -192,35 +221,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     setFilteredHosts(filtered)
     setCurrentPage(1)
     updatePagination(filtered)
-  }, [hosts, debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort])
-
-  const sortHosts = (hostsToSort: Host[], sortBy: string): Host[] => {
-    return [...hostsToSort].sort((a, b) => {
-      switch (sortBy) {
-        case 'random':
-          return Math.random() - 0.5
-        case 'recent':
-          if (a.created_at && b.created_at) return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          return (b.id || 0) - (a.id || 0)
-        case 'name':
-          return (a.name || '').localeCompare(b.name || '')
-        case 'cpu':
-          return parseCPUValue(b.cpu) - parseCPUValue(a.cpu)
-        case 'ram':
-          return parseMemoryToMB(b.ram, b.ramMB) - parseMemoryToMB(a.ram, a.ramMB)
-        case 'storage':
-          return parseMemoryToMB(b.disk, b.diskMB) - parseMemoryToMB(a.disk, a.diskMB)
-        default:
-          return Math.random() - 0.5
-      }
-    })
-  }
-
-  const updatePagination = (hostsList: Host[]) => {
-    const newTotalPages = Math.ceil(hostsList.length / pageSize)
-    setTotalPages(newTotalPages)
-    setCurrentPage(prev => Math.min(prev, Math.max(1, newTotalPages)))
-  }
+  }, [hosts, debouncedSearch, currentFilters, sortHosts])
 
   // Optimize URL updates
   const updateURL = useCallback(() => {
@@ -248,6 +249,30 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     }))
   }
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => {
+    if (hosts.length > 0) {
+      populateFilterOptions()
+      if (initialLoad.current) {
+        checkURLParams()
+        initialLoad.current = false
+      }
+    }
+  }, [hosts, currentFilters, populateFilterOptions, checkURLParams])
+
+  // Use debounced search in filters
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => {
+    applyFilters()
+  }, [hosts, debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, applyFilters])
+
+  // Only update URL when filters actually change (not during typing)
+  useEffect(() => {
+    if (!initialLoad.current) {
+      updateURL()
+    }
+  }, [debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, updateURL])
+
   const clearFilters = () => {
     setCurrentFilters({
       search: '',
@@ -264,31 +289,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     document.getElementById('hosts-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  // Helper functions
-  const parseCPUValue = (cpuStr?: string): number => {
-    if (!cpuStr) return 0
-    const percentMatch = cpuStr.match(/(\d+(\.\d+)?)%/)
-    if (percentMatch) return parseFloat(percentMatch[1]) / 100
-    const coreMatch = cpuStr.match(/(\d+(\.\d+)?)\s*(vCores|cores|core)/i)
-    if (coreMatch) return parseFloat(coreMatch[1])
-    const numberMatch = cpuStr.match(/(\d+(\.\d+)?)/)
-    return numberMatch ? parseFloat(numberMatch[1]) : 0
-  }
 
-  const parseMemoryToMB = (memoryStr?: string, memoryMB?: number): number => {
-    if (memoryMB) return memoryMB
-    if (!memoryStr) return 0
-    const match = memoryStr.match(/(\d+(\.\d+)?)\s*(GB|MB|TB)/i)
-    if (!match) return 0
-    const value = parseFloat(match[1])
-    const unit = match[3].toUpperCase()
-    switch (unit) {
-      case 'TB': return value * 1024 * 1024
-      case 'GB': return value * 1024
-      case 'MB': return value
-      default: return value
-    }
-  }
 
   const isHostNew = (host: Host): boolean => {
     if (!host.created_at) return false
@@ -604,8 +605,7 @@ function HostCard({ host, isNew, formatSize, getLanguageName }: HostCardProps) {
       <a 
         href={`/hosts/${host.id}`} 
         className="view-details-btn"
-        onClick={(e) => {
-         
+        onClick={() => {
           window.location.href = `/hosts/${host.id}`;
         }}
       >

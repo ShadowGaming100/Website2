@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from '@/components/NoPrefetchLink'
 import { type Host } from '../lib/cache'
 
@@ -10,7 +9,6 @@ interface HostDetailClientProps {
 }
 
 export default function HostDetailClient({ host }: HostDetailClientProps) {
-  const router = useRouter()
   const [showDiscordModal, setShowDiscordModal] = useState(false)
 
   const totalReviews = (host.approvals || 0) + (host.disapprovals || 0)
@@ -114,18 +112,13 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
         <div className="wrap">
           {/* Back Button */}
           <div className="host-detail-back-section">
-            <a 
+            <Link 
               href="/hosts" 
               className="host-detail-back-btn"
-              onClick={(e) => {
-                e.preventDefault();
-                // Force a full page reload to ensure proper state reset
-                window.location.href = '/hosts';
-              }}
             >
               <i className="fas fa-arrow-left"></i>
               <span>Back to All Hosts</span>
-            </a>
+            </Link>
           </div>
 
           {/* Host Header */}

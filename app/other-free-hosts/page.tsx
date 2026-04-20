@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Other Free Hosting Platforms - FreeHosts",
@@ -133,7 +134,7 @@ export default function OtherFreeHostsPage() {
               <div className="external-host-header">
                 <div className="external-host-icon-wrapper">
                   {host.image ? (
-                    <img src={host.image} alt={host.name} />
+                    <Image src={host.image} alt={host.name} width={40} height={40} />
                   ) : (
                     host.initials
                   )}

@@ -1,4 +1,4 @@
-import { type Host, fetchHosts } from '../../lib/cache'
+import { fetchHosts } from '../../lib/cache'
 import HostsClient from './HostsClient'
 
 export const runtime = 'edge';

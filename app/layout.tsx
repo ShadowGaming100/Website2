@@ -4,8 +4,8 @@ import Script from "next/script";
 import RouteInitializer from "../components/RouteInitializer";
 
 import "./globals.css";
-import "../../public/Src/css/styles.css";
-import "../../public/Src/css/hosts.css";
+import "./css/styles.css";
+import "./css/hosts.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://freehosts.space"),
