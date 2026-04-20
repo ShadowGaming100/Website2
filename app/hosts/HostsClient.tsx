@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense, useRef, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
+import Link from '@/components/NoPrefetchLink'
 import { type Host } from '../../lib/cache'
 
 // Debounce hook

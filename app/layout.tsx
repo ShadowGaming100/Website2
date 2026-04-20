@@ -1,10 +1,11 @@
-/* eslint-disable @next/next/no-css-tags */
 import type { Metadata, Viewport } from "next";
-import Link from "next/link";
+import Link from "@/components/NoPrefetchLink";
 import Script from "next/script";
 import RouteInitializer from "../components/RouteInitializer";
 
 import "./globals.css";
+import "../../public/Src/css/styles.css";
+import "../../public/Src/css/hosts.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://freehosts.space"),
@@ -14,7 +15,6 @@ export const metadata: Metadata = {
   robots: "index, follow",
   icons: {
     icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
   },
   alternates: {
     canonical: "/",
@@ -141,8 +141,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="stylesheet" href="/Src/css/styles.css" />
-        <link rel="stylesheet" href="/Src/css/hosts.css" />
         <link
           rel="stylesheet"
           href="https://font-awesome.icons.cdn.codelabworks.is-cool.dev/css/all.css"

@@ -17,6 +17,29 @@ export interface Host {
   created_at?: string
   free_plan?: string
   links: string[]
+  image?: string
+}
+
+interface RawHost {
+  id?: number
+  name?: string
+  description?: string
+  info?: string
+  type?: string
+  locale?: unknown
+  targets?: unknown
+  status?: string
+  cpu?: string
+  ram?: string
+  ramMB?: number
+  disk?: string
+  diskMB?: number
+  approvals?: number
+  disapprovals?: number
+  created_at?: string
+  free_plan?: string
+  links?: unknown
+  image?: string
 }
 
 // Server-side cache
@@ -47,7 +70,7 @@ export async function fetchHosts(): Promise<Host[]> {
       ? data
       : []
 
-    const cleanedHosts: Host[] = hostsData.map((host: any) => ({
+    const cleanedHosts: Host[] = hostsData.map((host: RawHost) => ({
       id: host.id || 0,
       name: host.name || 'Unknown Host',
       description: host.description || '',
@@ -66,6 +89,7 @@ export async function fetchHosts(): Promise<Host[]> {
       created_at: host.created_at || '',
       free_plan: host.free_plan || '',
       links: Array.isArray(host.links) ? host.links : [],
+      image: host.image,
     }))
 
     // Update cache

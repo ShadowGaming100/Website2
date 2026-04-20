@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/NoPrefetchLink'
 import { fetchHostById, type Host } from '../../../lib/cache'
 import HostDetailClient from '../../../components/HostDetailClient'
 export const runtime = 'edge';
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props) {
   const description = `Free hosting provider ${host.name} offering ${targets}. ${specsText} — ${typeText}.`
   const site = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://freehosts.space').replace(/\/$/, '')
   const hostUrl = `${site}/hosts/${host.id}`
-  const ogImageUrl = (host as any).image ?? `${site}/Src/Images/social-preview.png`
+  const ogImageUrl = host.image ?? `${site}/Src/Images/social-preview.png`
   const imageWidth = 1280
   const imageHeight = 720
   const imageAlt = `${host.name} — Free hosting provider on FreeHosts`
@@ -91,13 +91,13 @@ function HostNotFoundPage() {
         </div>
         <h1 className="not-found-title">404 - Host Not Found</h1>
         <p className="not-found-text">
-          The host you're looking for doesn't exist or may have been removed from our directory.
+          The host you&apos;re looking for doesn&apos;t exist or may have been removed from our directory.
         </p>
         <div className="not-found-actions">
-          <Link href="/hosts" prefetch={false} className="not-found-btn primary">
+          <Link href="/hosts" className="not-found-btn primary">
             <i className="fas fa-arrow-left" /> Back to All Hosts
           </Link>
-          <Link href="/" prefetch={false} className="not-found-btn secondary">
+          <Link href="/" className="not-found-btn secondary">
             <i className="fas fa-home" /> Go to Homepage
           </Link>
         </div>

@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+import Link from '@/components/NoPrefetchLink'
 import { type Host } from '../lib/cache'
 
 interface HostDetailClientProps {

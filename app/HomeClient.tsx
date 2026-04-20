@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/NoPrefetchLink";
 import { useEffect, useState } from "react";
 
 const inviteCode = "QbeZ3b5CQd";

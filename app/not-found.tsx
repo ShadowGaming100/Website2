@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/NoPrefetchLink";
 
 export const metadata: Metadata = {
   title: "404 - Page not found - FreeHosts",
