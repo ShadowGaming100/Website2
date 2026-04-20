@@ -135,12 +135,19 @@ addGlobalListener("click", ".sidebar-dropdown-toggle", (e, btn) => {
   else dropdown.classList.remove("open");
 });
 
-  var _mtm = window._mtm = window._mtm || [];
-  _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-  (function() {
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.async=true; g.src='https://matomo.codelabworks.is-a.dev/js/container_1680bbwg.js'; s.parentNode.insertBefore(g,s);
+if (!window.__fhMatomoLoaded) {
+  window.__fhMatomoLoaded = true;
+  var _mtm = (window._mtm = window._mtm || []);
+  _mtm.push({ "mtm.startTime": new Date().getTime(), event: "mtm.Start" });
+  (function () {
+    var d = document,
+      g = d.createElement("script"),
+      s = d.getElementsByTagName("script")[0];
+    g.async = true;
+    g.src = "https://matomo.codelabworks.is-a.dev/js/container_1680bbwg.js";
+    s.parentNode.insertBefore(g, s);
   })();
+}
 // --- 4. Animation & Interactivity Initialization ---
 function initPageLogic() {
   // A. Scroll Animations (Intersection Observer)
@@ -339,8 +346,3 @@ addGlobalListener("click", "#closePreview", () => {
   window.addEventListener("DOMContentLoaded", () => setTheme(t));
 })();
 
-// Initialize Logic on Load
-document.addEventListener("DOMContentLoaded", () => {
-  window.initPageLogic();
-  createSnowEffect();
-});

@@ -49,6 +49,40 @@ const commands = [
   },
 ];
 
+const hostingCategories = [
+  {
+    icon: "fa-globe",
+    title: "Website Hosting",
+    text:
+      "Deploy static sites, portfolios, blogs, and landing pages with providers optimized for frontend performance and easy publishing.",
+  },
+  {
+    icon: "fa-code-branch",
+    title: "Application Hosting",
+    text:
+      "Run Node.js, Python, PHP, Ruby, and other backend apps for APIs, dashboards, and full-stack projects that need server-side logic.",
+  },
+  {
+    icon: "fa-robot",
+    title: "Bot Hosting",
+    text:
+      "Keep Discord, Telegram, and automation bots online with enough uptime and resources for small to medium community projects.",
+  },
+  {
+    icon: "fa-database",
+    title: "Database Hosting",
+    text:
+      "Use free PostgreSQL, MongoDB, MySQL, or Redis services for apps that need storage, auth, content, and structured data.",
+  },
+];
+
+const choiceChecklist = [
+  "Compare storage, bandwidth, and compute limits before deploying.",
+  "Check uptime, cold starts, and deployment complexity for your stack.",
+  "Read community reviews to spot hidden limits and real-world reliability.",
+  "Pick a host with an upgrade path if your project may grow quickly.",
+];
+
 type DiscordState = {
   name: string;
   status: string;
@@ -293,74 +327,80 @@ export default function HomeClient() {
         </div>
       </section>
 
-      <section
-        id="what-is-free-hosting"
-        className="section wrap"
-        style={{ padding: "4rem 1rem", maxWidth: "900px", margin: "0 auto" }}
-      >
-        <h2 className="section-title">What is Free Hosting?</h2>
-        <p style={{ fontSize: "1.1rem", lineHeight: 1.8, marginBottom: "1.5rem" }}>
-          Free hosting allows developers, students, and hobbyists to deploy websites,
-          applications, Discord bots, and community projects without paying for server
-          infrastructure. These services provide computing resources at no cost, making
-          them ideal for learning, experimentation, and small-scale projects.
-        </p>
-        <p style={{ fontSize: "1.1rem", lineHeight: 1.8, marginBottom: "1.5rem" }}>
-          FreeHosts curates a comprehensive directory of verified free hosting providers.
-          Our community reviews, staff recommendations, and detailed feature lists help
-          you join the right hosting platform and find the most reliable options for your
-          specific needs. Whether you need hosting lists for Discord bots or web apps,
-          our community has you covered.
-        </p>
-        <h3 style={{ fontSize: "1.5rem", margin: "2rem 0 1rem" }}>
-          Popular Free Hosting Categories
-        </h3>
-        <p style={{ fontSize: "1.1rem", lineHeight: 1.8, marginBottom: "1rem" }}>
-          <strong>Website Hosting:</strong> Deploy static sites, blogs, portfolios, and
-          landing pages with providers that offer excellent performance through global
-          CDN distribution. These services are ideal for frontend projects built with
-          HTML, CSS, JavaScript, or modern frameworks.
-        </p>
-        <p style={{ fontSize: "1.1rem", lineHeight: 1.8, marginBottom: "1rem" }}>
-          <strong>Application Hosting:</strong> Run Node.js, Python, Ruby, PHP, and other
-          backend applications with full server environments. Perfect for APIs, web apps,
-          microservices, and full-stack projects that require dynamic server-side processing.
-        </p>
-        <p style={{ fontSize: "1.1rem", lineHeight: 1.8, marginBottom: "1rem" }}>
-          <strong>Discord Bot Hosting:</strong> Host Discord bots, Telegram bots, Twitter
-          bots, and other automated services continuously. Many providers offer 24/7
-          uptime with sufficient resources for small to medium bot projects that need
-          constant availability. Join our community to discover hosting lists and features
-          tailored for Discord developers.
-        </p>
-        <p style={{ fontSize: "1.1rem", lineHeight: 1.8, marginBottom: "1.5rem" }}>
-          <strong>Database Hosting:</strong> Free database services including PostgreSQL,
-          MongoDB, MySQL, and Redis. Essential for applications requiring data persistence,
-          user authentication, content management, and structured data storage without
-          hosting costs.
-        </p>
-        <h3 style={{ fontSize: "1.5rem", margin: "2rem 0 1rem" }}>
-          How to Choose Free Hosting - Join Our Community
-        </h3>
-        <p style={{ fontSize: "1.1rem", lineHeight: 1.8, marginBottom: "1rem" }}>
-          Consider your project requirements when selecting a hosting provider. Evaluate
-          factors like storage limits, bandwidth allowances, computational resources,
-          uptime guarantees, and deployment complexity. Read community reviews on
-          FreeHosts and join our Discord to learn from other developers&apos; experiences
-          with various hosting lists and features.
-        </p>
-        <p style={{ fontSize: "1.1rem", lineHeight: 1.8, marginBottom: "1rem" }}>
-          Our staff regularly updates hosting lists and FAQ sections to help you make
-          informed decisions. Join the FreeHosts community to access curated lists,
-          participate in discussions, and get support from experienced developers who
-          have tested these hosting solutions.
-        </p>
-        <p style={{ fontSize: "1.1rem", lineHeight: 1.8, marginBottom: "1.5rem" }}>
-          Most free hosting services have usage limitations but are generous enough for
-          learning projects, prototypes, personal websites, Discord bots, and small
-          community applications. As your project grows, many providers offer easy
-          upgrade paths to paid tiers with enhanced features and resources.
-        </p>
+      <section id="what-is-free-hosting" className="section wrap what-is-hosting-section">
+        <div className="what-is-hosting-shell">
+          <div className="what-is-hosting-intro">
+            <div className="what-is-hosting-kicker">
+              <i className="fa-solid fa-sparkles" />
+              Learn the Basics
+            </div>
+            <h2 className="section-title">What is Free Hosting?</h2>
+            <p className="what-is-hosting-lead">
+              Free hosting gives developers, students, and hobbyists a way to deploy
+              websites, apps, bots, and community projects without paying for server
+              infrastructure upfront. It is ideal for learning, experiments, prototypes,
+              and small real-world launches.
+            </p>
+          </div>
+
+          <div className="what-is-hosting-highlight">
+            <div className="hosting-highlight-icon">
+              <i className="fa-solid fa-compass" />
+            </div>
+            <div>
+              <h3>Why FreeHosts helps</h3>
+              <p>
+                FreeHosts curates verified providers, community reviews, staff picks,
+                and feature breakdowns so you can find the right option faster instead
+                of comparing random services blind.
+              </p>
+            </div>
+          </div>
+
+          <div className="hosting-category-grid">
+            {hostingCategories.map((category) => (
+              <article className="hosting-category-card" key={category.title}>
+                <div className="hosting-category-icon">
+                  <i className={`fa-solid ${category.icon}`} />
+                </div>
+                <h3>{category.title}</h3>
+                <p>{category.text}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="hosting-guide-grid">
+            <article className="hosting-guide-card">
+              <h3>
+                <i className="fa-solid fa-list-check" /> How to Choose Free Hosting
+              </h3>
+              <ul className="hosting-checklist">
+                {choiceChecklist.map((item) => (
+                  <li key={item}>
+                    <i className="fa-solid fa-check" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+
+            <article className="hosting-guide-card hosting-guide-card-accent">
+              <h3>
+                <i className="fa-solid fa-users" /> Join Our Community
+              </h3>
+              <p>
+                Our staff and community regularly update hosting lists, publish answers,
+                and share real deployment experience. It is the quickest way to avoid
+                weak providers and find something that actually fits your project.
+              </p>
+              <p>
+                Most free hosting plans have limits, but they are often generous enough
+                for portfolios, bots, MVPs, and learning projects. And when your app
+                starts growing, many providers offer an easy path to paid upgrades.
+              </p>
+            </article>
+          </div>
+        </div>
       </section>
 
       <section id="about-teaser" className="section about wrap">
