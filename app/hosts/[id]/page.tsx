@@ -1,7 +1,7 @@
 import Link from '@/components/NoPrefetchLink'
 import { fetchHostById, type Host } from '../../../lib/cache'
 import HostDetailClient from '../../../components/HostDetailClient'
-export const revalidate = 86400;
+export const runtime = 'edge';
 
 type Props = {
   params: Promise<{ id: string }>
