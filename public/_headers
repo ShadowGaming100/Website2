@@ -35,12 +35,14 @@
 # LISTING / DIRECTORY PAGES
 # =========================
 
-/hosts*
+/hosts/*
   Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400
 
 /other-free-hosts
   Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400
 
+/redirect/*
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400
 
 # =========================
 # SUBMISSION PAGES
