@@ -29,6 +29,10 @@ export const staffData: Record<string, StaffJsonMember> = {
     name: "simba",
     roles: ["Developer"],
   },
+  itsoffkey: {
+    name: "itsoffkey",
+    roles: ["Developer"],
+  },
   quanglocle24: {
     name: "quanglocle24",
     roles: ["Developer"],
