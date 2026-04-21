@@ -1,21 +1,39 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async rewrites() {
+  async headers() {
     return [
       {
-        source: '/server-rules',
-        destination: '/server-rules.html',
+        source: "/hosts/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value:
+              "public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400",
+          },
+        ],
       },
       {
-        source: '/submit-host',
-        destination: '/submit-host.html',
+        source: "/other-free-hosts",
+        headers: [
+          {
+            key: "Cache-Control",
+            value:
+              "public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400",
+          },
+        ],
       },
-      // {
-      //   source: '/hosts',
-      //   destination: '/hosts.html',
-      // },
-    ]
-  }
-}
+      {
+        source: "/redirect/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value:
+              "public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400",
+          },
+        ],
+      },
+    ];
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
