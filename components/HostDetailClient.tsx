@@ -4,6 +4,18 @@ import { useState, useCallback } from 'react'
 import Link from '@/components/NoPrefetchLink'
 import { type Host } from '../lib/cache'
 
+// ─── External URL helper ──────────────────────────────────────────────────────
+// Appends ?ref=freehosts.space (or &ref=… if a query string already exists).
+function buildTargetUrl(raw: string): string {
+  try {
+    const urlObj = new URL(raw)
+    urlObj.searchParams.append('ref', 'freehosts.space')
+    return urlObj.toString()
+  } catch {
+    return raw + (raw.includes('?') ? '&ref=freehosts.space' : '?ref=freehosts.space')
+  }
+}
+
 interface HostDetailClientProps {
   host: Host
 }
@@ -97,8 +109,12 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
     setShowDiscordModal(true)
   }
 
+
   const handleRedirect = useCallback((url: string, hostName?: string, linkType?: string) => {
     if (typeof window === 'undefined') return
+
+    window.open(buildTargetUrl(url), '_blank', 'noopener,noreferrer')
+
     const encodedUrl = encodeURIComponent(btoa(url))
     const encodedHostName = hostName ? `&hostName=${encodeURIComponent(hostName)}` : ''
     const lt = linkType ? `&linkType=${encodeURIComponent(linkType)}` : ''

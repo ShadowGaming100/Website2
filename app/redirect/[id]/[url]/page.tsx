@@ -29,17 +29,11 @@ export default function Page() {
   const [countdown, setCountdown] = useState(5);
   const [isCancelled, setIsCancelled] = useState(false);
 
-  // Open in new tab immediately on mount
-  useEffect(() => {
-    if (!url) return;
 
-    const targetUrl = buildTargetUrl(url);
-    window.open(targetUrl, '_blank', 'noopener,noreferrer');
-  }, [url]);
 
   // Countdown redirect back
   useEffect(() => {
-    if (isCancelled) return;
+    if (isCancelled || !url) return;
 
     const timer = setInterval(() => {
       setCountdown(prev => {
@@ -53,9 +47,10 @@ export default function Page() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isCancelled, returnTo]);
+  }, [isCancelled, returnTo, url]);
 
   const progress = (countdown / 5) * 100;
+  const targetUrl = url ? buildTargetUrl(url) : '#';
 
   return (
     <main id="main-content">
@@ -92,7 +87,7 @@ export default function Page() {
 
           <div className="redirect-actions">
             <a
-              href={buildTargetUrl(url)}
+              href={targetUrl}
               className="redirect-link"
               target="_blank"
               rel="noopener noreferrer"
@@ -139,7 +134,8 @@ export default function Page() {
                   margin: 0,
                 }}
               >
-                The link has been opened in a new tab. You can now return to the hosts list.
+                The link has been opened in a new tab. You can now return to
+                the hosts list.
               </p>
             </div>
           )}
