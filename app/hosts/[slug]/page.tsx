@@ -1,23 +1,26 @@
 import Link from '@/components/NoPrefetchLink'
-import { fetchHostById, type Host } from '../../../lib/cache'
+import { redirect } from 'next/navigation'
+import { fetchHostById, fetchHostBySlug, type Host } from '../../../lib/cache'
+import { slugify } from '../../../lib/slugify'
 import HostDetailClient from '../../../components/HostDetailClient'
 export const runtime = 'edge';
 
 type Props = {
-  params: Promise<{ id: string }>
+  params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { id } = await params
-  const idNum = Number(id)
-  if (!Number.isFinite(idNum)) {
+  const { slug } = await params
+
+  // For numeric slugs, return minimal metadata (page will redirect)
+  if (/^\d+$/.test(slug)) {
     return {
       title: 'Host Not Found | FreeHosts',
       description: 'The host you are looking for does not exist or has been removed.'
     }
   }
 
-  const host = await fetchHostById(idNum)
+  const host = await fetchHostBySlug(slug)
   if (!host) {
     return {
       title: 'Host Not Found | FreeHosts',
@@ -34,7 +37,7 @@ export async function generateMetadata({ params }: Props) {
   const typeText = host.type && host.type.toLowerCase().includes('trusted') ? 'Trusted & Free' : host.type || 'Free'
   const description = `Free hosting provider ${host.name} offering ${targets}. ${specsText} — ${typeText}.`
   const site = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://freehosts.space').replace(/\/$/, '')
-  const hostUrl = `${site}/hosts/${host.id}`
+  const hostUrl = `${site}/hosts/${slugify(host.name)}`
   const ogImageUrl = host.image ?? `${site}/Src/Images/social-preview.png`
   const imageWidth = 1280
   const imageHeight = 720
@@ -48,7 +51,6 @@ export async function generateMetadata({ params }: Props) {
     alternates: {
       canonical: hostUrl
     },
-    // favicon intentionally omitted (kept in layout.tsx)
     keywords,
     authors: [{ name: 'FreeHosts', url: site }],
     metadataBase: new URL(site),
@@ -107,11 +109,17 @@ function HostNotFoundPage() {
 }
 
 export default async function HostDetailPage({ params }: Props) {
-  const { id } = await params
-  const idNum = Number(id)
-  if (!Number.isFinite(idNum)) return <HostNotFoundPage />
+  const { slug } = await params
 
-  const host: Host | null = await fetchHostById(idNum)
+  if (/^\d+$/.test(slug)) {
+    // Legacy numeric ID — look up host and redirect to slug URL
+    const host: Host | null = await fetchHostById(Number(slug))
+    if (!host) return <HostNotFoundPage />
+    redirect(`/hosts/${slugify(host.name)}`)
+  }
+
+  // Slug-based lookup
+  const host: Host | null = await fetchHostBySlug(slug)
   if (!host) return <HostNotFoundPage />
 
   const targets = host.targets && host.targets.length ? host.targets.join(', ') : 'various purposes'
@@ -123,7 +131,7 @@ export default async function HostDetailPage({ params }: Props) {
   const typeText = host.type && host.type.toLowerCase().includes('trusted') ? 'Trusted & Free' : host.type || 'Free'
   const description = `Free hosting provider ${host.name} offering ${targets}. ${specsText} — ${typeText}.`
   const site = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://freehosts.space').replace(/\/$/, '')
-  const hostUrl = `${site}/hosts/${host.id}`
+  const hostUrl = `${site}/hosts/${slugify(host.name)}`
 
   const jsonLd = {
     "@context": "https://schema.org",

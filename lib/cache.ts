@@ -1,3 +1,5 @@
+import { slugify } from './slugify'
+
 export interface Host {
   id: number
   name: string
@@ -107,6 +109,14 @@ export async function fetchHosts(): Promise<Host[]> {
 export function getHostFromCache(id: number): Host | undefined {
   if (!hostsCache) return undefined
   return hostsCache.find((h) => h.id === id)
+}
+
+/**
+ * Finds a host whose slugified name matches the given slug.
+ * Uses the existing in-memory cache; calls fetchHosts() if cache is cold.
+ */
+export async function fetchHostBySlug(slug: string): Promise<Host | null> {
+  return (await fetchHosts()).find(h => slugify(h.name) === slug) ?? null
 }
 
 // Fetch single host using the full list (API has no /:id route)

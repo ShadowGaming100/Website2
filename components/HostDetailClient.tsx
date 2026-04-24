@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import Link from '@/components/NoPrefetchLink'
 import { type Host } from '../lib/cache'
+import { slugify } from '../lib/slugify'
 
 // ─── External URL helper ──────────────────────────────────────────────────────
 // Appends ?ref=freehosts.space (or &ref=… if a query string already exists).
@@ -118,9 +119,9 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
     const encodedUrl = encodeURIComponent(btoa(url))
     const encodedHostName = hostName ? `&hostName=${encodeURIComponent(hostName)}` : ''
     const lt = linkType ? `&linkType=${encodeURIComponent(linkType)}` : ''
-    const returnTo = host.id
-    window.location.href = `/redirect/${returnTo}/${encodedUrl}?${encodedHostName}${lt}&returnTo=${returnTo}`
-  }, [host.id])
+    const returnTo = slugify(host.name)
+    window.location.href = `/redirect/${host.id}/${encodedUrl}?${encodedHostName}${lt}&returnTo=${returnTo}`
+  }, [host.name])
 
   return (
     <>
