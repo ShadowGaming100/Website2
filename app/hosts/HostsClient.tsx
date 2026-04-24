@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, Suspense, useRef, useMemo } from 'rea
 import { useSearchParams, useRouter } from 'next/navigation';
 import { type Host } from '../../lib/cache';
 import Link from '@/components/NoPrefetchLink';
+import { slugify } from '../../lib/slugify';
 
 // Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -563,7 +564,7 @@ function HostCard({ host, isNew, formatSize, getLanguageName }: HostCardProps) {
       </div>
       
       <Link 
-        href={`/hosts/${host.id}`} 
+        href={`/hosts/${slugify(host.name)}`} 
         className="view-details-btn"
       >
         View Details
