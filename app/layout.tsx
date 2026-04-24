@@ -13,9 +13,6 @@ export const metadata: Metadata = {
   description:
     "Find reliable free hosting for websites, bots, apps, and Discord communities. Join our community directory to discover no-cost hosting solutions.",
   robots: "index, follow",
-  icons: {
-    icon: "/favicon.ico",
-  },
   alternates: {
     canonical: "/",
   },
