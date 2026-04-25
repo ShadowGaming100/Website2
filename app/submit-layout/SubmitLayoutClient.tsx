@@ -1,71 +1,55 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import {
+  Boxes,
+  CheckSquare,
+  Circle,
+  CircleAlert,
+  CircleCheck,
+  Code,
+  Copy,
+  FileText,
+  Info,
+  Link as LinkIcon,
+  MessageCircle,
+  Pencil,
+  Pin,
+  Plus,
+  RotateCcw,
+  SquareCheck,
+  Wand,
+  Zap,
+} from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDiscord } from "@fortawesome/free-brands-svg-icons";
 
 type SpecType = "same" | "different";
 type RenewalStatus = "" | "yes" | "no";
 
 type FormState = {
-  hostName: string;
-  plans: string;
-  targets: string;
-  locales: string;
-  specType: SpecType;
-  sameRam: string;
-  sameCpu: string;
-  sameDisk: string;
-  tosLink: string;
-  privacyLink: string;
-  planLink: string;
-  websiteLink: string;
-  discordLink: string;
-  otherLinks: string;
-  renewalStatus: RenewalStatus;
-  renewalDuration: string;
-  coinsNeeded: string;
-  notes: string;
-  checkToS: boolean;
-  checkPrivacy: boolean;
+  hostName: string; plans: string; targets: string; locales: string;
+  specType: SpecType; sameRam: string; sameCpu: string; sameDisk: string;
+  tosLink: string; privacyLink: string; planLink: string; websiteLink: string;
+  discordLink: string; otherLinks: string; renewalStatus: RenewalStatus;
+  renewalDuration: string; coinsNeeded: string; notes: string;
+  checkToS: boolean; checkPrivacy: boolean;
 };
 
-type PlanSpec = {
-  originalName: string;
-  name: string;
-  ram: string;
-  cpu: string;
-  disk: string;
-};
+type PlanSpec = { originalName: string; name: string; ram: string; cpu: string; disk: string };
 
 const initialForm: FormState = {
-  hostName: "",
-  plans: "",
-  targets: "",
-  locales: "",
-  specType: "same",
-  sameRam: "",
-  sameCpu: "",
-  sameDisk: "",
-  tosLink: "",
-  privacyLink: "",
-  planLink: "",
-  websiteLink: "",
-  discordLink: "",
-  otherLinks: "",
-  renewalStatus: "",
-  renewalDuration: "",
-  coinsNeeded: "",
-  notes: "",
-  checkToS: true,
-  checkPrivacy: true,
+  hostName: "", plans: "", targets: "", locales: "", specType: "same",
+  sameRam: "", sameCpu: "", sameDisk: "", tosLink: "", privacyLink: "",
+  planLink: "", websiteLink: "", discordLink: "", otherLinks: "",
+  renewalStatus: "", renewalDuration: "", coinsNeeded: "", notes: "",
+  checkToS: true, checkPrivacy: true,
 };
 
 const emptyPreview = "Fill in the form to see the message preview here...";
 
 function splitPlans(plans: string) {
-  return plans
-    .split(",")
-    .map((plan) => plan.trim())
-    .filter(Boolean);
+  return plans.split(",").map((p) => p.trim()).filter(Boolean);
 }
 
 function renewalDisplay(status: RenewalStatus) {
@@ -76,42 +60,24 @@ function renewalDisplay(status: RenewalStatus) {
 
 function buildMessage(form: FormState, planSpecs: PlanSpec[], otherSpec: PlanSpec | null) {
   const lines: string[] = [];
-
-  lines.push("Host Submission");
-  lines.push("");
-  lines.push("Host Name");
-  lines.push(form.hostName || "[Host Name]");
-  lines.push("Plans");
-  lines.push(form.plans || "[Plans]");
-  lines.push("Targets");
-  lines.push(form.targets || "[Targets]");
-  lines.push("Locales / Languages");
-  lines.push(form.locales || "[Locales]");
-  lines.push("------------------------------------------------------------");
-  lines.push("");
-  lines.push("Specifications");
-
+  lines.push("Host Submission", "", "Host Name", form.hostName || "[Host Name]",
+    "Plans", form.plans || "[Plans]", "Targets", form.targets || "[Targets]",
+    "Locales / Languages", form.locales || "[Locales]",
+    "------------------------------------------------------------", "", "Specifications");
   if (form.specType === "same") {
     if (form.sameRam || form.sameCpu || form.sameDisk) {
       if (form.sameRam) lines.push(`- RAM: ${form.sameRam}`);
       if (form.sameCpu) lines.push(`- CPU: ${form.sameCpu}`);
       if (form.sameDisk) lines.push(`- Disk: ${form.sameDisk}`);
-    } else {
-      lines.push("- [Specs will appear here]");
-    }
+    } else { lines.push("- [Specs will appear here]"); }
   } else {
-    const hasSpecs = planSpecs.length > 0 || otherSpec;
-    if (!hasSpecs) {
-      lines.push('- [Add plans using the "Add Plan" button above]');
-    }
-
+    if (!planSpecs.length && !otherSpec) lines.push('- [Add plans using the "Add Plan" button above]');
     planSpecs.forEach((spec) => {
       lines.push(`${spec.name || spec.originalName}:`);
       if (spec.ram) lines.push(`- RAM: ${spec.ram}`);
       if (spec.cpu) lines.push(`- CPU: ${spec.cpu}`);
       if (spec.disk) lines.push(`- Disk: ${spec.disk}`);
     });
-
     if (otherSpec) {
       lines.push(`${otherSpec.name}:`);
       if (otherSpec.ram) lines.push(`- RAM: ${otherSpec.ram}`);
@@ -119,37 +85,22 @@ function buildMessage(form: FormState, planSpecs: PlanSpec[], otherSpec: PlanSpe
       if (otherSpec.disk) lines.push(`- Disk: ${otherSpec.disk}`);
     }
   }
-
-  lines.push("------------------------------------------------------------");
-  lines.push("");
-  lines.push("Links");
-  lines.push(`ToS: ${form.tosLink || "[ToS Link]"}`);
-  lines.push(`Privacy Policy: ${form.privacyLink || "[Privacy Policy Link]"}`);
+  lines.push("------------------------------------------------------------", "", "Links",
+    `ToS: ${form.tosLink || "[ToS Link]"}`, `Privacy Policy: ${form.privacyLink || "[Privacy Policy Link]"}`);
   if (form.planLink) lines.push(`Plan Link: ${form.planLink}`);
   if (form.websiteLink) lines.push(`Website Link: ${form.websiteLink}`);
   if (form.discordLink) lines.push(`Discord Invite: ${form.discordLink}`);
-  form.otherLinks
-    .split("\n")
-    .map((link) => link.trim())
-    .filter(Boolean)
-    .forEach((link) => lines.push(link));
-
-  lines.push("------------------------------------------------------------");
-  lines.push("");
-  lines.push("Information");
-  lines.push(`- Renewal Required: ${renewalDisplay(form.renewalStatus)}`);
+  form.otherLinks.split("\n").map((l) => l.trim()).filter(Boolean).forEach((l) => lines.push(l));
+  lines.push("------------------------------------------------------------", "", "Information",
+    `- Renewal Required: ${renewalDisplay(form.renewalStatus)}`);
   if (form.renewalStatus === "yes") {
     if (form.renewalDuration) lines.push(`- Renewal Duration: ${form.renewalDuration}`);
     if (form.coinsNeeded) lines.push(`- Coins Needed: ${form.coinsNeeded}`);
   }
   if (form.notes) lines.push(`- Notes: ${form.notes}`);
-
-  lines.push("------------------------------------------------------------");
-  lines.push("");
-  lines.push("Verification");
-  lines.push(`[${form.checkToS ? "x" : " "}] I have included the ToS`);
-  lines.push(`[${form.checkPrivacy ? "x" : " "}] I have included the Privacy Policy`);
-
+  lines.push("------------------------------------------------------------", "", "Verification",
+    `[${form.checkToS ? "x" : " "}] I have included the ToS`,
+    `[${form.checkPrivacy ? "x" : " "}] I have included the Privacy Policy`);
   return lines.join("\n");
 }
 
@@ -162,133 +113,81 @@ export default function SubmitLayoutClient() {
   const [notification, setNotification] = useState<{ message: string; error: boolean } | null>(null);
 
   const allPlans = useMemo(() => splitPlans(form.plans), [form.plans]);
-  const addedPlanNames = useMemo(
-    () => new Set(planSpecs.map((spec) => spec.originalName)),
-    [planSpecs],
-  );
-  const availablePlans = allPlans.filter((plan) => !addedPlanNames.has(plan));
-  const otherPlans = allPlans.filter((plan) => !addedPlanNames.has(plan));
+  const addedPlanNames = useMemo(() => new Set(planSpecs.map((s) => s.originalName)), [planSpecs]);
+  const availablePlans = allPlans.filter((p) => !addedPlanNames.has(p));
+  const otherPlans = allPlans.filter((p) => !addedPlanNames.has(p));
 
   const missingFields = useMemo(() => {
-    const missing: string[] = [];
-    if (!form.hostName.trim()) missing.push("Host Name");
-    if (!form.plans.trim()) missing.push("Plans");
-    if (!form.targets.trim()) missing.push("Targets");
-    if (!form.locales.trim()) missing.push("Locales");
-    if (!form.tosLink.trim()) missing.push("ToS Link");
-    if (!form.privacyLink.trim()) missing.push("Privacy Policy Link");
-    if (!form.renewalStatus) missing.push("Renewal Required");
+    const m: string[] = [];
+    if (!form.hostName.trim()) m.push("Host Name");
+    if (!form.plans.trim()) m.push("Plans");
+    if (!form.targets.trim()) m.push("Targets");
+    if (!form.locales.trim()) m.push("Locales");
+    if (!form.tosLink.trim()) m.push("ToS Link");
+    if (!form.privacyLink.trim()) m.push("Privacy Policy Link");
+    if (!form.renewalStatus) m.push("Renewal Required");
     if (form.renewalStatus === "yes") {
-      if (!form.renewalDuration.trim()) missing.push("Renewal Duration");
-      if (!form.coinsNeeded.trim()) missing.push("Coins Needed");
+      if (!form.renewalDuration.trim()) m.push("Renewal Duration");
+      if (!form.coinsNeeded.trim()) m.push("Coins Needed");
     }
-    return missing;
+    return m;
   }, [form]);
 
   const canCopy = missingFields.length === 0;
-  const rawMessage = useMemo(
-    () => buildMessage(form, planSpecs, otherSpec),
-    [form, planSpecs, otherSpec],
-  );
+  const rawMessage = useMemo(() => buildMessage(form, planSpecs, otherSpec), [form, planSpecs, otherSpec]);
 
   const updateForm = <K extends keyof FormState>(key: K, value: FormState[K]) => {
-    setForm((current) => {
-      const next = { ...current, [key]: value };
-      if (key === "specType" && value === "same") {
-        setPlanSpecs([]);
-        setOtherSpec(null);
-      }
+    setForm((cur) => {
+      const next = { ...cur, [key]: value };
+      if (key === "specType" && value === "same") { setPlanSpecs([]); setOtherSpec(null); }
       if (key === "plans") {
         const nextPlans = new Set(splitPlans(String(value)));
-        setPlanSpecs((specs) => specs.filter((spec) => nextPlans.has(spec.originalName)));
+        setPlanSpecs((specs) => specs.filter((s) => nextPlans.has(s.originalName)));
         setSelectedPlan("");
       }
-      if (key === "renewalStatus" && value !== "yes") {
-        next.renewalDuration = "";
-        next.coinsNeeded = "";
-      }
+      if (key === "renewalStatus" && value !== "yes") { next.renewalDuration = ""; next.coinsNeeded = ""; }
       return next;
     });
   };
 
   const addPlan = () => {
     if (!selectedPlan || addedPlanNames.has(selectedPlan)) return;
-    setPlanSpecs((specs) => [
-      ...specs,
-      { originalName: selectedPlan, name: selectedPlan, ram: "", cpu: "", disk: "" },
-    ]);
+    setPlanSpecs((s) => [...s, { originalName: selectedPlan, name: selectedPlan, ram: "", cpu: "", disk: "" }]);
     setSelectedPlan("");
   };
 
-  const updatePlanSpec = (originalName: string, patch: Partial<PlanSpec>) => {
-    setPlanSpecs((specs) =>
-      specs.map((spec) =>
-        spec.originalName === originalName ? { ...spec, ...patch } : spec,
-      ),
-    );
-  };
+  const updatePlanSpec = (name: string, patch: Partial<PlanSpec>) =>
+    setPlanSpecs((s) => s.map((spec) => spec.originalName === name ? { ...spec, ...patch } : spec));
 
-  const removePlan = (originalName: string) => {
-    setPlanSpecs((specs) => specs.filter((spec) => spec.originalName !== originalName));
-  };
+  const removePlan = (name: string) =>
+    setPlanSpecs((s) => s.filter((spec) => spec.originalName !== name));
 
-  const showMessage = (message: string, error = false) => {
+  const showMsg = (message: string, error = false) => {
     setNotification({ message, error });
     window.setTimeout(() => setNotification(null), 2500);
   };
 
   const copyMessage = async () => {
-    if (!canCopy) {
-      showMessage("Please fill in all required fields first!", true);
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(rawMessage);
-      showMessage("Message copied to clipboard!");
-    } catch {
-      showMessage("Failed to copy message", true);
-    }
+    if (!canCopy) { showMsg("Please fill in all required fields first!", true); return; }
+    try { await navigator.clipboard.writeText(rawMessage); showMsg("Message copied to clipboard!"); }
+    catch { showMsg("Failed to copy message", true); }
   };
 
-  const resetForm = (event: FormEvent) => {
-    event.preventDefault();
-    setForm(initialForm);
-    setSelectedPlan("");
-    setPlanSpecs([]);
-    setOtherSpec(null);
-    setShowRenewalDetails(false);
+  const resetForm = (e: FormEvent) => {
+    e.preventDefault();
+    setForm(initialForm); setSelectedPlan(""); setPlanSpecs([]); setOtherSpec(null); setShowRenewalDetails(false);
   };
 
-  const renderSpecInputs = (spec: PlanSpec, onChange: (patch: Partial<PlanSpec>) => void) => (
+  const renderSpecInputs = (spec: PlanSpec, onChange: (p: Partial<PlanSpec>) => void) => (
     <div className="spec-grid">
-      <div className="form-group">
-        <label className="form-label">RAM</label>
-        <input
-          className="form-input"
-          value={spec.ram}
-          placeholder="e.g., 4GB"
-          onChange={(event) => onChange({ ram: event.target.value })}
-        />
-      </div>
-      <div className="form-group">
-        <label className="form-label">CPU</label>
-        <input
-          className="form-input"
-          value={spec.cpu}
-          placeholder="e.g., 2 vCores"
-          onChange={(event) => onChange({ cpu: event.target.value })}
-        />
-      </div>
-      <div className="form-group">
-        <label className="form-label">Disk</label>
-        <input
-          className="form-input"
-          value={spec.disk}
-          placeholder="e.g., 40GB SSD"
-          onChange={(event) => onChange({ disk: event.target.value })}
-        />
-      </div>
+      {(["ram", "cpu", "disk"] as const).map((field) => (
+        <div className="form-group" key={field}>
+          <label className="form-label">{field.toUpperCase()}</label>
+          <input className="form-input" value={spec[field]}
+            placeholder={field === "ram" ? "e.g., 4GB" : field === "cpu" ? "e.g., 2 vCores" : "e.g., 40GB SSD"}
+            onChange={(e) => onChange({ [field]: e.target.value })} />
+        </div>
+      ))}
     </div>
   );
 
@@ -297,30 +196,21 @@ export default function SubmitLayoutClient() {
       <div className="builder-container">
         <section className="builder-hero">
           <h1 className="builder-title">
-            <i data-lucide="wand" aria-hidden="true" /> Discord Layout Builder
+            <Wand size={20} aria-hidden="true" /> Discord Layout Builder
           </h1>
           <p className="builder-subtitle">
-            Create Discord-formatted hosting layouts instantly. Perfect formatting
-            for Discord submissions with a live preview and one-click copy.
+            Create Discord-formatted hosting layouts instantly. Perfect formatting for Discord submissions with a live preview and one-click copy.
           </p>
           <div className="builder-stats">
-            <div className="builder-stat">
-              <i data-lucide="zap" aria-hidden="true" />
-              <span>Instant Generation</span>
-            </div>
-            <div className="builder-stat">
-              <i data-lucide="copy" aria-hidden="true" />
-              <span>One-Click Copy</span>
-            </div>
+            <div className="builder-stat"><Zap size={14} aria-hidden="true" /><span>Instant Generation</span></div>
+            <div className="builder-stat"><Copy size={14} aria-hidden="true" /><span>One-Click Copy</span></div>
           </div>
         </section>
 
         <div className="builder-layout">
           <section className="form-card">
             <div className="form-header">
-              <div className="form-icon">
-                <i data-lucide="pencil" aria-hidden="true" />
-              </div>
+              <div className="form-icon"><Pencil size={20} aria-hidden="true" /></div>
               <div>
                 <h2 className="form-title">Build Your Layout</h2>
                 <p className="form-subtitle">Fill in the information below</p>
@@ -329,336 +219,140 @@ export default function SubmitLayoutClient() {
 
             <form id="layoutBuilderForm" onReset={resetForm}>
               <div className="form-section">
-                <div className="section-label">
-                  <i data-lucide="pin" aria-hidden="true" />
-                  <span>Basic Information</span>
-                </div>
-
+                <div className="section-label"><Pin size={14} aria-hidden="true" /><span>Basic Information</span></div>
+                <TInput id="hostName" label="Host Name" required value={form.hostName} onChange={(v) => updateForm("hostName", v)} placeholder="e.g., Example Host" />
                 <div className="form-group">
-                  <label htmlFor="hostName" className="form-label">
-                    Host Name <span className="required">*</span>
-                  </label>
-                  <input
-                    id="hostName"
-                    className="form-input"
-                    value={form.hostName}
-                    placeholder="e.g., Example Host"
-                    onChange={(event) => updateForm("hostName", event.target.value)}
-                  />
+                  <label htmlFor="plans" className="form-label">Plans <span className="required">*</span></label>
+                  <input id="plans" className="form-input" value={form.plans} placeholder="e.g., Nextjs, Javascript, Python, Node.js" onChange={(e) => updateForm("plans", e.target.value)} />
+                  <div className="help-text"><Info size={12} aria-hidden="true" /><span>Comma separated list of plan names</span></div>
                 </div>
-
-                <div className="form-group">
-                  <label htmlFor="plans" className="form-label">
-                    Plans <span className="required">*</span>
-                  </label>
-                  <input
-                    id="plans"
-                    className="form-input"
-                    value={form.plans}
-                    placeholder="e.g., Nextjs, Javascript, Python, Node.js"
-                    onChange={(event) => updateForm("plans", event.target.value)}
-                  />
-                  <div className="help-text">
-                    <i data-lucide="info" aria-hidden="true" />
-                    <span>Comma separated list of plan names</span>
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="targets" className="form-label">
-                    Targets <span className="required">*</span>
-                  </label>
-                  <input
-                    id="targets"
-                    className="form-input"
-                    value={form.targets}
-                    placeholder="e.g., Coding, Gaming"
-                    onChange={(event) => updateForm("targets", event.target.value)}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="locales" className="form-label">
-                    Locales / Languages <span className="required">*</span>
-                  </label>
-                  <input
-                    id="locales"
-                    className="form-input"
-                    value={form.locales}
-                    placeholder="e.g., en, es"
-                    onChange={(event) => updateForm("locales", event.target.value)}
-                  />
-                </div>
+                <TInput id="targets" label="Targets" required value={form.targets} onChange={(v) => updateForm("targets", v)} placeholder="e.g., Coding, Gaming" />
+                <TInput id="locales" label="Locales / Languages" required value={form.locales} onChange={(v) => updateForm("locales", v)} placeholder="e.g., en, es" />
               </div>
 
               <div className="form-section">
-                <div className="section-label">
-                  <i data-lucide="boxes" aria-hidden="true" />
-                  <span>Specifications</span>
-                </div>
-
+                <div className="section-label"><Boxes size={14} aria-hidden="true" /><span>Specifications</span></div>
                 <div className="form-group">
                   <label className="form-label">Spec Type <span className="required">*</span></label>
                   <div className="radio-group">
                     <label className="radio-option">
-                      <input
-                        type="radio"
-                        name="specType"
-                        value="same"
-                        checked={form.specType === "same"}
-                        onChange={() => updateForm("specType", "same")}
-                      />
+                      <input type="radio" name="specType" value="same" checked={form.specType === "same"} onChange={() => updateForm("specType", "same")} />
                       <span>Same specs for all plans</span>
                     </label>
                     <label className="radio-option">
-                      <input
-                        type="radio"
-                        name="specType"
-                        value="different"
-                        checked={form.specType === "different"}
-                        onChange={() => updateForm("specType", "different")}
-                      />
+                      <input type="radio" name="specType" value="different" checked={form.specType === "different"} onChange={() => updateForm("specType", "different")} />
                       <span>Different specs per target/plan</span>
                     </label>
                   </div>
                 </div>
-
                 {form.specType === "same" ? (
-                  <div className="spec-plan-card">
-                    <div className="spec-grid">
-                      <div className="form-group">
-                        <label htmlFor="sameRam" className="form-label">RAM</label>
-                        <input
-                          id="sameRam"
-                          className="form-input"
-                          value={form.sameRam}
-                          placeholder="e.g., 4GB"
-                          onChange={(event) => updateForm("sameRam", event.target.value)}
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="sameCpu" className="form-label">CPU</label>
-                        <input
-                          id="sameCpu"
-                          className="form-input"
-                          value={form.sameCpu}
-                          placeholder="e.g., 2 vCores"
-                          onChange={(event) => updateForm("sameCpu", event.target.value)}
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="sameDisk" className="form-label">Disk</label>
-                        <input
-                          id="sameDisk"
-                          className="form-input"
-                          value={form.sameDisk}
-                          placeholder="e.g., 40GB SSD"
-                          onChange={(event) => updateForm("sameDisk", event.target.value)}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  <div className="spec-plan-card">{renderSpecInputs({ originalName: "", name: "", ram: form.sameRam, cpu: form.sameCpu, disk: form.sameDisk }, (p) => { if (p.ram !== undefined) updateForm("sameRam", p.ram); if (p.cpu !== undefined) updateForm("sameCpu", p.cpu); if (p.disk !== undefined) updateForm("sameDisk", p.disk); })}</div>
                 ) : (
                   <>
                     <div className="form-group">
                       <label className="checkbox-option">
-                        <input
-                          type="checkbox"
-                          checked={Boolean(otherSpec)}
-                          onChange={(event) =>
-                            setOtherSpec(
-                              event.target.checked
-                                ? { originalName: "other", name: "All Other Plans", ram: "", cpu: "", disk: "" }
-                                : null,
-                            )
-                          }
-                        />
+                        <input type="checkbox" checked={Boolean(otherSpec)} onChange={(e) => setOtherSpec(e.target.checked ? { originalName: "other", name: "All Other Plans", ram: "", cpu: "", disk: "" } : null)} />
                         <span>All other plans not listed above share the same specs</span>
                       </label>
                     </div>
-
                     <div className="add-plan-container">
-                      <select
-                        className="form-select"
-                        value={selectedPlan}
-                        onChange={(event) => setSelectedPlan(event.target.value)}
-                      >
+                      <select className="form-select" value={selectedPlan} onChange={(e) => setSelectedPlan(e.target.value)}>
                         <option value="">Select a plan to add specs...</option>
-                        {availablePlans.map((plan) => (
-                          <option value={plan} key={plan}>{plan}</option>
-                        ))}
+                        {availablePlans.map((p) => <option value={p} key={p}>{p}</option>)}
                       </select>
-                      <button type="button" className="btn-add" onClick={addPlan}>
-                        <i data-lucide="plus" aria-hidden="true" /> Add Plan
-                      </button>
+                      <button type="button" className="btn-add" onClick={addPlan}><Plus size={14} aria-hidden="true" /> Add Plan</button>
                     </div>
-
                     <div className="spec-plans">
                       {planSpecs.map((spec) => (
                         <div className="spec-plan-card" key={spec.originalName}>
                           <div className="spec-plan-header">
                             <div className="spec-plan-name">{spec.originalName}</div>
-                            <button
-                              type="button"
-                              className="btn-remove"
-                              onClick={() => removePlan(spec.originalName)}
-                            >
-                              Remove
-                            </button>
+                            <button type="button" className="btn-remove" onClick={() => removePlan(spec.originalName)}>Remove</button>
                           </div>
                           <div className="form-group">
                             <label className="form-label">Display Name</label>
-                            <input
-                              className="form-input"
-                              value={spec.name}
-                              onChange={(event) =>
-                                updatePlanSpec(spec.originalName, { name: event.target.value })
-                              }
-                            />
+                            <input className="form-input" value={spec.name} onChange={(e) => updatePlanSpec(spec.originalName, { name: e.target.value })} />
                           </div>
-                          {renderSpecInputs(spec, (patch) => updatePlanSpec(spec.originalName, patch))}
+                          {renderSpecInputs(spec, (p) => updatePlanSpec(spec.originalName, p))}
                         </div>
                       ))}
-
-                      {otherSpec ? (
+                      {otherSpec && (
                         <div className="spec-plan-card other-plans-card">
                           <div className="spec-plan-header">
                             <div>
                               <div className="spec-plan-name">All Other Plans</div>
-                              <div className="help-text">
-                                {otherPlans.length > 0
-                                  ? otherPlans.join(", ")
-                                  : "No unlisted plans yet"}
-                              </div>
+                              <div className="help-text">{otherPlans.length > 0 ? otherPlans.join(", ") : "No unlisted plans yet"}</div>
                             </div>
                           </div>
-                          {renderSpecInputs(otherSpec, (patch) =>
-                            setOtherSpec((current) => (current ? { ...current, ...patch } : current)),
-                          )}
+                          {renderSpecInputs(otherSpec, (p) => setOtherSpec((c) => c ? { ...c, ...p } : c))}
                         </div>
-                      ) : null}
+                      )}
                     </div>
                   </>
                 )}
               </div>
 
               <div className="form-section">
-                <div className="section-label">
-                  <i data-lucide="link" aria-hidden="true" />
-                  <span>Links</span>
-                </div>
-
-                <TextInput id="tosLink" label="ToS Link" required value={form.tosLink} onChange={(value) => updateForm("tosLink", value)} placeholder="https://example.com/tos" />
-                <TextInput id="privacyLink" label="Privacy Policy Link" required value={form.privacyLink} onChange={(value) => updateForm("privacyLink", value)} placeholder="https://example.com/privacy" />
-                <TextInput id="planLink" label="Plan Link" value={form.planLink} onChange={(value) => updateForm("planLink", value)} placeholder="https://example.com/plan" />
-                <TextInput id="websiteLink" label="Website Link" value={form.websiteLink} onChange={(value) => updateForm("websiteLink", value)} placeholder="https://example.com" />
-                <TextInput id="discordLink" label="Discord Invite" value={form.discordLink} onChange={(value) => updateForm("discordLink", value)} placeholder="https://discord.gg/invite" />
-
+                <div className="section-label"><LinkIcon size={14} aria-hidden="true" /><span>Links</span></div>
+                <TInput id="tosLink" label="ToS Link" required value={form.tosLink} onChange={(v) => updateForm("tosLink", v)} placeholder="https://example.com/tos" />
+                <TInput id="privacyLink" label="Privacy Policy Link" required value={form.privacyLink} onChange={(v) => updateForm("privacyLink", v)} placeholder="https://example.com/privacy" />
+                <TInput id="planLink" label="Plan Link" value={form.planLink} onChange={(v) => updateForm("planLink", v)} placeholder="https://example.com/plan" />
+                <TInput id="websiteLink" label="Website Link" value={form.websiteLink} onChange={(v) => updateForm("websiteLink", v)} placeholder="https://example.com" />
+                <TInput id="discordLink" label="Discord Invite" value={form.discordLink} onChange={(v) => updateForm("discordLink", v)} placeholder="https://discord.gg/invite" />
                 <div className="form-group">
                   <label htmlFor="otherLinks" className="form-label">Other Links</label>
-                  <textarea
-                    id="otherLinks"
-                    className="form-textarea"
-                    value={form.otherLinks}
-                    placeholder={"One per line, e.g.:\nDocumentation: https://docs.example.com\nSupport: https://support.example.com"}
-                    onChange={(event) => updateForm("otherLinks", event.target.value)}
-                  />
-                  <div className="help-text">
-                    <i data-lucide="info" aria-hidden="true" />
-                    <span>Format: Label: URL, one per line</span>
-                  </div>
+                  <textarea id="otherLinks" className="form-textarea" value={form.otherLinks} placeholder={"One per line, e.g.:\nDocumentation: https://docs.example.com"} onChange={(e) => updateForm("otherLinks", e.target.value)} />
+                  <div className="help-text"><Info size={12} aria-hidden="true" /><span>Format: Label: URL, one per line</span></div>
                 </div>
               </div>
 
               <div className="form-section">
-                <div className="section-label">
-                  <i data-lucide="file-lines" aria-hidden="true" />
-                  <span>Information</span>
-                </div>
-
+                <div className="section-label"><FileText size={14} aria-hidden="true" /><span>Information</span></div>
                 <div className="form-group">
-                  <label htmlFor="renewalStatus" className="form-label">
-                    Renewal Required <span className="required">*</span>
-                  </label>
-                  <select
-                    id="renewalStatus"
-                    className="form-select"
-                    value={form.renewalStatus}
-                    onChange={(event) => updateForm("renewalStatus", event.target.value as RenewalStatus)}
-                  >
+                  <label htmlFor="renewalStatus" className="form-label">Renewal Required <span className="required">*</span></label>
+                  <select id="renewalStatus" className="form-select" value={form.renewalStatus} onChange={(e) => updateForm("renewalStatus", e.target.value as RenewalStatus)}>
                     <option value="">Select an option</option>
                     <option value="yes">This host requires renewal</option>
                     <option value="no">This host does not require renewal</option>
                   </select>
                 </div>
-
-                {form.renewalStatus === "yes" ? (
+                {form.renewalStatus === "yes" && (
                   <div className="conditional-fields">
-                    <TextInput id="renewalDuration" label="Renewal Duration" required value={form.renewalDuration} onChange={(value) => updateForm("renewalDuration", value)} placeholder="e.g., 30 days" />
-                    <TextInput id="coinsNeeded" label="Coins Needed" required value={form.coinsNeeded} onChange={(value) => updateForm("coinsNeeded", value)} placeholder="e.g., 300 coins" />
+                    <TInput id="renewalDuration" label="Renewal Duration" required value={form.renewalDuration} onChange={(v) => updateForm("renewalDuration", v)} placeholder="e.g., 30 days" />
+                    <TInput id="coinsNeeded" label="Coins Needed" required value={form.coinsNeeded} onChange={(v) => updateForm("coinsNeeded", v)} placeholder="e.g., 300 coins" />
                   </div>
-                ) : null}
-
+                )}
                 <div className="form-group">
                   <label htmlFor="notes" className="form-label">Notes</label>
-                  <textarea
-                    id="notes"
-                    className="form-textarea"
-                    value={form.notes}
-                    placeholder="Add any important notes about the host"
-                    onChange={(event) => updateForm("notes", event.target.value)}
-                  />
+                  <textarea id="notes" className="form-textarea" value={form.notes} placeholder="Add any important notes about the host" onChange={(e) => updateForm("notes", e.target.value)} />
                 </div>
               </div>
 
               <div className="form-section">
-                <div className="section-label">
-                  <i data-lucide="square-check" aria-hidden="true" />
-                  <span>Verification</span>
-                </div>
+                <div className="section-label"><SquareCheck size={14} aria-hidden="true" /><span>Verification</span></div>
                 <div className="checkbox-group">
                   <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={form.checkToS}
-                      onChange={(event) => updateForm("checkToS", event.target.checked)}
-                    />
+                    <input type="checkbox" checked={form.checkToS} onChange={(e) => updateForm("checkToS", e.target.checked)} />
                     <span>I have included the ToS</span>
                   </label>
                   <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={form.checkPrivacy}
-                      onChange={(event) => updateForm("checkPrivacy", event.target.checked)}
-                    />
+                    <input type="checkbox" checked={form.checkPrivacy} onChange={(e) => updateForm("checkPrivacy", e.target.checked)} />
                     <span>I have included the Privacy Policy</span>
                   </label>
                 </div>
               </div>
 
               <div className="form-actions">
-                <button type="reset" className="btn btn-reset">
-                  <i data-lucide="rotate-ccw" aria-hidden="true" /> Reset Form
-                </button>
-                <button
-                  type="button"
-                  className="btn primary btn-generate"
-                  disabled={!canCopy}
-                  onClick={copyMessage}
-                >
-                  <i data-lucide="copy" aria-hidden="true" /> Copy Message
+                <button type="reset" className="btn btn-reset"><RotateCcw size={14} aria-hidden="true" /> Reset Form</button>
+                <button type="button" className="btn primary btn-generate" disabled={!canCopy} onClick={copyMessage}>
+                  <Copy size={14} aria-hidden="true" /> Copy Message
                 </button>
               </div>
 
               <div className="preview-container">
                 <div className="message-preview">
-                  <div className="message-preview-title">
-                    <i data-lucide="code" aria-hidden="true" />
-                    <span>Message Preview (Raw Text)</span>
-                  </div>
-                  <div className="message-preview-content">
-                    {rawMessage.trim() ? rawMessage : emptyPreview}
-                  </div>
+                  <div className="message-preview-title"><Code size={14} aria-hidden="true" /><span>Message Preview (Raw Text)</span></div>
+                  <div className="message-preview-content">{rawMessage.trim() ? rawMessage : emptyPreview}</div>
                 </div>
               </div>
             </form>
@@ -667,85 +361,37 @@ export default function SubmitLayoutClient() {
           <section className="builder-preview-card">
             <div className="preview-header">
               <h3 className="preview-title">
-                <i data-lucide="message-circle" aria-hidden="true" />
-                Discord Message Preview
+                <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> Discord Message Preview
               </h3>
               <span className="preview-badge">
-                <i data-lucide="circle" aria-hidden="true" />
-                Live
+                <Circle size={8} aria-hidden="true" /> Live
               </span>
             </div>
-            <DiscordPreview
-              form={form}
-              planSpecs={planSpecs}
-              otherSpec={otherSpec}
-              otherPlans={otherPlans}
-              missingFields={missingFields}
-              showRenewalDetails={showRenewalDetails}
-              setShowRenewalDetails={setShowRenewalDetails}
-            />
+            <DiscordPreview form={form} planSpecs={planSpecs} otherSpec={otherSpec} otherPlans={otherPlans} missingFields={missingFields} showRenewalDetails={showRenewalDetails} setShowRenewalDetails={setShowRenewalDetails} />
           </section>
         </div>
       </div>
 
-      {notification ? (
+      {notification && (
         <div className={`copy-notification ${notification.error ? "error" : "success"}`}>
-          <i data-lucide={notification.error ? "circle-alert" : "circle-check"} aria-hidden="true" />
+          {notification.error ? <CircleAlert size={14} aria-hidden="true" /> : <CircleCheck size={14} aria-hidden="true" />}
           <span>{notification.message}</span>
         </div>
-      ) : null}
+      )}
     </main>
   );
 }
 
-function TextInput({
-  id,
-  label,
-  value,
-  onChange,
-  placeholder,
-  required = false,
-}: {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  required?: boolean;
-}) {
+function TInput({ id, label, value, onChange, placeholder, required = false }: { id: string; label: string; value: string; onChange: (v: string) => void; placeholder?: string; required?: boolean }) {
   return (
     <div className="form-group">
-      <label htmlFor={id} className="form-label">
-        {label} {required ? <span className="required">*</span> : null}
-      </label>
-      <input
-        id={id}
-        className="form-input"
-        value={value}
-        placeholder={placeholder}
-        onChange={(event) => onChange(event.target.value)}
-      />
+      <label htmlFor={id} className="form-label">{label} {required && <span className="required">*</span>}</label>
+      <input id={id} className="form-input" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
     </div>
   );
 }
 
-function DiscordPreview({
-  form,
-  planSpecs,
-  otherSpec,
-  otherPlans,
-  missingFields,
-  showRenewalDetails,
-  setShowRenewalDetails,
-}: {
-  form: FormState;
-  planSpecs: PlanSpec[];
-  otherSpec: PlanSpec | null;
-  otherPlans: string[];
-  missingFields: string[];
-  showRenewalDetails: boolean;
-  setShowRenewalDetails: (show: boolean) => void;
-}) {
+function DiscordPreview({ form, planSpecs, otherSpec, otherPlans, missingFields, showRenewalDetails, setShowRenewalDetails }: { form: FormState; planSpecs: PlanSpec[]; otherSpec: PlanSpec | null; otherPlans: string[]; missingFields: string[]; showRenewalDetails: boolean; setShowRenewalDetails: (v: boolean) => void }) {
   return (
     <div className="discord-preview">
       <div className="discord-message">
@@ -756,9 +402,7 @@ function DiscordPreview({
             <span className="discord-timestamp">Today at 12:00 PM</span>
           </div>
           <div className="discord-message-text">
-            <span className="discord-bold">Host Submission</span>
-            <br />
-            <br />
+            <span className="discord-bold">Host Submission</span><br /><br />
             <span className="discord-bold">Host Name</span>
             <div className="discord-blockquote">{form.hostName || "[Host Name]"}</div>
             <span className="discord-bold">Plans</span>
@@ -768,97 +412,43 @@ function DiscordPreview({
             <span className="discord-bold">Locales / Languages</span>
             <div className="discord-blockquote">{form.locales || "[Locales]"}</div>
             <div className="discord-divider" />
-
-            <span className="discord-bold">Specifications</span>
-            <br />
+            <span className="discord-bold">Specifications</span><br />
             <SpecPreview form={form} planSpecs={planSpecs} otherSpec={otherSpec} otherPlans={otherPlans} />
-
+            <div className="discord-divider" /><br />
+            <span className="discord-bold">Links</span><br />
+            <span className="discord-bold">ToS:</span> {form.tosLink || "[ToS Link]"}<br />
+            <span className="discord-bold">Privacy Policy:</span> {form.privacyLink || "[Privacy Policy Link]"}<br />
+            {form.planLink && <><span className="discord-bold">Plan Link:</span> {form.planLink}<br /></>}
+            {form.websiteLink && <><span className="discord-bold">Website Link:</span> {form.websiteLink}<br /></>}
+            {form.discordLink && <><span className="discord-bold">Discord Invite:</span> {form.discordLink}<br /></>}
+            {form.otherLinks.split("\n").map((l) => l.trim()).filter(Boolean).map((l) => <span key={l}>{l}<br /></span>)}
             <div className="discord-divider" />
-            <br />
-            <span className="discord-bold">Links</span>
-            <br />
-            <span className="discord-bold">ToS:</span> {form.tosLink || "[ToS Link]"}
-            <br />
-            <span className="discord-bold">Privacy Policy:</span>{" "}
-            {form.privacyLink || "[Privacy Policy Link]"}
-            <br />
-            {form.planLink ? <Line label="Plan Link" value={form.planLink} /> : null}
-            {form.websiteLink ? <Line label="Website Link" value={form.websiteLink} /> : null}
-            {form.discordLink ? <Line label="Discord Invite" value={form.discordLink} /> : null}
-            {form.otherLinks
-              .split("\n")
-              .map((link) => link.trim())
-              .filter(Boolean)
-              .map((link) => (
-                <span key={link}>
-                  {link}
-                  <br />
-                </span>
-              ))}
-
-            <div className="discord-divider" />
-            <span className="discord-bold">Information</span>
-            <br />
-            - Renewal Required: {renewalDisplay(form.renewalStatus)}
-            <br />
-            {form.renewalStatus === "yes" ? (
+            <span className="discord-bold">Information</span><br />
+            - Renewal Required: {renewalDisplay(form.renewalStatus)}<br />
+            {form.renewalStatus === "yes" && (
               <>
-                <button
-                  className="discord-renewal-toggle"
-                  type="button"
-                  onClick={() => setShowRenewalDetails(!showRenewalDetails)}
-                >
-                  {showRenewalDetails
-                    ? "[Click to hide renewal details]"
-                    : "[Click to show renewal details]"}
+                <button className="discord-renewal-toggle" type="button" onClick={() => setShowRenewalDetails(!showRenewalDetails)}>
+                  {showRenewalDetails ? "[Click to hide renewal details]" : "[Click to show renewal details]"}
                 </button>
-                {showRenewalDetails ? (
+                {showRenewalDetails && (
                   <div className="discord-renewal-content">
-                    This host requires renewal
-                    <br />
-                    {form.renewalDuration ? (
-                      <>
-                        - Renewal Duration: {form.renewalDuration}
-                        <br />
-                      </>
-                    ) : null}
-                    {form.coinsNeeded ? (
-                      <>
-                        - Coins Needed: {form.coinsNeeded}
-                        <br />
-                      </>
-                    ) : null}
+                    This host requires renewal<br />
+                    {form.renewalDuration && <>- Renewal Duration: {form.renewalDuration}<br /></>}
+                    {form.coinsNeeded && <>- Coins Needed: {form.coinsNeeded}<br /></>}
                   </div>
-                ) : null}
+                )}
               </>
-            ) : null}
-            {form.notes ? (
-              <>
-                - Notes: {form.notes}
-                <br />
-              </>
-            ) : null}
-
+            )}
+            {form.notes && <>- Notes: {form.notes}<br /></>}
             <div className="discord-divider" />
-            <span className="discord-bold">Verification</span>
-            <br />
-            <span className={`discord-checkbox ${form.checkToS ? "checked" : ""}`}>
-              {form.checkToS ? "x" : ""}
-            </span>
-            I have included the ToS
-            <br />
-            <span className={`discord-checkbox ${form.checkPrivacy ? "checked" : ""}`}>
-              {form.checkPrivacy ? "x" : ""}
-            </span>
-            I have included the Privacy Policy
-            <br />
-
-            {missingFields.length > 0 ? (
+            <span className="discord-bold">Verification</span><br />
+            <span className={`discord-checkbox ${form.checkToS ? "checked" : ""}`}>{form.checkToS ? "x" : ""}</span> I have included the ToS<br />
+            <span className={`discord-checkbox ${form.checkPrivacy ? "checked" : ""}`}>{form.checkPrivacy ? "x" : ""}</span> I have included the Privacy Policy<br />
+            {missingFields.length > 0 && (
               <div className="discord-blockquote" style={{ color: "#faa81a", marginTop: "16px" }}>
-                <span className="discord-bold">Missing required fields:</span>{" "}
-                {missingFields.join(", ")}
+                <span className="discord-bold">Missing required fields:</span> {missingFields.join(", ")}
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       </div>
@@ -866,76 +456,30 @@ function DiscordPreview({
   );
 }
 
-function Line({ label, value }: { label: string; value: string }) {
-  return (
-    <>
-      <span className="discord-bold">{label}:</span> {value}
-      <br />
-    </>
-  );
-}
-
-function SpecPreview({
-  form,
-  planSpecs,
-  otherSpec,
-  otherPlans,
-}: {
-  form: FormState;
-  planSpecs: PlanSpec[];
-  otherSpec: PlanSpec | null;
-  otherPlans: string[];
-}) {
+function SpecPreview({ form, planSpecs, otherSpec, otherPlans }: { form: FormState; planSpecs: PlanSpec[]; otherSpec: PlanSpec | null; otherPlans: string[] }) {
   if (form.specType === "same") {
-    if (!form.sameRam && !form.sameCpu && !form.sameDisk) {
-      return (
-        <>
-          - [Specs will appear here]
-          <br />
-        </>
-      );
-    }
-
-    return (
-      <>
-        {form.sameRam ? <>- RAM: {form.sameRam}<br /></> : null}
-        {form.sameCpu ? <>- CPU: {form.sameCpu}<br /></> : null}
-        {form.sameDisk ? <>- Disk: {form.sameDisk}<br /></> : null}
-      </>
-    );
+    if (!form.sameRam && !form.sameCpu && !form.sameDisk) return <>- [Specs will appear here]<br /></>;
+    return <>{form.sameRam && <>- RAM: {form.sameRam}<br /></>}{form.sameCpu && <>- CPU: {form.sameCpu}<br /></>}{form.sameDisk && <>- Disk: {form.sameDisk}<br /></>}</>;
   }
-
-  if (planSpecs.length === 0 && !otherSpec) {
-    return (
-      <>
-        - [Add plans using the Add Plan button above]
-        <br />
-      </>
-    );
-  }
-
+  if (!planSpecs.length && !otherSpec) return <>- [Add plans using the Add Plan button above]<br /></>;
   return (
     <>
       {planSpecs.map((spec) => (
         <span key={spec.originalName}>
-          <span className="discord-bold">{spec.name || spec.originalName}:</span>
-          <br />
-          {spec.ram ? <>- RAM: {spec.ram}<br /></> : null}
-          {spec.cpu ? <>- CPU: {spec.cpu}<br /></> : null}
-          {spec.disk ? <>- Disk: {spec.disk}<br /></> : null}
+          <span className="discord-bold">{spec.name || spec.originalName}:</span><br />
+          {spec.ram && <>- RAM: {spec.ram}<br /></>}
+          {spec.cpu && <>- CPU: {spec.cpu}<br /></>}
+          {spec.disk && <>- Disk: {spec.disk}<br /></>}
         </span>
       ))}
-      {otherSpec ? (
+      {otherSpec && (
         <span>
-          <span className="discord-bold">
-            All Other Plans{otherPlans.length > 0 ? ` (${otherPlans.join(", ")})` : ""}:
-          </span>
-          <br />
-          {otherSpec.ram ? <>- RAM: {otherSpec.ram}<br /></> : null}
-          {otherSpec.cpu ? <>- CPU: {otherSpec.cpu}<br /></> : null}
-          {otherSpec.disk ? <>- Disk: {otherSpec.disk}<br /></> : null}
+          <span className="discord-bold">All Other Plans{otherPlans.length > 0 ? ` (${otherPlans.join(", ")})` : ""}:</span><br />
+          {otherSpec.ram && <>- RAM: {otherSpec.ram}<br /></>}
+          {otherSpec.cpu && <>- CPU: {otherSpec.cpu}<br /></>}
+          {otherSpec.disk && <>- Disk: {otherSpec.disk}<br /></>}
         </span>
-      ) : null}
+      )}
     </>
   );
 }
