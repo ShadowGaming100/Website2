@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
 
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /cgi-bin/
+Disallow: /redirect/
+
 Sitemap: https://freehosts.space/sitemap.xml
