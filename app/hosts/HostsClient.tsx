@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, Suspense, useRef, useMemo } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { type Host } from '../../lib/cache';
 import Link from '@/components/NoPrefetchLink';
 import { slugify } from '../../lib/slugify';

@@ -121,7 +121,7 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
     const lt = linkType ? `&linkType=${encodeURIComponent(linkType)}` : ''
     const returnTo = slugify(host.name)
     window.location.href = `/redirect/${host.id}/${encodedUrl}?${encodedHostName}${lt}&returnTo=${returnTo}`
-  }, [host.name])
+  }, [host.id, host.name])
 
   return (
     <>

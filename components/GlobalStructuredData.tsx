@@ -1,13 +1,14 @@
-import { headers } from "next/headers";
+"use client";
+
+import { usePathname } from "next/navigation";
 
 /**
- * Server component — renders breadcrumb + site-wide structured data.
- * Runs at request time on the server, so JSON-LD is in the initial HTML
- * and immediately visible to crawlers.
+ * Client component — renders breadcrumb structured data based on the current
+ * pathname. Using usePathname() avoids calling headers() in the layout, which
+ * would force every page into dynamic rendering and prevent static generation.
  */
-export default async function GlobalStructuredData() {
-  const headersList = await headers();
-  const pathname = headersList.get("x-pathname") ?? "";
+export default function GlobalStructuredData() {
+  const pathname = usePathname() ?? "";
 
   // No breadcrumbs needed on the home page
   if (!pathname || pathname === "/") return null;
