@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '18'
 
       - name: Install dependencies
         run: npm install axios
@@ -216,22 +216,14 @@ jobs:
         run: |
           SCRIPT_CHANGED=$(cat .sitemap-changed)
           rm -f .sitemap-changed
-
-          if [ "$SCRIPT_CHANGED" = "true" ]; then
-            git add public/sitemap.xml public/robots.txt
-            echo "changes=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "changes=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Pull latest changes
-        if: steps.git-check.outputs.changes == 'true'
-        run: git pull --rebase origin main
+          echo "changes=$SCRIPT_CHANGED" >> "$GITHUB_OUTPUT"
 
       - name: Commit and push
         if: steps.git-check.outputs.changes == 'true'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
+          git add public/sitemap.xml public/robots.txt
           git commit -m "🤖 Auto-update sitemap $(date +'%Y-%m-%d')"
           git push origin main
