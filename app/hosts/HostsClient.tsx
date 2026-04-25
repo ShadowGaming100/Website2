@@ -6,7 +6,121 @@ import { type Host } from '../../lib/cache';
 import Link from '@/components/NoPrefetchLink';
 import { slugify } from '../../lib/slugify';
 import { getLanguageName } from '../../lib/getLanguageName';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, X, Shuffle, ArrowDownAZ, Cpu, MemoryStick, HardDrive, Clock } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, X, Shuffle, ArrowDownAZ, Cpu, MemoryStick, HardDrive, Clock } from 'lucide-react';
+
+// ─── Custom Dropdown ──────────────────────────────────────────────────────────
+
+interface DropdownOption {
+  value: string
+  label: string
+}
+
+interface CustomDropdownProps {
+  id: string
+  value: string
+  options: DropdownOption[]
+  placeholder: string
+  onChange: (value: string) => void
+}
+
+function CustomDropdown({ id, value, options, placeholder, onChange }: CustomDropdownProps) {
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
+  const ref = useRef<HTMLDivElement>(null)
+  const searchRef = useRef<HTMLInputElement>(null)
+
+  const selected = options.find(o => o.value === value)
+
+  const filtered = useMemo(() => {
+    if (!search.trim()) return options
+    const q = search.toLowerCase()
+    return options.filter(o => o.label.toLowerCase().includes(q) || o.value.toLowerCase().includes(q))
+  }, [options, search])
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false)
+        setSearch('')
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  // Focus search input when opened
+  useEffect(() => {
+    if (open) searchRef.current?.focus()
+  }, [open])
+
+  function select(val: string) {
+    onChange(val)
+    setOpen(false)
+    setSearch('')
+  }
+
+  return (
+    <div className={`filter-dropdown${open ? ' open' : ''}`} ref={ref} id={id}>
+      <button
+        type="button"
+        className="filter-dropdown-trigger"
+        onClick={() => setOpen(o => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <span className={selected ? 'filter-dropdown-value' : 'filter-dropdown-placeholder'}>
+          {selected ? selected.label : placeholder}
+        </span>
+        <ChevronDown size={14} className="filter-dropdown-chevron" aria-hidden="true" />
+      </button>
+
+      {open && (
+        <div className="filter-dropdown-menu" role="listbox">
+          {options.length > 6 && (
+            <div className="filter-dropdown-search">
+              <Search size={13} aria-hidden="true" />
+              <input
+                ref={searchRef}
+                type="text"
+                placeholder="Search..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                onClick={e => e.stopPropagation()}
+              />
+            </div>
+          )}
+          <div className="filter-dropdown-list">
+            <button
+              type="button"
+              role="option"
+              aria-selected={value === ''}
+              className={`filter-dropdown-item${value === '' ? ' active' : ''}`}
+              onClick={() => select('')}
+            >
+              {placeholder}
+            </button>
+            {filtered.map(opt => (
+              <button
+                key={opt.value}
+                type="button"
+                role="option"
+                aria-selected={value === opt.value}
+                className={`filter-dropdown-item${value === opt.value ? ' active' : ''}`}
+                onClick={() => select(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+            {filtered.length === 0 && (
+              <div className="filter-dropdown-empty">No results</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 // Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -324,32 +438,26 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                 value={currentFilters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
               />
-              <select
+              <CustomDropdown
                 id="locale"
-                className="search-select"
                 value={currentFilters.locale}
-                onChange={(e) => handleFilterChange('locale', e.target.value)}
-              >
-                <option value="">All Languages</option>
-                {locales.map(locale => (
-                  <option key={locale} value={locale}>
-                    {getLanguageName(locale)} ({locale})
-                  </option>
-                ))}
-              </select>
-              <select
+                placeholder="All Languages"
+                options={locales.map(locale => ({
+                  value: locale,
+                  label: `${getLanguageName(locale)} (${locale})`
+                }))}
+                onChange={(val) => handleFilterChange('locale', val)}
+              />
+              <CustomDropdown
                 id="target-filter"
-                className="search-select"
                 value={currentFilters.target}
-                onChange={(e) => handleFilterChange('target', e.target.value)}
-              >
-                <option value="">All Targets</option>
-                {targets.map(target => (
-                  <option key={target} value={target}>
-                    {target}
-                  </option>
-                ))}
-              </select>
+                placeholder="All Targets"
+                options={targets.map(target => ({
+                  value: target,
+                  label: target
+                }))}
+                onChange={(val) => handleFilterChange('target', val)}
+              />
             </div>
           </div>
 
