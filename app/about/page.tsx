@@ -2,9 +2,20 @@ import type { Metadata } from "next";
 import Link from "@/components/NoPrefetchLink";
 
 export const metadata: Metadata = {
-  title: "About - FreeHosts",
-  description: "About FreeHosts - our mission, team, and how to contribute.",
-  robots: "index, follow",
+  title: "About FreeHosts - Our Mission, Team & Community",
+  description:
+    "Learn about FreeHosts — a community-driven directory helping developers, students, and makers discover reliable free hosting. Meet the team and find out how to contribute.",
+  keywords: [
+    "about freehosts",
+    "free hosting community",
+    "hosting directory mission",
+    "freehosts team",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+  },
   alternates: {
     canonical: "https://freehosts.space/about",
   },
@@ -13,9 +24,9 @@ export const metadata: Metadata = {
     siteName: "FreeHosts",
     type: "website",
     url: "https://freehosts.space/about",
-    title: "About - FreeHosts",
+    title: "About FreeHosts - Our Mission, Team & Community",
     description:
-      "A community-driven directory to discover, compare and review free hosting services.",
+      "A community-driven directory to discover, compare and review free hosting services for websites, bots, and apps.",
     images: [
       {
         url: "https://freehosts.space/Src/Images/social-preview.png",
@@ -27,9 +38,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "About - FreeHosts",
+    title: "About FreeHosts - Our Mission, Team & Community",
     description:
-      "A community-driven directory to discover, compare and review free hosting services.",
+      "A community-driven directory to discover, compare and review free hosting services for websites, bots, and apps.",
     images: [
       {
         url: "https://freehosts.space/Src/Images/social-preview.png",
@@ -45,22 +56,16 @@ const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "WebSite",
-      "@id": "https://freehosts.space/#website",
-      url: "https://freehosts.space/",
-      name: "FreeHosts",
-      potentialAction: {
-        "@type": "SearchAction",
-        target: "https://freehosts.space/hosts?search={search_term_string}",
-        "query-input": "required name=search_term_string",
-      },
-    },
-    {
       "@type": "Organization",
       "@id": "https://freehosts.space/#organization",
       name: "FreeHosts",
       url: "https://freehosts.space/",
-      logo: "https://freehosts.space/Src/Images/icon.png",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://freehosts.space/Src/icons/icon.png",
+        width: 512,
+        height: 512,
+      },
       sameAs: [
         "https://x.com/freehosts_",
         "https://www.instagram.com/freehosts/",
@@ -69,15 +74,31 @@ const structuredData = {
       ],
       description:
         "FreeHosts is a community-curated directory of free hosting providers and services.",
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          email: "support@freehosts.space",
+          contactType: "customer support",
+          availableLanguage: "English",
+        },
+        {
+          "@type": "ContactPoint",
+          url: "https://discord.gg/QbeZ3b5CQd",
+          contactType: "community support",
+          availableLanguage: "English",
+        },
+      ],
     },
     {
       "@type": "WebPage",
       "@id": "https://freehosts.space/about#webpage",
       url: "https://freehosts.space/about",
-      name: "About - FreeHosts",
+      name: "About FreeHosts - Our Mission, Team & Community",
       isPartOf: { "@id": "https://freehosts.space/#website" },
+      about: { "@id": "https://freehosts.space/#organization" },
       inLanguage: "en",
-      description: "About FreeHosts - our mission, team, and how to contribute.",
+      description:
+        "Learn about FreeHosts — a community-driven directory helping developers, students, and makers discover reliable free hosting.",
     },
   ],
 };

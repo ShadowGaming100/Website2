@@ -54,6 +54,16 @@ export async function generateMetadata({ params }: Props) {
     keywords,
     authors: [{ name: 'FreeHosts', url: site }],
     metadataBase: new URL(site),
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large" as const,
+        "max-snippet": -1,
+      },
+    },
     openGraph: {
       title,
       description,
@@ -74,7 +84,7 @@ export async function generateMetadata({ params }: Props) {
       card: 'summary_large_image',
       title,
       description,
-      images: [ogImageUrl],
+      images: [{ url: ogImageUrl, alt: imageAlt }],
       site: '@freehosts_',
       creator: '@freehosts_'
     }
@@ -144,11 +154,56 @@ export default async function HostDetailPage({ params }: Props) {
     "description": description
   }
 
+  const totalReviews = host.approvals + host.disapprovals
+  const ratingValue = totalReviews > 0
+    ? ((host.approvals / totalReviews) * 5).toFixed(1)
+    : null
+
+  const serviceLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": host.name,
+    "description": description,
+    "url": hostUrl,
+    "serviceType": "Web Hosting",
+    "category": host.targets?.join(', ') || 'Web Hosting',
+    "provider": {
+      "@type": "Organization",
+      "name": host.name,
+      ...(host.links?.[0] ? { "url": host.links[0] } : {}),
+    },
+    ...(host.image ? { "image": host.image } : {}),
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": host.status?.toLowerCase() === "online"
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      "url": hostUrl,
+      "description": `Free ${host.targets?.join(', ') || 'hosting'} — ${host.cpu || 'Unknown'} CPU, ${host.ram || 'Unknown'} RAM, ${host.disk || 'Unknown'} storage`,
+    },
+    ...(ratingValue ? {
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": ratingValue,
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": totalReviews,
+        "reviewCount": totalReviews,
+      }
+    } : {}),
+  }
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceLd) }}
       />
       <HostDetailClient host={host} />
     </>

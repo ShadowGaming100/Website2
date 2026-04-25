@@ -77,6 +77,16 @@ jobs:
             return results;
           }
 
+          // Slugify function matching lib/slugify.ts
+          function slugify(name) {
+            return name
+              .toLowerCase()
+              .replace(/\s+/g, '-')
+              .replace(/[^a-z0-9-]/g, '')
+              .replace(/-{2,}/g, '-')
+              .replace(/^-+|-+$/g, '');
+          }
+
           function generateSitemap(hosts) {
             const today = new Date().toISOString().split('T')[0];
 
@@ -98,10 +108,13 @@ jobs:
               urlSet.add(urlPath);
             });
 
-            // Add host-specific URLs from API
+            // Add host-specific slug URLs from API
             hosts.forEach(host => {
-              if (host && host.id !== undefined && host.id !== null) {
-                urlSet.add(`/hosts?id=${host.id}`);
+              if (host && host.name) {
+                const slug = slugify(host.name);
+                if (slug) {
+                  urlSet.add(`/hosts/${slug}`);
+                }
               }
             });
 
@@ -132,6 +145,7 @@ jobs:
               'Disallow: /admin/',
               'Disallow: /private/',
               'Disallow: /cgi-bin/',
+              'Disallow: /redirect/',
               '',
               `Sitemap: ${SITE_URL}/sitemap.xml`,
               ''

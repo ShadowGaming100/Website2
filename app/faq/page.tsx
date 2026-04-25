@@ -3,10 +3,21 @@ import FaqClient from "./FaqClient";
 import { faqItems } from "./data";
 
 export const metadata: Metadata = {
-  title: "FAQ - FreeHosts | Common Questions About Free Hosting",
+  title: "FAQ - Frequently Asked Questions About FreeHosts & Free Hosting",
   description:
-    "Find answers to frequently asked questions about FreeHosts and free hosting services. Get help with your hosting journey.",
-  robots: "index, follow",
+    "Get answers to the most common questions about FreeHosts and free hosting services. Learn how to find, compare, and submit hosting providers.",
+  keywords: [
+    "freehosts faq",
+    "free hosting questions",
+    "hosting directory help",
+    "freehosts help",
+    "free hosting guide",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+  },
   alternates: {
     canonical: "https://freehosts.space/faq",
   },
@@ -15,9 +26,9 @@ export const metadata: Metadata = {
     siteName: "FreeHosts",
     type: "website",
     url: "https://freehosts.space/faq",
-    title: "FAQ - FreeHosts | Common Questions About Free Hosting",
+    title: "FAQ - Frequently Asked Questions About FreeHosts & Free Hosting",
     description:
-      "Find answers to frequently asked questions about FreeHosts and free hosting services.",
+      "Get answers to the most common questions about FreeHosts and free hosting services.",
     images: [
       {
         url: "https://freehosts.space/Src/Images/social-preview.png",
@@ -29,9 +40,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "FAQ - FreeHosts | Common Questions About Free Hosting",
+    title: "FAQ - Frequently Asked Questions About FreeHosts & Free Hosting",
     description:
-      "Find answers to frequently asked questions about FreeHosts and free hosting services.",
+      "Get answers to the most common questions about FreeHosts and free hosting services.",
     images: [
       {
         url: "https://freehosts.space/Src/Images/social-preview.png",
@@ -43,34 +54,16 @@ export const metadata: Metadata = {
   },
 };
 
-const websiteSchema = {
+const webPageSchema = {
   "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebSite",
-      "@id": "https://freehosts.space/#website",
-      url: "https://freehosts.space/",
-      name: "FreeHosts",
-      potentialAction: {
-        "@type": "SearchAction",
-        target: "https://freehosts.space/hosts?search={search_term_string}",
-        "query-input": "required name=search_term_string",
-      },
-    },
-    {
-      "@type": "Organization",
-      "@id": "https://freehosts.space/#organization",
-      name: "FreeHosts",
-      url: "https://freehosts.space/",
-      logo: "https://freehosts.space/Src/Images/icon.png",
-      sameAs: [
-        "https://x.com/freehosts_",
-        "https://www.instagram.com/freehosts/",
-        "https://github.com/freehostsofficial",
-        "https://discord.gg/QbeZ3b5CQd",
-      ],
-    },
-  ],
+  "@type": "WebPage",
+  "@id": "https://freehosts.space/faq#webpage",
+  url: "https://freehosts.space/faq",
+  name: "FAQ - Frequently Asked Questions About FreeHosts & Free Hosting",
+  isPartOf: { "@id": "https://freehosts.space/#website" },
+  inLanguage: "en",
+  description:
+    "Get answers to the most common questions about FreeHosts and free hosting services. Learn how to find, compare, and submit hosting providers.",
 };
 
 const faqSchema = {
@@ -91,7 +84,7 @@ export default function FaqPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
       />
       <script
         type="application/ld+json"

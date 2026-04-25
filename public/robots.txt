@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
+# Block internal redirect handler and API routes
+Disallow: /redirect/
+Disallow: /api/
+
 Sitemap: https://freehosts.space/sitemap.xml

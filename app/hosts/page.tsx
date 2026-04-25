@@ -1,85 +1,60 @@
 import { fetchHosts } from '../../lib/cache'
 import HostsClient from './HostsClient'
+import { slugify } from '../../lib/slugify'
 
 export const runtime = 'edge';
 
 export const metadata = {
-  title: 'Hosting Directory - FreeHosts',
-  description: 'Find trusted free hosting for websites, bots, and apps. Compare reliable providers in the FreeHosts Hosting Directory.',
-  robots: 'index, follow',
+  title: 'Free Hosting Directory - Browse 100+ Providers | FreeHosts',
+  description: 'Browse 100+ free hosting providers for websites, Discord bots, and apps. Filter by CPU, RAM, storage, language, and target. Find the best free host for your project.',
+  keywords: [
+    'free hosting directory',
+    'free web hosting',
+    'free bot hosting',
+    'free discord bot hosting',
+    'free app hosting',
+    'free server hosting',
+    'hosting comparison',
+    'best free hosting',
+    'no cost hosting providers',
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+  },
   alternates: {
-    canonical: 'https://freehosts.space/',
+    canonical: 'https://freehosts.space/hosts',
   },
   openGraph: {
     locale: 'en_US',
     siteName: 'FreeHosts',
     type: 'website',
-    url: 'https://freehosts.space/',
-    title: 'Hosting Directory - FreeHosts',
-    description: 'Find trusted free hosting for websites, bots, and apps. Compare reliable providers in the FreeHosts Hosting Directory.',
+    url: 'https://freehosts.space/hosts',
+    title: 'Free Hosting Directory - Browse 100+ Providers | FreeHosts',
+    description: 'Browse 100+ free hosting providers for websites, Discord bots, and apps. Filter by CPU, RAM, storage, language, and target.',
     images: [
       {
         url: 'https://freehosts.space/Src/Images/social-preview.png',
         width: 1280,
         height: 720,
-        alt: 'FreeHosts — Discover Free Hosting',
+        alt: 'FreeHosts — Free Hosting Directory',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Hosting Directory - FreeHosts',
-    description: 'Find trusted free hosting for websites, bots, and apps. Compare reliable providers in the FreeHosts Hosting Directory.',
+    title: 'Free Hosting Directory - Browse 100+ Providers | FreeHosts',
+    description: 'Browse 100+ free hosting providers for websites, Discord bots, and apps. Filter by CPU, RAM, storage, language, and target.',
     images: [
       {
         url: 'https://freehosts.space/Src/Images/social-preview.png',
-        alt: 'FreeHosts — Discover Free Hosting',
+        alt: 'FreeHosts — Free Hosting Directory',
       },
     ],
     site: '@freehosts_',
     creator: '@freehosts_',
   },
-  other: {
-    'application/ld+json': {
-      '@context': 'https://schema.org',
-      '@graph': [
-        {
-          '@type': 'WebSite',
-          '@id': 'https://freehosts.space/#website',
-          url: 'https://freehosts.space/',
-          name: 'FreeHosts',
-          potentialAction: {
-            '@type': 'SearchAction',
-            target: 'https://freehosts.space/hosts?search={search_term_string}',
-            'query-input': 'required name=search_term_string'
-          }
-        },
-        {
-          '@type': 'Organization',
-          '@id': 'https://freehosts.space/#organization',
-          name: 'FreeHosts',
-          url: 'https://freehosts.space/',
-          logo: 'https://freehosts.space/Src/Images/icon.png',
-          sameAs: [
-            'https://x.com/freehosts_',
-            'https://www.instagram.com/freehosts/',
-            'https://github.com/freehostsofficial',
-            'https://discord.gg/QbeZ3b5CQd'
-          ],
-          description: 'FreeHosts is a community-curated directory of free hosting providers and services.'
-        },
-        {
-          '@type': 'WebPage',
-          '@id': 'https://freehosts.space/#homepage',
-          url: 'https://freehosts.space/',
-          name: 'FreeHosts — Discover Free Hosting',
-          isPartOf: { '@id': 'https://freehosts.space/#website' },
-          inLanguage: 'en',
-          description: 'FreeHosts helps developers, students, and makers discover and compare reliable free hosting for websites, bots, and more.'
-        }
-      ]
-    }
-  }
 }
 
 export const viewport = {
@@ -88,6 +63,44 @@ export const viewport = {
 
 export default async function HostsPage() {
   const hosts = await fetchHosts()
-  
-  return <HostsClient initialHosts={hosts} />
+
+  const itemListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Free Hosting Directory',
+    description: 'A curated directory of free hosting providers for websites, bots, and apps.',
+    url: 'https://freehosts.space/hosts',
+    numberOfItems: hosts.length,
+    itemListElement: hosts.slice(0, 50).map((host, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `https://freehosts.space/hosts/${slugify(host.name)}`,
+      name: host.name,
+    })),
+  }
+
+  const webPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://freehosts.space/hosts#webpage',
+    url: 'https://freehosts.space/hosts',
+    name: 'Free Hosting Directory | FreeHosts',
+    isPartOf: { '@id': 'https://freehosts.space/#website' },
+    inLanguage: 'en',
+    description: 'Browse and compare free hosting providers for websites, bots, and apps.',
+  }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
+      <HostsClient initialHosts={hosts} />
+    </>
+  )
 }

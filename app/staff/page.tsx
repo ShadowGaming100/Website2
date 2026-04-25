@@ -1,11 +1,22 @@
 import type { Metadata } from "next";
 import StaffClient from "./StaffClient";
+import { staffData } from "./data";
 
 export const metadata: Metadata = {
-  title: "Staff - FreeHosts",
+  title: "Meet the FreeHosts Team - Staff & Contributors",
   description:
-    "Meet the FreeHosts team: owners, developers, moderators, and host publishers of this community-curated free hosting directory.",
-  robots: "index, follow",
+    "Meet the volunteers behind FreeHosts — owners, developers, moderators, and host publishers who keep this free hosting directory running.",
+  keywords: [
+    "freehosts staff",
+    "freehosts team",
+    "freehosts contributors",
+    "hosting directory team",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+  },
   alternates: {
     canonical: "https://freehosts.space/staff",
   },
@@ -14,27 +25,27 @@ export const metadata: Metadata = {
     siteName: "FreeHosts",
     type: "website",
     url: "https://freehosts.space/staff",
-    title: "Staff | FreeHosts",
+    title: "Meet the FreeHosts Team - Staff & Contributors",
     description:
-      "Meet the FreeHosts team: owners, developers, moderators, and host publishers of this free hosting directory.",
+      "Meet the volunteers behind FreeHosts — owners, developers, moderators, and host publishers who keep this free hosting directory running.",
     images: [
       {
         url: "https://freehosts.space/Src/Images/social-preview.png",
         width: 1280,
         height: 720,
-        alt: "FreeHosts - Discover Free Hosting",
+        alt: "FreeHosts - Meet the Team",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Staff | FreeHosts",
+    title: "Meet the FreeHosts Team - Staff & Contributors",
     description:
-      "Meet the FreeHosts team: owners, developers, moderators, and host publishers of this free hosting directory.",
+      "Meet the volunteers behind FreeHosts — owners, developers, moderators, and host publishers who keep this free hosting directory running.",
     images: [
       {
         url: "https://freehosts.space/Src/Images/social-preview.png",
-        alt: "FreeHosts - Discover Free Hosting",
+        alt: "FreeHosts - Meet the Team",
       },
     ],
     site: "@freehosts_",
@@ -42,54 +53,54 @@ export const metadata: Metadata = {
   },
 };
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebSite",
-      "@id": "https://freehosts.space/#website",
-      url: "https://freehosts.space/",
-      name: "FreeHosts",
-      potentialAction: {
-        "@type": "SearchAction",
-        target: "https://freehosts.space/hosts?search={search_term_string}",
-        "query-input": "required name=search_term_string",
-      },
-    },
-    {
-      "@type": "Organization",
-      "@id": "https://freehosts.space/#organization",
-      name: "FreeHosts",
-      url: "https://freehosts.space/",
-      logo: "https://freehosts.space/Src/Images/icon.png",
-      sameAs: [
-        "https://x.com/freehosts_",
-        "https://www.instagram.com/freehosts/",
-        "https://github.com/freehostsofficial",
-        "https://discord.gg/QbeZ3b5CQd",
-      ],
-      description:
-        "FreeHosts is a community-curated directory of free hosting providers and services.",
-    },
-    {
-      "@type": "WebPage",
-      "@id": "https://freehosts.space/staff#webpage",
-      url: "https://freehosts.space/staff",
-      name: "Staff - FreeHosts",
-      isPartOf: { "@id": "https://freehosts.space/#website" },
-      inLanguage: "en",
-      description:
-        "Meet the FreeHosts team: owners, developers, moderators, and host publishers.",
-    },
-  ],
-};
-
 export default function StaffPage() {
+  const webPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://freehosts.space/staff#webpage",
+    url: "https://freehosts.space/staff",
+    name: "Meet the FreeHosts Team - Staff & Contributors",
+    isPartOf: { "@id": "https://freehosts.space/#website" },
+    inLanguage: "en",
+    description:
+      "Meet the volunteers behind FreeHosts — owners, developers, moderators, and host publishers.",
+  };
+
+  const teamSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "FreeHosts Team Members",
+    description: "The staff and contributors who run the FreeHosts community directory.",
+    url: "https://freehosts.space/staff",
+    numberOfItems: Object.keys(staffData).length,
+    itemListElement: Object.entries(staffData).map(([, member], index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Person",
+        name: member.name ?? "FreeHosts Team Member",
+        jobTitle: Array.isArray(member.roles)
+          ? member.roles[0]
+          : member.roles,
+        worksFor: {
+          "@id": "https://freehosts.space/#organization",
+        },
+        ...(member.links?.github
+          ? { url: member.links.github }
+          : {}),
+      },
+    })),
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(teamSchema) }}
       />
       <StaffClient />
     </>

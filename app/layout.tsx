@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Link from "@/components/NoPrefetchLink";
 import Script from "next/script";
 import RouteInitializer from "../components/RouteInitializer";
+import GlobalStructuredData from "../components/GlobalStructuredData";
 
 import "./src/css/globals.css";
 import "./src/css/styles.css";
@@ -9,12 +10,35 @@ import "./src/css/hosts.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://freehosts.space"),
-  title: "FreeHosts - Free Hosting for Anything You Build",
+  title: {
+    default: "FreeHosts - Free Hosting for Anything You Build",
+    template: "%s | FreeHosts",
+  },
   description:
     "Find reliable free hosting for websites, bots, apps, and Discord communities. Join our community directory to discover no-cost hosting solutions.",
-  robots: "index, follow",
-  alternates: {
-    canonical: "/",
+  keywords: [
+    "free hosting",
+    "free web hosting",
+    "free bot hosting",
+    "free app hosting",
+    "free discord bot hosting",
+    "free server hosting",
+    "hosting directory",
+    "no cost hosting",
+  ],
+  authors: [{ name: "FreeHosts", url: "https://freehosts.space" }],
+  creator: "FreeHosts",
+  publisher: "FreeHosts",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
   openGraph: {
     locale: "en_US",
@@ -139,6 +163,11 @@ export default function RootLayout({
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <link
+          rel="preconnect"
+          href="https://font-awesome.icons.cdn.codelabworks.is-cool.dev"
+          crossOrigin="anonymous"
+        />
+        <link
           rel="stylesheet"
           href="https://font-awesome.icons.cdn.codelabworks.is-cool.dev/css/all.css"
         />
@@ -151,6 +180,7 @@ export default function RootLayout({
       </head>
       <body>
         <RouteInitializer />
+        <GlobalStructuredData />
         <Script src="/Src/js/script.js" strategy="afterInteractive" />
 
         <header className="site-header">

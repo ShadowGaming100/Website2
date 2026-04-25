@@ -2,10 +2,21 @@ import type { Metadata } from "next";
 import SubmitHostClient from "./SubmitHostClient";
 
 export const metadata: Metadata = {
-  title: "Submit a Host - FreeHosts",
+  title: "Submit a Free Host - Get Listed on FreeHosts",
   description:
-    "Learn how to submit your hosting service to the FreeHosts directory. Review our submission rules and use our layout builder for a fast listing.",
-  robots: "index, follow",
+    "Want to get your free hosting service listed on FreeHosts? Learn the submission process, review our guidelines, and use our layout builder to submit your host today.",
+  keywords: [
+    "submit free host",
+    "list hosting service",
+    "add hosting to directory",
+    "freehosts submission",
+    "get listed freehosts",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+  },
   alternates: {
     canonical: "https://freehosts.space/submit-host",
   },
@@ -14,7 +25,7 @@ export const metadata: Metadata = {
     siteName: "FreeHosts",
     type: "website",
     url: "https://freehosts.space/submit-host",
-    title: "Submit a Host to the FreeHosts Directory",
+    title: "Submit a Free Host - Get Listed on FreeHosts",
     description:
       "Join the community-curated directory of free hosting. Learn the submission process and get your host listed today.",
     images: [
@@ -28,7 +39,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Submit a Host to FreeHosts",
+    title: "Submit a Free Host - Get Listed on FreeHosts",
     description:
       "Want to get your hosting service listed? Follow our guide and use our layout builder for a seamless submission experience.",
     images: ["https://freehosts.space/Src/Images/social-preview.png"],
@@ -37,6 +48,26 @@ export const metadata: Metadata = {
   },
 };
 
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://freehosts.space/submit-host#webpage",
+  url: "https://freehosts.space/submit-host",
+  name: "Submit a Free Host - Get Listed on FreeHosts",
+  isPartOf: { "@id": "https://freehosts.space/#website" },
+  inLanguage: "en",
+  description:
+    "Submit your free hosting service to the FreeHosts directory. Learn the process and get listed.",
+};
+
 export default function SubmitHostPage() {
-  return <SubmitHostClient />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <SubmitHostClient />
+    </>
+  );
 }
