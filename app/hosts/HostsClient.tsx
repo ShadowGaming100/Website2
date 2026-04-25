@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { type Host } from '../../lib/cache';
 import Link from '@/components/NoPrefetchLink';
 import { slugify } from '../../lib/slugify';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, X, Shuffle, ArrowDownAZ, Cpu, MemoryStick, HardDrive, Clock } from 'lucide-react';
 
 // Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -385,6 +386,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                     className={`sort-btn ${currentFilters.sort === sortType ? 'active' : ''}`}
                     onClick={() => handleSortChange(sortType)}
                   >
+                    {getSortIcon(sortType)}
                     {getSortLabel(sortType)}
                   </button>
                 ))}
@@ -394,7 +396,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
               className={`clear-filters-btn ${hasActiveFilters ? 'active' : ''}`}
               onClick={clearFilters}
             >
-              <i data-lucide="x" aria-hidden="true" /> Clear Filters
+              <X size={14} aria-hidden="true" /> Clear Filters
             </button>
           </div>
 
@@ -403,7 +405,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
             {filteredHosts.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">
-                  <i data-lucide="search" aria-hidden="true" />
+                  <Search size={48} aria-hidden="true" />
                 </div>
                 <div className="empty-title">No hosts found</div>
                 <p style={{ color: 'var(--muted)' }}>Try adjusting your filters to find more results</p>
@@ -429,14 +431,14 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                 onClick={() => goToPage(1)}
                 disabled={currentPage === 1}
               >
-                <i data-lucide="chevrons-left" aria-hidden="true" /> First
+                <ChevronsLeft size={14} aria-hidden="true" /> First
               </button>
               <button 
                 className="pagination-btn" 
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage === 1}
               >
-                <i data-lucide="chevron-left" aria-hidden="true" /> Previous
+                <ChevronLeft size={14} aria-hidden="true" /> Previous
               </button>
               
               <div className="pagination-pages" id="page-numbers">
@@ -462,14 +464,14 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
               >
-                Next <i data-lucide="chevron-right" aria-hidden="true" />
+                Next <ChevronRight size={14} aria-hidden="true" />
               </button>
               <button 
                 className="pagination-btn" 
                 onClick={() => goToPage(totalPages)}
                 disabled={currentPage === totalPages}
               >
-                Last <i data-lucide="chevrons-right" aria-hidden="true" />
+                Last <ChevronsRight size={14} aria-hidden="true" />
               </button>
             </div>
           )}
@@ -496,94 +498,97 @@ function HostCard({ host, isNew, formatSize, getLanguageName }: HostCardProps) {
   const statusClass = host.status && host.status.toLowerCase() === 'online' ? 'online' : 'closed'
   const typeDisplay = host.type ? host.type.split(',').map(t => t.trim().replace(/\s*\([^)]*\)/g, '').trim()) : []
 
-  const targetBadges = (host.targets || []).flatMap(target => 
-    target.split(',').map(t => {
-      const displayTarget = t.trim()
-      return displayTarget ? (
-        <span key={displayTarget} className="target-badge">
-          {displayTarget}
-        </span>
-      ) : null
-    }).filter(Boolean)
-  )
-
-  const languageBadges = (host.locale || []).map(locale => (
-    <span key={locale} className="language-badge">
-      {getLanguageName(locale)}
-    </span>
-  ))
-
   return (
     <div className="host-card">
-      {isNew && (
-        <div className="host-badge">NEW</div>
-      )}
-      
-      <div className="host-icon">{iconLetter}</div>
-      
-      <div className="host-info">
-        <div className="host-header">
+      {isNew && <div className="host-badge">NEW</div>}
+
+      {/* Top: icon + name/badges */}
+      <div className="host-card-top">
+        <div className="host-icon">{iconLetter}</div>
+        <div className="host-name-group">
           <div className="host-name">{host.name}</div>
-        </div>
-        
-        <div className="badges-container">
-          <span className={`status-badge ${statusClass}`}>
-            {host.status || 'Unknown'}
-          </span>
-          {typeDisplay.map(type => (
-            <span key={type} className="host-type-badge">
-              {type}
-            </span>
-          ))}
-          {languageBadges}
-          {targetBadges}
-        </div>
-        
-        <div className="host-specs">
-          <div className="spec">
-            <div className="spec-value">{host.cpu || 'Unknown'}</div>
-            <div className="spec-label">CPU</div>
+          <div className="badges-container">
+            <span className={`status-badge ${statusClass}`}>{host.status || 'Unknown'}</span>
+            {typeDisplay.map(type => (
+              <span key={type} className="host-type-badge">{type}</span>
+            ))}
+            {(host.locale || []).map(locale => (
+              <span key={locale} className="language-badge">{getLanguageName(locale)}</span>
+            ))}
+            {(host.targets || []).flatMap(target =>
+              target.split(',').map(t => {
+                const d = t.trim()
+                return d ? <span key={d} className="target-badge">{d}</span> : null
+              }).filter(Boolean)
+            )}
           </div>
-          <div className="spec">
-            <div className="spec-value">{ramDisplay}</div>
-            <div className="spec-label">Memory</div>
+          {host.description && (
+            <p className="host-description">{host.description}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Spec cards: CPU / RAM / Storage */}
+      <div className="host-specs">
+        <div className="host-spec-card">
+          <div className="host-spec-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M9 2v2M2 15h2M2 9h2M15 20v2M9 20v2M20 15h2M20 9h2"/></svg>
           </div>
-          <div className="spec">
-            <div className="spec-value">{storageDisplay}</div>
-            <div className="spec-label">Storage</div>
+          <div className="spec-copy">
+            <div className="spec-box-value">{host.cpu || 'Unknown'}</div>
+            <div className="spec-box-label">CPU</div>
+          </div>
+        </div>
+        <div className="host-spec-card">
+          <div className="host-spec-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 19v-3"/><path d="M10 19v-3"/><path d="M14 19v-3"/><path d="M18 19v-3"/><path d="M8 11V9"/><path d="M16 11V9"/><path d="M12 11V9"/><path d="M2 15h20"/><path d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1.1a2 2 0 0 0 0 3.837V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5.1a2 2 0 0 0 0-3.837Z"/></svg>
+          </div>
+          <div className="spec-copy">
+            <div className="spec-box-value">{ramDisplay}</div>
+            <div className="spec-box-label">Memory</div>
+          </div>
+        </div>
+        <div className="host-spec-card">
+          <div className="host-spec-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="22" x2="2" y1="12" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" x2="6.01" y1="16" y2="16"/><line x1="10" x2="10.01" y1="16" y2="16"/></svg>
+          </div>
+          <div className="spec-copy">
+            <div className="spec-box-value">{storageDisplay}</div>
+            <div className="spec-box-label">Storage</div>
           </div>
         </div>
       </div>
-      
-      <div className="host-rating">
-        <div className="rating-value">{rating}%</div>
-        <div className="rating-label">{totalReviews} reviews</div>
-        <div className="rating-bar">
-          <div className="rating-fill" style={{ width: `${rating}%` }}></div>
+
+      {/* Footer: rating + view details */}
+      <div className="host-card-footer">
+        <div className="host-rating">
+          <div className="rating-value">{rating}%</div>
+          <div className="rating-label">{totalReviews} reviews</div>
+          <div className="rating-bar">
+            <div className="rating-fill" style={{ width: `${rating}%` }} />
+          </div>
+        </div>
+        <div className="host-card-actions">
+          <Link href={`/hosts/${slugify(host.name)}`} className="view-details-btn">
+            View Details
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </Link>
         </div>
       </div>
-      
-      <Link 
-        href={`/hosts/${slugify(host.name)}`} 
-        className="view-details-btn"
-      >
-        View Details
-      </Link>
     </div>
-    
   )
 }
 
 // Helper functions for sort icons and labels
-function getSortIcon(sortType: string): string {
+function getSortIcon(sortType: string): React.ReactNode {
   switch (sortType) {
-    case 'random': return 'random'
-    case 'name': return 'sort-alpha-down'
-    case 'cpu': return 'microchip'
-    case 'ram': return 'memory'
-    case 'storage': return 'hdd'
-    case 'recent': return 'clock'
-    default: return 'random'
+    case 'random': return <Shuffle size={13} aria-hidden="true" />
+    case 'name': return <ArrowDownAZ size={13} aria-hidden="true" />
+    case 'cpu': return <Cpu size={13} aria-hidden="true" />
+    case 'ram': return <MemoryStick size={13} aria-hidden="true" />
+    case 'storage': return <HardDrive size={13} aria-hidden="true" />
+    case 'recent': return <Clock size={13} aria-hidden="true" />
+    default: return <Shuffle size={13} aria-hidden="true" />
   }
 }
 

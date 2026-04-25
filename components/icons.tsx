@@ -1,6 +1,8 @@
 /**
  * Icon components using lucide-react for UI icons
  * and @fortawesome/react-fontawesome for brand icons.
+ * Note: Brand icons (Discord, GitHub, Twitter, Instagram, LinkedIn)
+ * are provided by Font Awesome — lucide-react does not include brand icons.
  */
 
 // Lucide UI icons
@@ -67,6 +69,7 @@ export {
   Newspaper,
   Pencil,
   Pin,
+  Plus,
   PlusCircle,
   Repeat,
   Rocket,
@@ -85,7 +88,6 @@ export {
   Sun,
   Terminal,
   TriangleAlert,
-  Twitter,
   Upload,
   UserCheck,
   UserRoundX,

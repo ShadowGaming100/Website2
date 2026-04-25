@@ -1704,6 +1704,13 @@ i[data-lucide] {
     text-decoration: none;
 }
 
+/* Constrain FontAwesome SVG icons inside social link buttons */
+.social-links a svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
 .social-links a:hover {
     background: var(--accent);
     border-color: var(--accent);
@@ -1753,6 +1760,13 @@ i[data-lucide] {
 
 .footer-list a i {
     font-size: var(--font-size-xs);
+}
+
+/* Constrain FontAwesome SVG icons inside footer list links */
+.footer-list a svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
 }
 
 .footer-bottom {
@@ -3111,6 +3125,11 @@ html[data-theme=light] .rating-section {
     margin-bottom: var(--space-sm)
 }
 
+.centered-hero {
+    min-height: auto;
+    padding: var(--space-xl) 0 var(--space-lg);
+}
+
 .centered-hero .hero-inner {
     text-align: center;
     justify-content: center
@@ -3353,6 +3372,35 @@ html[data-theme=light] .rating-section {
         flex-direction: column;
         text-align: center;
     }
+
+    /* Touch targets - minimum 44x44px for all interactive elements */
+    .btn,
+    .icon-btn,
+    .sort-btn,
+    .view-details-btn,
+    .filter-btn,
+    .sidebar-link,
+    .sidebar-dropdown-toggle,
+    .nav-link {
+        min-height: 44px;
+    }
+
+    .btn.small {
+        min-height: 36px;
+    }
+
+    .icon-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    /* Ensure footer links are tappable */
+    .footer-list a,
+    .footer-bottom-links a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
 }
 
 @media (max-width:480px) {
@@ -3405,6 +3453,50 @@ html[data-theme=light] .rating-section {
     .staff-avatar {
         width: 56px;
         height: 56px;
+        font-size: var(--font-size-xl);
+    }
+
+    /* Hide terminal card on very small viewports */
+    .hero-right {
+        display: none;
+    }
+
+    /* Ensure hero is fully single-column */
+    .hero-inner {
+        flex-direction: column;
+    }
+}
+
+/* ============================================
+   Breakpoint: 320px - Very Small Screens
+   ============================================ */
+@media (max-width: 320px) {
+    .wrap {
+        padding: 0 var(--space-sm);
+    }
+
+    .hero-title {
+        font-size: var(--font-size-xl);
+    }
+
+    .hero-cta .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .stat {
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .header-inner {
+        padding: .5rem .6rem;
+    }
+
+    .footer-content {
+        gap: var(--space-md);
+    }
+
+    .section-title {
         font-size: var(--font-size-xl);
     }
 }
