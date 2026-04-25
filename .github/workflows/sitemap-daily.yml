@@ -1,150 +1,167 @@
-name: Sitemap — Daily
+name: Update Sitemap
 
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 2 * * 1' # Weekly on Monday at 2 AM UTC
   workflow_dispatch:
 
 jobs:
-  build-sitemap:
+  update-sitemap:
     runs-on: ubuntu-latest
-    env:
-      SITE_URL: 'https://freehosts.space'
-      API_URL: 'https://api.freehosts.space'
-      API_FETCH_TIMEOUT_MS: '15000'
 
     steps:
-      - name: Checkout current branch
+      - name: Checkout website branch
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
+          ref: website
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '18'
 
-      - name: Install dependencies
-        run: npm install axios
-
-      - name: Generate sitemap & robots
+      - name: Generate and update sitemap & robots.txt
         run: |
-          # Create the JS script
           cat <<'JS' > generate-sitemap.js
-          const axios = require("axios");
-          const fs = require("fs");
-          const path = require("path");
+          const https = require('https');
+          const fs = require('fs');
 
-          const SITE_URL = process.env.SITE_URL;
-          const API_URL = process.env.API_URL;
-          const API_TIMEOUT = Number(process.env.API_FETCH_TIMEOUT_MS || 10000);
+          const SITE_URL = 'https://freehosts.space';
+          const API_URL = 'https://api.freehosts.space';
 
-          const USER_AGENTS = [
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0",
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129 Safari/537.36",
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3 Mobile/15E148 Safari/604.1"
+          // Static routes — keep in sync with the app/  directory
+          const STATIC_ROUTES = [
+            '/',
+            '/hosts',
+            '/about',
+            '/faq',
+            '/staff',
+            '/submit-host',
+            '/submit-layout',
+            '/submission-rules',
+            '/server-rules',
+            '/other-free-hosts',
+            '/tos',
+            '/privacy-policy',
           ];
 
-          const BASE_HEADERS = {
-            "Accept": "application/json, text/plain, */*",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache",
-            "Connection": "keep-alive",
-            "Upgrade-Insecure-Requests": "1"
-          };
+          // Slugify — must match lib/slugify.ts exactly
+          function slugify(name) {
+            return name
+              .toLowerCase()
+              .replace(/\s+/g, '-')
+              .replace(/[^a-z0-9-]/g, '')
+              .replace(/-{2,}/g, '-')
+              .replace(/^-+|-+$/g, '');
+          }
 
-          const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-          async function fetchAPIWithUA(url) {
-            for (let i = 0; i < USER_AGENTS.length; i++) {
-              const ua = USER_AGENTS[i];
-              console.log(`Trying UA ${i + 1}/${USER_AGENTS.length}: ${ua}`);
-              try {
-                const res = await axios.get(url, {
-                  timeout: API_TIMEOUT,
-                  headers: { ...BASE_HEADERS, "User-Agent": ua }
+          function fetchHosts() {
+            return new Promise((resolve, reject) => {
+              https.get(API_URL + '/api/hosts?limit=1000', (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                  try {
+                    const jsonData = JSON.parse(data);
+                    resolve(Array.isArray(jsonData.data) ? jsonData.data : []);
+                  } catch (e) {
+                    reject(e);
+                  }
                 });
-                if (res.status === 200) return res;
-              } catch (err) {
-                console.log(`UA failed (${ua}):`, err.message);
+              }).on('error', reject);
+            });
+          }
+
+          function generateSitemap(hosts) {
+            const today = new Date().toISOString().split('T')[0];
+
+            // Start with static routes, then append one slug URL per host
+            const urls = [...STATIC_ROUTES];
+
+            hosts.forEach(host => {
+              if (host && host.name) {
+                const slug = slugify(host.name);
+                if (slug) urls.push(`/hosts/${slug}`);
               }
-              await sleep(500);
+            });
+
+            // Deduplicate and sort
+            const sorted = [...new Set(urls)].sort();
+
+            let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+                          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+            for (const p of sorted) {
+              sitemap += `  <url>\n` +
+                         `    <loc>${SITE_URL}${p}</loc>\n` +
+                         `    <lastmod>${today}</lastmod>\n` +
+                         `    <changefreq>weekly</changefreq>\n` +
+                         `    <priority>0.8</priority>\n` +
+                         `  </url>\n`;
             }
-            throw new Error("All User-Agents failed (Cloudflare likely blocking)");
+
+            sitemap += '</urlset>\n';
+            return sitemap;
           }
 
-          function findHtml(dir) {
-            const out = [];
-            let list;
-            try { list = fs.readdirSync(dir); } catch { return out; }
-            for (const file of list) {
-              const p = path.join(dir, file);
-              const s = fs.statSync(p);
-              if (s.isDirectory()) {
-                if (!["api","admin","private","node_modules",".git"].includes(file))
-                  out.push(...findHtml(p));
-              } else if (file.endsWith(".html")) out.push(p);
-            }
-            return out;
+          function generateRobotsTxt() {
+            return [
+              'User-agent: *',
+              'Allow: /',
+              '',
+              '# Block API endpoints and admin pages',
+              'Disallow: /api/',
+              'Disallow: /admin/',
+              'Disallow: /private/',
+              'Disallow: /cgi-bin/',
+              'Disallow: /redirect/',
+              '',
+              `Sitemap: ${SITE_URL}/sitemap.xml`,
+              ''
+            ].join('\n');
           }
 
-          function buildXML(urls) {
-            const today = new Date().toISOString().split("T")[0];
-            let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-            xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-            for (const u of urls) {
-              xml += `  <url>
-              <loc>${SITE_URL}${u}</loc>
-              <lastmod>${today}</lastmod>
-              <changefreq>weekly</changefreq>
-              <priority>0.8</priority>
-            </url>\n`;
-            }
-            xml += `</urlset>\n`;
-            return xml;
-          }
+          async function main() {
+            try {
+              console.log('📡 Fetching hosts from API...');
+              const hosts = await fetchHosts();
+              console.log('✅ Found ' + hosts.length + ' hosts');
 
-          (async () => {
-            console.log("Starting sitemap generation...");
-            const publicDir = path.join(process.cwd(), "public");
-            const hostEndpoint = `${API_URL}/api/hosts?limit=1000`;
+              const sitemap = generateSitemap(hosts);
+              const robots = generateRobotsTxt();
 
-            // Find local HTML files
-            const htmlFiles = findHtml(publicDir);
-            const urlSet = new Set();
-            for (const f of htmlFiles) {
-              let rel = "/" + path.relative(publicDir, f).replace(/\\/g, "/");
-              rel = rel.replace(/index\.html$/, "").replace(/\.html$/, "");
-              if (rel === "") rel = "/";
-              urlSet.add(rel);
-            }
+              let currentSitemap = '';
+              let currentRobots = '';
+              try { currentSitemap = fs.readFileSync('public/sitemap.xml', 'utf8'); } catch {}
+              try { currentRobots = fs.readFileSync('public/robots.txt', 'utf8'); } catch {}
 
-            // Fetch API hosts
-            let response;
-            try { response = await fetchAPIWithUA(hostEndpoint); } 
-            catch (e) { console.error("API fetch failed:", e.message); }
+              let changesMade = false;
 
-            if (response && response.data && Array.isArray(response.data.data)) {
-              for (const h of response.data.data) {
-                if (h.id) urlSet.add(`/hosts/${h.id}`);
+              if (currentSitemap !== sitemap) {
+                fs.writeFileSync('public/sitemap.xml', sitemap);
+                console.log('✅ Sitemap updated');
+                changesMade = true;
+              } else {
+                console.log('ℹ️ Sitemap unchanged');
               }
-            }
 
-            // Write sitemap + robots.txt
-            fs.mkdirSync(publicDir, { recursive: true });
-            const finalUrls = [...urlSet].sort();
-            fs.writeFileSync(path.join(publicDir, "sitemap.xml"), buildXML(finalUrls));
-            fs.writeFileSync(
-              path.join(publicDir, "robots.txt"),
-              `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`
-            );
-            console.log("Sitemap complete. URL count:", finalUrls.length);
-          })();
+              if (currentRobots !== robots) {
+                fs.writeFileSync('public/robots.txt', robots);
+                console.log('✅ Robots.txt updated');
+                changesMade = true;
+              } else {
+                console.log('ℹ️ Robots.txt unchanged');
+              }
+
+              if (!changesMade) console.log('🚫 No changes detected');
+            } catch (err) {
+              console.error('❌ Error:', err && err.message ? err.message : err);
+              process.exit(1);
+            }
+          }
+
+          main();
           JS
 
           # Run the script
@@ -169,4 +186,4 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "🤖 Auto-update: Sitemap & robots.txt $(date +'%Y-%m-%d')"
-          git push origin "${GITHUB_REF_NAME}"
+          git push origin website
