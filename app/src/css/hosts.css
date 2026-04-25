@@ -143,7 +143,10 @@
 
 .sort-btn {
     border: 1px solid var(--border);
-    border-radius: 999px
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
 }
 
 .sort-btn:hover {
@@ -202,12 +205,18 @@
     color: var(--accent);
     font-size: var(--font-size-sm);
     font-weight: 600;
-    margin: 0 auto var(--space-md);
+    margin: 0;
     padding: 0.5rem 1rem;
     background: rgba(99, 102, 241, 0.08);
     border: 1px solid rgba(99, 102, 241, 0.2);
     border-radius: 999px;
     animation: .5s ease-out fadeIn
+}
+
+.sort-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
 }
 
 .hosts-grid {
@@ -1331,7 +1340,7 @@
     }
 
     .results-info {
-        width: 100%;
+        width: auto;
         text-align: center
     }
 
@@ -1994,6 +2003,13 @@
     width: 0.875rem;
     height: 0.875rem;
     stroke-width: 2;
+}
+
+.sort-btn svg {
+    width: 0.875rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+    vertical-align: middle;
 }
 
 /* Pagination icons */

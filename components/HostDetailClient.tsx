@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import Link from '@/components/NoPrefetchLink'
 import { type Host } from '../lib/cache'
 import { slugify } from '../lib/slugify'
+import { getLanguageName } from '../lib/getLanguageName'
 import { ArrowLeft, Cpu, Crosshair, ExternalLink, Gift, HardDrive, Info, Languages, Link as LinkIcon, MemoryStick, Settings, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
@@ -26,19 +27,6 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
   const rating = totalReviews > 0 ? Math.round(((host.approvals || 0) / totalReviews) * 100) : 0
   const statusClass = host.status && host.status.toLowerCase() === 'online' ? 'online' : 'closed'
   const typeDisplay = host.type ? host.type.split(',').map(t => t.trim().replace(/\s*\([^)]*\)/g, '').trim()).join(', ') : 'Unknown'
-
-  function getLanguageName(locale: string): string {
-    const nameMap: Record<string, string> = {
-      'EN': 'English', 'ES': 'Spanish', 'FR': 'French', 'DE': 'German',
-      'IT': 'Italian', 'PT': 'Portuguese', 'RU': 'Russian', 'JP': 'Japanese',
-      'KR': 'Korean', 'CN': 'Chinese', 'IN': 'Hindi', 'BR': 'Portuguese (BR)',
-      'MX': 'Spanish (MX)', 'AR': 'Arabic', 'NL': 'Dutch', 'SE': 'Swedish',
-      'NO': 'Norwegian', 'DK': 'Danish', 'FI': 'Finnish', 'PL': 'Polish',
-      'TR': 'Turkish', 'SA': 'Arabic (SA)', 'AE': 'Arabic (AE)',
-      'AU': 'English (AU)', 'CA': 'English (CA)', 'GB': 'English (GB)', 'US': 'English (US)'
-    }
-    return nameMap[locale.toUpperCase()] || locale
-  }
 
   function escapeHtml(text: string): string {
     if (typeof text !== 'string') return ''

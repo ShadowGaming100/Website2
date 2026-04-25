@@ -325,14 +325,12 @@
 
 .hosting-checklist li {
   position: relative;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-sm);
-  align-items: start;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
   color: var(--muted);
   line-height: 1.65;
-  padding: var(--space-lg);
-  padding-left: calc(var(--space-xl) + var(--space-md));
+  padding: var(--space-lg) var(--space-lg) var(--space-lg) var(--space-md);
   counter-increment: step-counter;
   overflow: hidden;
   background: var(--card);
@@ -341,11 +339,12 @@
   box-shadow: var(--shadow-md);
 }
 
+/* Ghost step number — decorative, sits on the right */
 .hosting-checklist li::before {
   content: counter(step-counter);
   position: absolute;
-  top: 0;
-  left: 0;
+  top: -0.25rem;
+  right: var(--space-md);
   font-size: 5rem;
   font-weight: 800;
   color: var(--accent);
@@ -355,16 +354,36 @@
   pointer-events: none;
 }
 
+/* Step number badge on the left */
+.hosting-checklist li::after {
+  content: counter(step-counter);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: var(--accent);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
 .hosting-checklist li i {
-  margin-top: 0.2rem;
   color: var(--accent);
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
 }
 
 .hosting-checklist li span {
   position: relative;
   z-index: 1;
+  flex: 1;
 }
 
 .hosts-directory-page .hosts-hero {
@@ -1417,6 +1436,7 @@
 .section.about {
   position: relative;
   overflow: hidden;
+  text-align: center;
 }
 
 .section.about::before {
@@ -3701,7 +3721,6 @@
 
   .hosting-checklist li {
     padding: var(--space-md);
-    padding-left: calc(var(--space-lg) + var(--space-sm));
   }
 
   .hosting-checklist li::before {

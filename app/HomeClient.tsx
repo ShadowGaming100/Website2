@@ -406,11 +406,11 @@ export default function HomeClient() {
         <h2 className="section-title">About FreeHosts</h2>
         <p className="section-sub">
           Built by people who love the web - a friendly place to discover hosting
-          options at zero cost.{" "}
-          <Link href="/about" className="btn ghost">
-            <Info size={14} aria-hidden="true" /> Read more
-          </Link>
+          options at zero cost.
         </p>
+        <Link href="/about" className="btn ghost">
+          <Info size={14} aria-hidden="true" /> Read more
+        </Link>
       </section>
     </main>
   );

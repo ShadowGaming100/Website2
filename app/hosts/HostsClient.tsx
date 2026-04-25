@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { type Host } from '../../lib/cache';
 import Link from '@/components/NoPrefetchLink';
 import { slugify } from '../../lib/slugify';
+import { getLanguageName } from '../../lib/getLanguageName';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, X, Shuffle, ArrowDownAZ, Cpu, MemoryStick, HardDrive, Clock } from 'lucide-react';
 
 // Debounce hook
@@ -277,20 +278,6 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     return Math.round(mb) + 'MB'
   }
 
-  const getLanguageName = (locale: string): string => {
-    const nameMap: { [key: string]: string } = {
-      'EN': 'English', 'ES': 'Spanish', 'FR': 'French', 'DE': 'German',
-      'IT': 'Italian', 'PT': 'Portuguese', 'RU': 'Russian', 'JP': 'Japanese',
-      'KR': 'Korean', 'CN': 'Chinese', 'IN': 'Hindi', 'BR': 'Portuguese (BR)',
-      'MX': 'Spanish (MX)', 'AR': 'Arabic', 'NL': 'Dutch', 'SE': 'Swedish',
-      'NO': 'Norwegian', 'DK': 'Danish', 'FI': 'Finnish', 'PL': 'Polish',
-      'TR': 'Turkish', 'SA': 'Arabic (SA)', 'AE': 'Arabic (AE)',
-      'AU': 'English (AU)', 'CA': 'English (CA)', 'GB': 'English (GB)',
-      'US': 'English (US)'
-    }
-    return nameMap[locale.toUpperCase()] || locale
-  }
-
   const currentPageHosts = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize
     const endIndex = Math.min(startIndex + pageSize, filteredHosts.length)
@@ -366,15 +353,6 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
             </div>
           </div>
 
-          {/* Results Info */}
-          <div className="results-info" id="results-info">
-            {hasActiveFilters ? (
-              `Showing ${filteredHosts.length} of ${hosts.length} hosts`
-            ) : (
-              `Showing all ${hosts.length} hosts`
-            )}
-          </div>
-
           {/* Sort Bar */}
           <div className="sort-bar">
             <div className="sort-left">
@@ -392,12 +370,22 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                 ))}
               </div>
             </div>
-            <button 
-              className={`clear-filters-btn ${hasActiveFilters ? 'active' : ''}`}
-              onClick={clearFilters}
-            >
-              <X size={14} aria-hidden="true" /> Clear Filters
-            </button>
+            <div className="sort-right">
+              {/* Results Info */}
+              <div className="results-info" id="results-info">
+                {hasActiveFilters ? (
+                  `Showing ${filteredHosts.length} of ${hosts.length} hosts`
+                ) : (
+                  `Showing all ${hosts.length} hosts`
+                )}
+              </div>
+              <button 
+                className={`clear-filters-btn ${hasActiveFilters ? 'active' : ''}`}
+                onClick={clearFilters}
+              >
+                <X size={14} aria-hidden="true" /> Clear Filters
+              </button>
+            </div>
           </div>
 
           {/* Hosts Grid */}
@@ -417,7 +405,6 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                   host={host} 
                   isNew={isHostNew(host)}
                   formatSize={formatSize}
-                  getLanguageName={getLanguageName}
                 />
               ))
             )}
@@ -486,10 +473,9 @@ interface HostCardProps {
   host: Host
   isNew: boolean
   formatSize: (mb?: number) => string
-  getLanguageName: (locale: string) => string
 }
 
-function HostCard({ host, isNew, formatSize, getLanguageName }: HostCardProps) {
+function HostCard({ host, isNew, formatSize }: HostCardProps) {
   const ramDisplay = host.ramMB ? formatSize(host.ramMB) : host.ram || 'Unknown'
   const storageDisplay = host.diskMB ? formatSize(host.diskMB) : host.disk || 'Unknown'
   const totalReviews = (host.approvals || 0) + (host.disapprovals || 0)
