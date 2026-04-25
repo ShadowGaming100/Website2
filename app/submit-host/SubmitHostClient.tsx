@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "@/components/NoPrefetchLink";
-import React from "react";
+import { ArrowRight, Check, CircleHelp } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDiscord } from "@fortawesome/free-brands-svg-icons";
 
 const inviteUrl = "https://discord.gg/QbeZ3b5CQd";
 
@@ -27,13 +29,9 @@ export default function SubmitHostClient() {
               <div className="step-num">01</div>
               <div className="step-content">
                 <h3>Review Requirements</h3>
-                <p>
-                  Ensure the host meets our security and service standards. It must
-                  offer a genuinely free plan (not a trial) available for at least 2
-                  months.
-                </p>
+                <p>Ensure the host meets our security and service standards. It must offer a genuinely free plan (not a trial) available for at least 2 months.</p>
                 <Link href="/submission-rules" className="step-link">
-                  View Full Rules <i className="fa-solid fa-arrow-right" />
+                  View Full Rules <ArrowRight size={14} aria-hidden="true" />
                 </Link>
               </div>
             </div>
@@ -42,13 +40,9 @@ export default function SubmitHostClient() {
               <div className="step-num">02</div>
               <div className="step-content">
                 <h3>Prepare the Layout</h3>
-                <p>
-                  All submissions must follow our standardized Discord formatting. Use
-                  our Layout Builder tool to create a perfectly formatted message in
-                  seconds.
-                </p>
+                <p>All submissions must follow our standardized Discord formatting. Use our Layout Builder tool to create a perfectly formatted message in seconds.</p>
                 <Link href="/submit-layout" className="step-link">
-                  Open Layout Builder <i className="fa-solid fa-arrow-right" />
+                  Open Layout Builder <ArrowRight size={14} aria-hidden="true" />
                 </Link>
               </div>
             </div>
@@ -57,11 +51,7 @@ export default function SubmitHostClient() {
               <div className="step-num">03</div>
               <div className="step-content">
                 <h3>Post on Discord</h3>
-                <p>
-                  Join our Discord server and navigate to the <strong>#add-host</strong>
-                  {" "}channel. Paste your formatted message there. Our curators will
-                  review it within 3-7 days.
-                </p>
+                <p>Join our Discord server and navigate to the <strong>#add-host</strong>{" "}channel. Paste your formatted message there. Our curators will review it within 3-7 days.</p>
               </div>
             </div>
           </div>
@@ -70,36 +60,19 @@ export default function SubmitHostClient() {
             <div className="info-card">
               <h3>Quick Checklist</h3>
               <ul className="checklist">
-                <li>
-                  <i className="fa-solid fa-check" /> Public ToS & Privacy Policy
-                </li>
-                <li>
-                  <i className="fa-solid fa-check" /> Genuinely Free (No Trials)
-                </li>
-                <li>
-                  <i className="fa-solid fa-check" /> Stable Performance
-                </li>
-                <li>
-                  <i className="fa-solid fa-check" /> No Nulled/Illegal Content
-                </li>
-                <li>
-                  <i className="fa-solid fa-check" /> Detailed Specs Provided
-                </li>
+                <li><Check size={14} aria-hidden="true" /> Public ToS &amp; Privacy Policy</li>
+                <li><Check size={14} aria-hidden="true" /> Genuinely Free (No Trials)</li>
+                <li><Check size={14} aria-hidden="true" /> Stable Performance</li>
+                <li><Check size={14} aria-hidden="true" /> No Nulled/Illegal Content</li>
+                <li><Check size={14} aria-hidden="true" /> Detailed Specs Provided</li>
               </ul>
             </div>
 
             <div className="cta-card">
               <h3>Ready to Submit?</h3>
-              <p>
-                The quickest way to get listed is via our active Discord community.
-              </p>
-              <a
-                href={inviteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn primary full"
-              >
-                <i className="fa-brands fa-discord" /> Join Discord to Submit
+              <p>The quickest way to get listed is via our active Discord community.</p>
+              <a href={inviteUrl} target="_blank" rel="noopener noreferrer" className="btn primary full">
+                <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> Join Discord to Submit
               </a>
               <p className="support-text">
                 Need help with a listing? Contact us at{" "}
@@ -128,7 +101,7 @@ export default function SubmitHostClient() {
         </div>
         <div className="teaser-action">
           <Link href="/faq" className="btn ghost">
-            View All FAQs <i className="fa-solid fa-question-circle" />
+            View All FAQs <CircleHelp size={14} aria-hidden="true" />
           </Link>
         </div>
       </section>

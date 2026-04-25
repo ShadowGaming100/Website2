@@ -385,7 +385,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                     className={`sort-btn ${currentFilters.sort === sortType ? 'active' : ''}`}
                     onClick={() => handleSortChange(sortType)}
                   >
-                    <i className={`fas fa-${getSortIcon(sortType)}`}></i> {getSortLabel(sortType)}
+                    {getSortLabel(sortType)}
                   </button>
                 ))}
               </div>
@@ -394,7 +394,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
               className={`clear-filters-btn ${hasActiveFilters ? 'active' : ''}`}
               onClick={clearFilters}
             >
-              <i className="fas fa-times"></i> Clear Filters
+              <i data-lucide="x" aria-hidden="true" /> Clear Filters
             </button>
           </div>
 
@@ -403,7 +403,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
             {filteredHosts.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">
-                  <i className="fas fa-search"></i>
+                  <i data-lucide="search" aria-hidden="true" />
                 </div>
                 <div className="empty-title">No hosts found</div>
                 <p style={{ color: 'var(--muted)' }}>Try adjusting your filters to find more results</p>
@@ -429,14 +429,14 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                 onClick={() => goToPage(1)}
                 disabled={currentPage === 1}
               >
-                <i className="fas fa-angle-double-left"></i> First
+                <i data-lucide="chevrons-left" aria-hidden="true" /> First
               </button>
               <button 
                 className="pagination-btn" 
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage === 1}
               >
-                <i className="fas fa-angle-left"></i> Previous
+                <i data-lucide="chevron-left" aria-hidden="true" /> Previous
               </button>
               
               <div className="pagination-pages" id="page-numbers">
@@ -462,14 +462,14 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
               >
-                Next <i className="fas fa-angle-right"></i>
+                Next <i data-lucide="chevron-right" aria-hidden="true" />
               </button>
               <button 
                 className="pagination-btn" 
                 onClick={() => goToPage(totalPages)}
                 disabled={currentPage === totalPages}
               >
-                Last <i className="fas fa-angle-double-right"></i>
+                Last <i data-lucide="chevrons-right" aria-hidden="true" />
               </button>
             </div>
           )}

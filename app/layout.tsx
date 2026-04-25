@@ -1,8 +1,35 @@
 import type { Metadata, Viewport } from "next";
+import React from "react";
+import Image from "next/image";
 import Link from "@/components/NoPrefetchLink";
 import Script from "next/script";
 import RouteInitializer from "../components/RouteInitializer";
 import GlobalStructuredData from "../components/GlobalStructuredData";
+import {
+  BookOpen,
+  ChevronDown,
+  CircleHelp,
+  FileText,
+  Info,
+  Link as LinkIcon,
+  ListChecks,
+  Lock,
+  Mail,
+  Menu,
+  MessageCircle,
+  Moon,
+  Pencil,
+  Plus,
+  Scale,
+  Server,
+  Shield,
+  Sun,
+  Upload,
+  Users,
+  X,
+} from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDiscord, faGithub, faInstagram, faTwitter } from "@fortawesome/free-brands-svg-icons";
 
 import "./src/css/globals.css";
 import "./src/css/styles.css";
@@ -81,22 +108,22 @@ export const viewport: Viewport = {
 };
 
 const submitLinks = [
-  { href: "/submit-host", icon: "fa-plus", label: "Submit a Host" },
-  { href: "/submit-layout", icon: "fa-pencil", label: "Submit Layout" },
-  { href: "/submission-rules", icon: "fa-list-check", label: "Submission Rules" },
+  { href: "/submit-host", icon: <Plus size={14} aria-hidden="true" />, label: "Submit a Host" },
+  { href: "/submit-layout", icon: <Pencil size={14} aria-hidden="true" />, label: "Submit Layout" },
+  { href: "/submission-rules", icon: <ListChecks size={14} aria-hidden="true" />, label: "Submission Rules" },
 ];
 
 const resourceLinks = [
-  { href: "/about", icon: "fa-circle-info", label: "About" },
-  { href: "/staff", icon: "fa-users", label: "Staff" },
-  { href: "/faq", icon: "fa-question-circle", label: "FAQ" },
-  { href: "/server-rules", icon: "fa-shield", label: "Server Rules" },
-  { href: "/other-free-hosts", icon: "fa-link", label: "Other Free Hosts" },
+  { href: "/about", icon: <Info size={14} aria-hidden="true" />, label: "About" },
+  { href: "/staff", icon: <Users size={14} aria-hidden="true" />, label: "Staff" },
+  { href: "/faq", icon: <CircleHelp size={14} aria-hidden="true" />, label: "FAQ" },
+  { href: "/server-rules", icon: <Shield size={14} aria-hidden="true" />, label: "Server Rules" },
+  { href: "/other-free-hosts", icon: <LinkIcon size={14} aria-hidden="true" />, label: "Other Free Hosts" },
 ];
 
 const legalLinks = [
-  { href: "/tos", icon: "fa-file-contract", label: "Terms of Service" },
-  { href: "/privacy-policy", icon: "fa-lock", label: "Privacy Policy" },
+  { href: "/tos", icon: <FileText size={14} aria-hidden="true" />, label: "Terms of Service" },
+  { href: "/privacy-policy", icon: <Lock size={14} aria-hidden="true" />, label: "Privacy Policy" },
 ];
 
 function Dropdown({
@@ -104,20 +131,20 @@ function Dropdown({
   label,
   links,
 }: {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
-  links: { href: string; icon: string; label: string }[];
+  links: { href: string; icon: React.ReactNode; label: string }[];
 }) {
   return (
     <div className="nav-item">
       <span className="nav-link has-dropdown">
-        <i className={`fa-solid ${icon}`} /> {label}
-        <i className="fa-solid fa-chevron-down dropdown-arrow" />
+        {icon} {label}
+        <ChevronDown size={11} className="dropdown-arrow" aria-hidden="true" />
       </span>
       <div className="dropdown-menu">
         {links.map((link) => (
           <Link href={link.href} key={link.href}>
-            <i className={`fa-solid ${link.icon}`} /> {link.label}
+            {link.icon} {link.label}
           </Link>
         ))}
       </div>
@@ -130,21 +157,21 @@ function SidebarDropdown({
   label,
   links,
 }: {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
-  links: { href: string; icon: string; label: string }[];
+  links: { href: string; icon: React.ReactNode; label: string }[];
 }) {
   return (
     <div className="sidebar-dropdown">
       <button className="sidebar-dropdown-toggle" type="button">
-        <i className={`fa-solid ${icon}`} />
+        {icon}
         <span>{label}</span>
-        <i className="fa-solid fa-chevron-down" />
+        <ChevronDown size={12} aria-hidden="true" />
       </button>
       <div className="sidebar-dropdown-menu">
         {links.map((link) => (
           <Link href={link.href} key={link.href}>
-            <i className={`fa-solid ${link.icon}`} /> {link.label}
+            {link.icon} {link.label}
           </Link>
         ))}
       </div>
@@ -162,14 +189,11 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          rel="preconnect"
-          href="https://font-awesome.icons.cdn.codelabworks.is-cool.dev"
-          crossOrigin="anonymous"
-        />
-        <link
+          href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700;800&family=Inter:wght@400;600;700;800&display=swap"
           rel="stylesheet"
-          href="https://font-awesome.icons.cdn.codelabworks.is-cool.dev/css/all.css"
         />
         <link
           rel="sitemap"
@@ -190,27 +214,28 @@ export default function RootLayout({
               className="icon-btn mobile-only"
               aria-label="Open menu"
             >
-              <i className="fa-solid fa-bars" />
+              <Menu size={18} aria-hidden="true" />
             </button>
 
             <Link className="logo" href="/" aria-label="FreeHosts Home">
-              <i className="fa-solid fa-hands-holding-circle" /> FreeHosts
+              <Image src="/Src/icons/icon.png" alt="FreeHosts" width={24} height={24} />
+              FreeHosts
             </Link>
 
             <nav className="nav" role="navigation" aria-label="Main">
               <div className="nav-item">
                 <Link href="/hosts" className="nav-link">
-                  <i className="fa-solid fa-server" /> Hosts
+                  <Server size={14} aria-hidden="true" /> Hosts
                 </Link>
               </div>
               <div className="nav-item">
                 <Link href="/#features" className="nav-link">
-                  <i className="fa-solid fa-list-check" /> Features
+                  <ListChecks size={14} aria-hidden="true" /> Features
                 </Link>
               </div>
-              <Dropdown icon="fa-upload" label="Submit Host" links={submitLinks} />
-              <Dropdown icon="fa-book" label="Resources" links={resourceLinks} />
-              <Dropdown icon="fa-gavel" label="Legal" links={legalLinks} />
+              <Dropdown icon={<Upload size={14} aria-hidden="true" />} label="Submit Host" links={submitLinks} />
+              <Dropdown icon={<BookOpen size={14} aria-hidden="true" />} label="Resources" links={resourceLinks} />
+              <Dropdown icon={<Scale size={14} aria-hidden="true" />} label="Legal" links={legalLinks} />
             </nav>
 
             <div className="actions" id="headerActions">
@@ -220,7 +245,8 @@ export default function RootLayout({
                 aria-pressed="false"
                 aria-label="Toggle theme"
               >
-                <i className="fa-solid fa-moon" />
+                <Moon size={18} aria-hidden="true" className="theme-icon-dark" />
+                <Sun size={18} aria-hidden="true" className="theme-icon-light" />
               </button>
               <a
                 className="btn primary"
@@ -229,7 +255,7 @@ export default function RootLayout({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <i className="fa-brands fa-discord" /> Join Discord
+                <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> Join Discord
               </a>
             </div>
           </div>
@@ -238,23 +264,24 @@ export default function RootLayout({
         <aside className="sidebar" id="sidebar" aria-hidden="true">
           <div className="sidebar-top">
             <Link className="logo" href="/">
-              <i className="fa-solid fa-hands-holding-circle" /> FreeHosts
+              <Image src="/Src/icons/icon.png" alt="FreeHosts" width={24} height={24} />
+              FreeHosts
             </Link>
             <button id="sidebarClose" className="icon-btn" aria-label="Close menu">
-              <i className="fa-solid fa-xmark" />
+              <X size={18} aria-hidden="true" />
             </button>
           </div>
 
           <nav className="sidebar-nav" role="navigation">
             <Link href="/hosts" className="sidebar-link">
-              <i className="fa-solid fa-server" /> Hosts
+              <Server size={16} aria-hidden="true" /> Hosts
             </Link>
             <Link href="/#features" className="sidebar-link">
-              <i className="fa-solid fa-list-check" /> Features
+              <ListChecks size={16} aria-hidden="true" /> Features
             </Link>
-            <SidebarDropdown icon="fa-upload" label="Submit Host" links={submitLinks} />
-            <SidebarDropdown icon="fa-book" label="Resources" links={resourceLinks} />
-            <SidebarDropdown icon="fa-gavel" label="Legal" links={legalLinks} />
+            <SidebarDropdown icon={<Upload size={16} aria-hidden="true" />} label="Submit Host" links={submitLinks} />
+            <SidebarDropdown icon={<BookOpen size={16} aria-hidden="true" />} label="Resources" links={resourceLinks} />
+            <SidebarDropdown icon={<Scale size={16} aria-hidden="true" />} label="Legal" links={legalLinks} />
           </nav>
 
           <div className="sidebar-footer">
@@ -265,7 +292,7 @@ export default function RootLayout({
               target="_blank"
               rel="noopener noreferrer"
             >
-              <i className="fa-brands fa-discord" /> Join Discord
+              <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> Join Discord
             </a>
           </div>
         </aside>
@@ -278,7 +305,7 @@ export default function RootLayout({
           <div className="wrap footer-content">
             <div className="footer-section footer-brand">
               <div className="footer-logo">
-                <i className="fa-solid fa-hands-holding-circle" />
+                <Image src="/Src/icons/icon.png" alt="FreeHosts" width={24} height={24} />
                 <span>FreeHosts</span>
               </div>
               <p className="footer-tagline">Discover free hosting that just works.</p>
@@ -289,7 +316,7 @@ export default function RootLayout({
                   rel="noopener noreferrer"
                   aria-label="Discord"
                 >
-                  <i className="fa-brands fa-discord" />
+                  <FontAwesomeIcon icon={faDiscord} aria-hidden="true" />
                 </a>
                 <a
                   href="https://x.com/freehosts_"
@@ -297,7 +324,7 @@ export default function RootLayout({
                   rel="noopener noreferrer"
                   aria-label="Twitter"
                 >
-                  <i className="fa-brands fa-twitter" />
+                  <FontAwesomeIcon icon={faTwitter} aria-hidden="true" />
                 </a>
                 <a
                   href="https://www.instagram.com/freehosts/"
@@ -305,7 +332,7 @@ export default function RootLayout({
                   rel="noopener noreferrer"
                   aria-label="Instagram"
                 >
-                  <i className="fa-brands fa-instagram" />
+                  <FontAwesomeIcon icon={faInstagram} aria-hidden="true" />
                 </a>
                 <a
                   href="https://github.com/freehostsofficial"
@@ -313,7 +340,7 @@ export default function RootLayout({
                   rel="noopener noreferrer"
                   aria-label="GitHub"
                 >
-                  <i className="fa-brands fa-github" />
+                  <FontAwesomeIcon icon={faGithub} aria-hidden="true" />
                 </a>
               </div>
             </div>
@@ -352,7 +379,7 @@ export default function RootLayout({
               <ul className="footer-list">
                 <li>
                   <a href="mailto:support@freehosts.space">
-                    <i className="fa-solid fa-envelope" /> support@freehosts.space
+                    <Mail size={12} aria-hidden="true" /> support@freehosts.space
                   </a>
                 </li>
                 <li>
@@ -361,7 +388,7 @@ export default function RootLayout({
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <i className="fa-brands fa-discord" /> Join Discord
+                    <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> Join Discord
                   </a>
                 </li>
               </ul>

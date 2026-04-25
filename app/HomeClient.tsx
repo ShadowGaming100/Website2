@@ -2,6 +2,25 @@
 
 import Link from "@/components/NoPrefetchLink";
 import { useEffect, useState } from "react";
+import {
+  Bot,
+  Check,
+  Compass,
+  Database,
+  DoorOpen,
+  Filter,
+  GitBranch,
+  Globe,
+  HandHeart,
+  Info,
+  ListChecks,
+  MessageCircle,
+  Rocket,
+  Sparkles,
+  Users,
+} from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDiscord } from "@fortawesome/free-brands-svg-icons";
 
 const inviteCode = "QbeZ3b5CQd";
 const inviteUrl = `https://discord.gg/${inviteCode}`;
@@ -50,30 +69,10 @@ const commands = [
 ];
 
 const hostingCategories = [
-  {
-    icon: "fa-globe",
-    title: "Website Hosting",
-    text:
-      "Deploy static sites, portfolios, blogs, and landing pages with providers optimized for frontend performance and easy publishing.",
-  },
-  {
-    icon: "fa-code-branch",
-    title: "Application Hosting",
-    text:
-      "Run Node.js, Python, PHP, Ruby, and other backend apps for APIs, dashboards, and full-stack projects that need server-side logic.",
-  },
-  {
-    icon: "fa-robot",
-    title: "Bot Hosting",
-    text:
-      "Keep Discord, Telegram, and automation bots online with enough uptime and resources for small to medium community projects.",
-  },
-  {
-    icon: "fa-database",
-    title: "Database Hosting",
-    text:
-      "Use free PostgreSQL, MongoDB, MySQL, or Redis services for apps that need storage, auth, content, and structured data.",
-  },
+  { icon: <Globe size={20} aria-hidden="true" />, title: "Website Hosting", text: "Deploy static sites, portfolios, blogs, and landing pages with providers optimized for frontend performance and easy publishing." },
+  { icon: <GitBranch size={20} aria-hidden="true" />, title: "Application Hosting", text: "Run Node.js, Python, PHP, Ruby, and other backend apps for APIs, dashboards, and full-stack projects that need server-side logic." },
+  { icon: <Bot size={20} aria-hidden="true" />, title: "Bot Hosting", text: "Keep Discord, Telegram, and automation bots online with enough uptime and resources for small to medium community projects." },
+  { icon: <Database size={20} aria-hidden="true" />, title: "Database Hosting", text: "Use free PostgreSQL, MongoDB, MySQL, or Redis services for apps that need storage, auth, content, and structured data." },
 ];
 
 const choiceChecklist = [
@@ -218,7 +217,7 @@ export default function HomeClient() {
         <div className="wrap hero-inner">
           <div className="hero-left">
             <h1 id="hero-title" className="hero-title">
-              Discover free hosting that just works.
+              Discover free hosting that <span className="gradient-text">just works</span>.
               <span className="typed-wrap" aria-hidden="true">
                 <span className="typed" id="typedText" />
                 <span className="cursor" id="typedCursor">|</span>
@@ -231,10 +230,10 @@ export default function HomeClient() {
 
             <div className="hero-cta">
               <Link href="/about" className="btn large">
-                <i className="fa-solid fa-circle-info" /> About FreeHosts
+                <Info size={16} aria-hidden="true" /> About FreeHosts
               </Link>
               <a className="btn ghost" id="joinCommunity" href={inviteUrl}>
-                <i className="fa-solid fa-comments" /> Join the community
+                <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> Join the community
               </a>
             </div>
 
@@ -257,7 +256,7 @@ export default function HomeClient() {
               <div className="dw-row">
                 <div className="dw-left">
                   <div className="dw-title" id="discordName">
-                    <i className="fa-brands fa-discord" /> {discord.name}
+                    <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> {discord.name}
                   </div>
                   <div className="dw-sub" id="discordStatus">{discord.status}</div>
                 </div>
@@ -270,7 +269,7 @@ export default function HomeClient() {
                       type="button"
                       onClick={() => window.open(inviteUrl, "_blank", "noopener")}
                     >
-                      <i className="fa-solid fa-door-open" /> Join
+                      <DoorOpen size={14} aria-hidden="true" /> Join
                     </button>
                   ) : null}
                 </div>
@@ -310,17 +309,17 @@ export default function HomeClient() {
         <p className="section-sub">Quick highlights - no fluff.</p>
         <div className="cards-grid" aria-hidden="true">
           <article className="feature-card">
-            <div className="icon"><i className="fa-solid fa-rocket" /></div>
+            <div className="icon"><Rocket size={24} aria-hidden="true" /></div>
             <h3>Fast discovery</h3>
             <p>Find hosts by use-case quickly - deploy a demo in minutes.</p>
           </article>
           <article className="feature-card">
-            <div className="icon"><i className="fa-solid fa-hands-helping" /></div>
+            <div className="icon"><HandHeart size={24} aria-hidden="true" /></div>
             <h3>Community tips</h3>
             <p>User-contributed reviews and sample setups to get you started.</p>
           </article>
           <article className="feature-card">
-            <div className="icon"><i className="fa-solid fa-filter" /></div>
+            <div className="icon"><Filter size={24} aria-hidden="true" /></div>
             <h3>Curated lists</h3>
             <p>Hand-curated, up-to-date listings so you do not waste time.</p>
           </article>
@@ -331,7 +330,7 @@ export default function HomeClient() {
         <div className="what-is-hosting-shell">
           <div className="what-is-hosting-intro">
             <div className="what-is-hosting-kicker">
-              <i className="fa-solid fa-sparkles" />
+              <Sparkles size={14} aria-hidden="true" />
               Learn the Basics
             </div>
             <h2 className="section-title">What is Free Hosting?</h2>
@@ -345,7 +344,7 @@ export default function HomeClient() {
 
           <div className="what-is-hosting-highlight">
             <div className="hosting-highlight-icon">
-              <i className="fa-solid fa-compass" />
+              <Compass size={20} aria-hidden="true" />
             </div>
             <div>
               <h3>Why FreeHosts helps</h3>
@@ -361,7 +360,7 @@ export default function HomeClient() {
             {hostingCategories.map((category) => (
               <article className="hosting-category-card" key={category.title}>
                 <div className="hosting-category-icon">
-                  <i className={`fa-solid ${category.icon}`} />
+                  {category.icon}
                 </div>
                 <h3>{category.title}</h3>
                 <p>{category.text}</p>
@@ -372,12 +371,12 @@ export default function HomeClient() {
           <div className="hosting-guide-grid">
             <article className="hosting-guide-card">
               <h3>
-                <i className="fa-solid fa-list-check" /> How to Choose Free Hosting
+                <ListChecks size={16} aria-hidden="true" /> How to Choose Free Hosting
               </h3>
               <ul className="hosting-checklist">
                 {choiceChecklist.map((item) => (
                   <li key={item}>
-                    <i className="fa-solid fa-check" />
+                    <Check size={14} aria-hidden="true" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -386,7 +385,7 @@ export default function HomeClient() {
 
             <article className="hosting-guide-card hosting-guide-card-accent">
               <h3>
-                <i className="fa-solid fa-users" /> Join Our Community
+                <Users size={16} aria-hidden="true" /> Join Our Community
               </h3>
               <p>
                 Our staff and community regularly update hosting lists, publish answers,
@@ -409,7 +408,7 @@ export default function HomeClient() {
           Built by people who love the web - a friendly place to discover hosting
           options at zero cost.{" "}
           <Link href="/about" className="btn ghost">
-            <i className="fa-solid fa-circle-info" /> Read more
+            <Info size={14} aria-hidden="true" /> Read more
           </Link>
         </p>
       </section>

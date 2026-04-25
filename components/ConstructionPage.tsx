@@ -1,14 +1,15 @@
 import Link from "@/components/NoPrefetchLink";
+import { type LucideIcon, Home, Mail, Server } from "lucide-react";
 
 type ConstructionPageProps = {
-  icon: string;
+  icon: LucideIcon;
   title: string;
   message: string;
   progress: number;
 };
 
 export default function ConstructionPage({
-  icon,
+  icon: Icon,
   title,
   message,
   progress,
@@ -17,7 +18,7 @@ export default function ConstructionPage({
     <main className="wrap">
       <section className="construction-hero">
         <div className="construction-hero-icon">
-          <i className={`fa-solid ${icon}`} />
+          <Icon size={48} aria-hidden="true" />
         </div>
         <div className="construction-card">
           <div className="construction-bg-blob" />
@@ -48,13 +49,13 @@ export default function ConstructionPage({
 
           <div className="construction-actions">
             <Link className="btn primary" href="/">
-              <i className="fa-solid fa-home" /> Back to Home
+              <Home size={14} aria-hidden="true" /> Back to Home
             </Link>
             <Link className="btn" href="/hosts">
-              <i className="fa-solid fa-server" /> Browse Hosts
+              <Server size={14} aria-hidden="true" /> Browse Hosts
             </Link>
             <a className="btn ghost" href="mailto:support@freehosts.space">
-              <i className="fa-solid fa-envelope" /> Contact Us
+              <Mail size={14} aria-hidden="true" /> Contact Us
             </a>
           </div>
         </div>

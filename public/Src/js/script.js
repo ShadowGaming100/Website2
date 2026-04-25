@@ -46,11 +46,9 @@ function setTheme(theme) {
     date.toUTCString() +
     ";path=/;SameSite=Lax";
 
-  // Update Icons
-  const icons = document.querySelectorAll("[data-theme-toggle] i");
-  icons.forEach((icon) => {
-    icon.className = theme === "light" ? "fa-solid fa-sun" : "fa-solid fa-moon";
-  });
+  // Update theme toggle icons via CSS data-theme attribute
+  // The CSS handles showing sun/moon based on [data-theme] attribute
+  // No JS icon manipulation needed - handled by CSS selectors
 
   // Update Buttons Accessibility
   const toggles = document.querySelectorAll("[data-theme-toggle]");
@@ -150,6 +148,9 @@ if (!window.__fhMatomoLoaded) {
 }
 // --- 4. Animation & Interactivity Initialization ---
 function initPageLogic() {
+  // Re-initialize Lucide icons on each page load/navigation
+  if (window.lucide) window.lucide.createIcons();
+
   // A. Scroll Animations (Intersection Observer)
   const observer = new IntersectionObserver(
     (entries) => {
@@ -299,7 +300,9 @@ addGlobalListener("click", "#closePreview", () => {
 (function () {
   const t = getTheme();
   document.documentElement.setAttribute("data-theme", t);
-  // Set initial icon state if icon exists immediately
-  window.addEventListener("DOMContentLoaded", () => setTheme(t));
+  window.addEventListener("DOMContentLoaded", () => {
+    // Apply theme first (updates icon data-lucide attribute)
+    setTheme(t);
+  });
 })();
 

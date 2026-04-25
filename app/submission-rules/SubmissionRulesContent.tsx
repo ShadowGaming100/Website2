@@ -1,4 +1,5 @@
 import React from "react";
+import { Code, FileText, Handshake, LayoutTemplate, Lock, Repeat, TriangleAlert, Wrench } from "lucide-react";
 
 export default function SubmissionRulesContent() {
   return (
@@ -13,13 +14,13 @@ export default function SubmissionRulesContent() {
       <section className="rule-category">
         <div className="category-header">
           <div className="category-icon">
-            <i className="fa-solid fa-lock"></i>
+            <Lock size={20} aria-hidden="true" />
           </div>
           <h2 className="category-title">Security</h2>
         </div>
         <div className="category-content">
           <ul>
-            <li>Passwords encrypted & stored safely.</li>
+            <li>Passwords encrypted &amp; stored safely.</li>
             <li>Anti-DDoS, and secure authentication.</li>
           </ul>
         </div>
@@ -28,7 +29,7 @@ export default function SubmissionRulesContent() {
       <section className="rule-category">
         <div className="category-header">
           <div className="category-icon">
-            <i className="fa-solid fa-table-layout"></i>
+            <LayoutTemplate size={20} aria-hidden="true" />
           </div>
           <h2 className="category-title">Layout</h2>
         </div>
@@ -114,13 +115,13 @@ export default function SubmissionRulesContent() {
       <section className="rule-category">
         <div className="category-header">
           <div className="category-icon">
-            <i className="fa-solid fa-toolbox"></i>
+            <Wrench size={20} aria-hidden="true" />
           </div>
           <h2 className="category-title">Service</h2>
         </div>
         <div className="category-content">
           <ul>
-            <li>Stable performance & normal uptime.</li>
+            <li>Stable performance &amp; normal uptime.</li>
             <li>Free service must be provided for at least 2 months.</li>
             <li>Signup must be simple with no restrictions.</li>
             <li>Must offer real free plans, not trials.</li>
@@ -142,7 +143,7 @@ export default function SubmissionRulesContent() {
       <section className="rule-category">
         <div className="category-header">
           <div className="category-icon">
-            <i className="fa-solid fa-file-contract"></i>
+            <FileText size={20} aria-hidden="true" />
           </div>
           <h2 className="category-title">Policies</h2>
         </div>
@@ -159,7 +160,7 @@ export default function SubmissionRulesContent() {
       <section className="rule-category">
         <div className="category-header">
           <div className="category-icon">
-            <i className="fa-solid fa-code"></i>
+            <Code size={20} aria-hidden="true" />
           </div>
           <h2 className="category-title">Software</h2>
         </div>
@@ -174,7 +175,7 @@ export default function SubmissionRulesContent() {
       <section className="rule-category">
         <div className="category-header">
           <div className="category-icon">
-            <i className="fa-solid fa-handshake"></i>
+            <Handshake size={20} aria-hidden="true" />
           </div>
           <h2 className="category-title">Conduct</h2>
         </div>
@@ -203,7 +204,7 @@ export default function SubmissionRulesContent() {
       <section className="rule-category">
         <div className="category-header">
           <div className="category-icon">
-            <i className="fa-solid fa-repeat"></i>
+            <Repeat size={20} aria-hidden="true" />
           </div>
           <h2 className="category-title">Renewal</h2>
         </div>
@@ -222,7 +223,7 @@ export default function SubmissionRulesContent() {
       <section className="rule-category">
         <div className="category-header">
           <div className="category-icon">
-            <i className="fa-solid fa-exclamation-triangle"></i>
+            <TriangleAlert size={20} aria-hidden="true" />
           </div>
           <h2 className="category-title">Enforcement</h2>
         </div>

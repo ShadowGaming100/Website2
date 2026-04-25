@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import type { LucideIcon } from "lucide-react";
+import { ArrowUpRight, Award, Code, Crown, Globe, GraduationCap, HandHeart, HandMetal, Heart, LayoutGrid, Newspaper, Server, Shield, ShieldCheck, Terminal, Upload, UserCheck, Users, X } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import { faDiscord, faGithub, faInstagram, faLinkedin, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import { staffData, type StaffJsonMember } from "./data";
 
 type FilterKey =
@@ -14,7 +19,7 @@ type FilterKey =
   | "hosting-provider";
 
 type RoleInfo = {
-  icon: string;
+  icon: LucideIcon;
   className: string;
   priority: number;
   displayName: string;
@@ -31,47 +36,47 @@ type StaffMember = {
 };
 
 const roleConfig: Record<string, RoleInfo> = {
-  owner: { icon: "fa-solid fa-crown", className: "owner", priority: 1, displayName: "Owner", filterKey: "owner" },
-  "co-owner": { icon: "fa-solid fa-crown", className: "owner", priority: 1, displayName: "Owner", filterKey: "owner" },
-  administrator: { icon: "fa-solid fa-user-shield", className: "admin", priority: 2, displayName: "Administrator", filterKey: "administrator" },
-  admin: { icon: "fa-solid fa-user-shield", className: "admin", priority: 2, displayName: "Administrator", filterKey: "administrator" },
-  developer: { icon: "fa-solid fa-terminal", className: "developer", priority: 3, displayName: "Developer", filterKey: "developer" },
-  dev: { icon: "fa-solid fa-terminal", className: "developer", priority: 3, displayName: "Developer", filterKey: "developer" },
-  moderator: { icon: "fa-solid fa-shield-halved", className: "moderator", priority: 4, displayName: "Moderator", filterKey: "moderator" },
-  helper: { icon: "fa-solid fa-hands-helping", className: "helper", priority: 5, displayName: "Helper", filterKey: "helper" },
-  "host publisher": { icon: "fa-solid fa-newspaper", className: "publisher", priority: 6, displayName: "Host Publisher", filterKey: "host-publisher" },
-  publisher: { icon: "fa-solid fa-newspaper", className: "publisher", priority: 6, displayName: "Host Publisher", filterKey: "host-publisher" },
-  "hosting provider": { icon: "fa-solid fa-server", className: "hosting-provider", priority: 7, displayName: "Hosting Provider", filterKey: "hosting-provider" },
-  provider: { icon: "fa-solid fa-server", className: "hosting-provider", priority: 7, displayName: "Hosting Provider", filterKey: "hosting-provider" },
+  owner: { icon: Crown, className: "owner", priority: 1, displayName: "Owner", filterKey: "owner" },
+  "co-owner": { icon: Crown, className: "owner", priority: 1, displayName: "Owner", filterKey: "owner" },
+  administrator: { icon: ShieldCheck, className: "admin", priority: 2, displayName: "Administrator", filterKey: "administrator" },
+  admin: { icon: ShieldCheck, className: "admin", priority: 2, displayName: "Administrator", filterKey: "administrator" },
+  developer: { icon: Terminal, className: "developer", priority: 3, displayName: "Developer", filterKey: "developer" },
+  dev: { icon: Terminal, className: "developer", priority: 3, displayName: "Developer", filterKey: "developer" },
+  moderator: { icon: Shield, className: "moderator", priority: 4, displayName: "Moderator", filterKey: "moderator" },
+  helper: { icon: HandHeart, className: "helper", priority: 5, displayName: "Helper", filterKey: "helper" },
+  "host publisher": { icon: Newspaper, className: "publisher", priority: 6, displayName: "Host Publisher", filterKey: "host-publisher" },
+  publisher: { icon: Newspaper, className: "publisher", priority: 6, displayName: "Host Publisher", filterKey: "host-publisher" },
+  "hosting provider": { icon: Server, className: "hosting-provider", priority: 7, displayName: "Hosting Provider", filterKey: "hosting-provider" },
+  provider: { icon: Server, className: "hosting-provider", priority: 7, displayName: "Hosting Provider", filterKey: "hosting-provider" },
 };
 
-const sections: Record<Exclude<FilterKey, "all">, { title: string; desc: string; iconClass: string; icon: string }> = {
-  owner: { title: "Owners", desc: "Founders and leaders of FreeHosts", iconClass: "leadership", icon: "fa-solid fa-crown" },
-  administrator: { title: "Administrators", desc: "Team administrators managing operations", iconClass: "leadership", icon: "fa-solid fa-user-tie" },
-  developer: { title: "Developers", desc: "Building and maintaining our platform", iconClass: "development", icon: "fa-solid fa-code" },
-  moderator: { title: "Moderators", desc: "Community moderators keeping things safe", iconClass: "community", icon: "fa-solid fa-shield-halved" },
-  helper: { title: "Helpers", desc: "Support team helping our community", iconClass: "community", icon: "fa-solid fa-hands-helping" },
-  "host-publisher": { title: "Host Publishers", desc: "Contributors managing host listings", iconClass: "hosting", icon: "fa-solid fa-upload" },
-  "hosting-provider": { title: "Hosting Providers", desc: "Partners providing hosting services", iconClass: "hosting", icon: "fa-solid fa-server" },
+const sections: Record<Exclude<FilterKey, "all">, { title: string; desc: string; iconClass: string; icon: LucideIcon }> = {
+  owner: { title: "Owners", desc: "Founders and leaders of FreeHosts", iconClass: "leadership", icon: Crown },
+  administrator: { title: "Administrators", desc: "Team administrators managing operations", iconClass: "leadership", icon: UserCheck },
+  developer: { title: "Developers", desc: "Building and maintaining our platform", iconClass: "development", icon: Code },
+  moderator: { title: "Moderators", desc: "Community moderators keeping things safe", iconClass: "community", icon: Shield },
+  helper: { title: "Helpers", desc: "Support team helping our community", iconClass: "community", icon: HandHeart },
+  "host-publisher": { title: "Host Publishers", desc: "Contributors managing host listings", iconClass: "hosting", icon: Upload },
+  "hosting-provider": { title: "Hosting Providers", desc: "Partners providing hosting services", iconClass: "hosting", icon: Server },
 };
 
-const filters: { key: FilterKey; icon: string; label: string }[] = [
-  { key: "all", icon: "fa-solid fa-th", label: "All Team" },
-  { key: "owner", icon: "fa-solid fa-crown", label: "Owner" },
-  { key: "administrator", icon: "fa-solid fa-user-tie", label: "Administrator" },
-  { key: "developer", icon: "fa-solid fa-code", label: "Developer" },
-  { key: "moderator", icon: "fa-solid fa-shield-halved", label: "Moderator" },
-  { key: "helper", icon: "fa-solid fa-hands-helping", label: "Helper" },
-  { key: "host-publisher", icon: "fa-solid fa-upload", label: "Host Publisher" },
-  { key: "hosting-provider", icon: "fa-solid fa-server", label: "Hosting Provider" },
+const filters: { key: FilterKey; icon: LucideIcon; label: string }[] = [
+  { key: "all", icon: LayoutGrid, label: "All Team" },
+  { key: "owner", icon: Crown, label: "Owner" },
+  { key: "administrator", icon: UserCheck, label: "Administrator" },
+  { key: "developer", icon: Code, label: "Developer" },
+  { key: "moderator", icon: Shield, label: "Moderator" },
+  { key: "helper", icon: HandHeart, label: "Helper" },
+  { key: "host-publisher", icon: Upload, label: "Host Publisher" },
+  { key: "hosting-provider", icon: Server, label: "Hosting Provider" },
 ];
 
-const linkIcons: Record<string, { icon: string; label: string }> = {
-  github: { icon: "fa-brands fa-github", label: "GitHub Profile" },
-  website: { icon: "fa-solid fa-globe", label: "Website" },
-  discord: { icon: "fa-brands fa-discord", label: "Discord" },
-  twitter: { icon: "fa-brands fa-twitter", label: "Twitter" },
-  linkedin: { icon: "fa-brands fa-linkedin", label: "LinkedIn" },
+const linkIcons: Record<string, { icon: LucideIcon | IconDefinition; label: string; isBrand?: boolean }> = {
+  github: { icon: faGithub, label: "GitHub Profile", isBrand: true },
+  website: { icon: Globe, label: "Website" },
+  discord: { icon: faDiscord, label: "Discord", isBrand: true },
+  twitter: { icon: faTwitter, label: "Twitter", isBrand: true },
+  linkedin: { icon: faLinkedin, label: "LinkedIn", isBrand: true },
 };
 
 function categorizeRole(role: string) {
@@ -146,7 +151,7 @@ export default function StaffClient() {
     <main className="wrap staff-page">
       <section className="staff-hero">
         <div className="staff-hero-icon">
-          <i className="fa-solid fa-users" />
+          <Users size={24} aria-hidden="true" />
         </div>
         <h1>Meet Our Team</h1>
         <p>Dedicated volunteers who help run, maintain, and grow the FreeHosts community.</p>
@@ -160,7 +165,7 @@ export default function StaffClient() {
             onClick={() => setActiveFilter(filter.key)}
             key={filter.key}
           >
-            <i className={filter.icon} />
+            {React.createElement(filter.icon, { size: 14, "aria-hidden": "true" })}
             {filter.label}
           </button>
         ))}
@@ -170,7 +175,7 @@ export default function StaffClient() {
 
       <section className="join-team-section">
         <div className="join-icon">
-          <i className="fa-solid fa-hand-sparkles" />
+          <HandMetal size={24} aria-hidden="true" />
         </div>
         <h2>Want to Join the Team?</h2>
         <p>
@@ -180,14 +185,14 @@ export default function StaffClient() {
         </p>
 
         <div className="join-benefits">
-          <Benefit icon="fa-heart" title="Make an Impact" text="Help thousands find the right hosting" />
-          <Benefit icon="fa-users" title="Join Community" text="Work with passionate volunteers" />
-          <Benefit icon="fa-graduation-cap" title="Learn & Grow" text="Gain experience and skills" />
-          <Benefit icon="fa-award" title="Recognition" text="Get credited for your work" />
+          <Benefit icon={Heart} title="Make an Impact" text="Help thousands find the right hosting" />
+          <Benefit icon={Users} title="Join Community" text="Work with passionate volunteers" />
+          <Benefit icon={GraduationCap} title="Learn & Grow" text="Gain experience and skills" />
+          <Benefit icon={Award} title="Recognition" text="Get credited for your work" />
         </div>
 
         <a href="https://discord.gg/QbeZ3b5CQd" className="join-cta" target="_blank" rel="noopener noreferrer">
-          <i className="fa-brands fa-discord" />
+          <FontAwesomeIcon icon={faDiscord} aria-hidden="true" />
           Join Our Discord
         </a>
       </section>
@@ -220,7 +225,7 @@ function StaffSections({
           <section className="staff-section" key={key}>
             <div className="staff-section-header">
               <div className={`staff-section-icon ${section.iconClass}`}>
-                <i className={section.icon} />
+                {React.createElement(section.icon, { size: 20, "aria-hidden": "true" })}
               </div>
               <div className="staff-section-title">
                 <h2>{section.title}</h2>
@@ -231,7 +236,7 @@ function StaffSections({
               {members.map((member) => (
                 <button className="staff-card" type="button" onClick={() => onSelect(member)} key={member.username}>
                   <div className={`staff-avatar ${member.primaryRole.className}`}>
-                    <i className={member.primaryRole.icon} />
+                    {React.createElement(member.primaryRole.icon, { size: 20, "aria-hidden": "true" })}
                   </div>
                   <div className="staff-info">
                     <h3>{member.name}</h3>
@@ -252,7 +257,7 @@ function RoleBadges({ roles }: { roles: RoleInfo[] }) {
     <div className="staff-roles">
       {roles.map((role) => (
         <span className={`staff-role role-${role.className}`} key={`${role.filterKey}-${role.displayName}`}>
-          <i className={role.icon} />
+          {React.createElement(role.icon, { size: 14, "aria-hidden": "true" })}
           {role.displayName}
         </span>
       ))}
@@ -268,10 +273,10 @@ function StaffModal({ member, onClose }: { member: StaffMember; onClose: () => v
       <div className="staff-modal-content" onClick={(event) => event.stopPropagation()}>
         <div className="staff-modal-header">
           <button className="staff-modal-close" type="button" aria-label="Close" onClick={onClose}>
-            <i className="fa-solid fa-xmark" />
+            <X size={20} aria-hidden="true" />
           </button>
           <div className="staff-modal-avatar">
-            <i className={member.primaryRole.icon} />
+            {React.createElement(member.primaryRole.icon, { size: 20, "aria-hidden": "true" })}
           </div>
           <div className="staff-modal-info">
             <h2>{member.name}</h2>
@@ -291,17 +296,20 @@ function StaffModal({ member, onClose }: { member: StaffMember; onClose: () => v
               <h3>Links</h3>
               <div className="staff-modal-links">
                 {links.map(([key, value]) => {
-                  const info = linkIcons[key] || { icon: "fa-solid fa-link", label: key };
+                  const info = linkIcons[key] || { icon: Globe, label: key };
                   return (
                     <a className="staff-modal-link" href={value} target="_blank" rel="noopener noreferrer" key={key}>
                       <div className="staff-modal-link-icon">
-                        <i className={info.icon} />
+                        {info.isBrand
+                          ? <FontAwesomeIcon icon={info.icon as IconDefinition} aria-hidden="true" />
+                          : React.createElement(info.icon as LucideIcon, { size: 20, "aria-hidden": "true" })
+                        }
                       </div>
                       <div className="staff-modal-link-text">
                         <strong>{info.label}</strong>
                         <span>{value}</span>
                       </div>
-                      <i className="fa-solid fa-arrow-up-right-from-square" style={{ color: "var(--muted)" }} />
+                      <ArrowUpRight size={20} aria-hidden="true" style={{ color: "var(--muted)" }} />
                     </a>
                   );
                 })}
@@ -314,11 +322,11 @@ function StaffModal({ member, onClose }: { member: StaffMember; onClose: () => v
   );
 }
 
-function Benefit({ icon, title, text }: { icon: string; title: string; text: string }) {
+function Benefit({ icon, title, text }: { icon: LucideIcon; title: string; text: string }) {
   return (
     <div className="benefit-item">
       <div className="benefit-icon">
-        <i className={`fa-solid ${icon}`} />
+        {React.createElement(icon, { size: 20, "aria-hidden": "true" })}
       </div>
       <div className="benefit-text">
         <strong>{title}</strong>

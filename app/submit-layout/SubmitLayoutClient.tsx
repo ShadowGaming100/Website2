@@ -297,7 +297,7 @@ export default function SubmitLayoutClient() {
       <div className="builder-container">
         <section className="builder-hero">
           <h1 className="builder-title">
-            <i className="fa-solid fa-wand-magic-sparkles" /> Discord Layout Builder
+            <i data-lucide="wand" aria-hidden="true" /> Discord Layout Builder
           </h1>
           <p className="builder-subtitle">
             Create Discord-formatted hosting layouts instantly. Perfect formatting
@@ -305,11 +305,11 @@ export default function SubmitLayoutClient() {
           </p>
           <div className="builder-stats">
             <div className="builder-stat">
-              <i className="fa-solid fa-bolt" />
+              <i data-lucide="zap" aria-hidden="true" />
               <span>Instant Generation</span>
             </div>
             <div className="builder-stat">
-              <i className="fa-solid fa-copy" />
+              <i data-lucide="copy" aria-hidden="true" />
               <span>One-Click Copy</span>
             </div>
           </div>
@@ -319,7 +319,7 @@ export default function SubmitLayoutClient() {
           <section className="form-card">
             <div className="form-header">
               <div className="form-icon">
-                <i className="fa-solid fa-edit" />
+                <i data-lucide="pencil" aria-hidden="true" />
               </div>
               <div>
                 <h2 className="form-title">Build Your Layout</h2>
@@ -330,7 +330,7 @@ export default function SubmitLayoutClient() {
             <form id="layoutBuilderForm" onReset={resetForm}>
               <div className="form-section">
                 <div className="section-label">
-                  <i className="fa-solid fa-thumbtack" />
+                  <i data-lucide="pin" aria-hidden="true" />
                   <span>Basic Information</span>
                 </div>
 
@@ -359,7 +359,7 @@ export default function SubmitLayoutClient() {
                     onChange={(event) => updateForm("plans", event.target.value)}
                   />
                   <div className="help-text">
-                    <i className="fa-solid fa-circle-info" />
+                    <i data-lucide="info" aria-hidden="true" />
                     <span>Comma separated list of plan names</span>
                   </div>
                 </div>
@@ -393,7 +393,7 @@ export default function SubmitLayoutClient() {
 
               <div className="form-section">
                 <div className="section-label">
-                  <i className="fa-solid fa-cubes" />
+                  <i data-lucide="boxes" aria-hidden="true" />
                   <span>Specifications</span>
                 </div>
 
@@ -489,7 +489,7 @@ export default function SubmitLayoutClient() {
                         ))}
                       </select>
                       <button type="button" className="btn-add" onClick={addPlan}>
-                        <i className="fa-solid fa-plus" /> Add Plan
+                        <i data-lucide="plus" aria-hidden="true" /> Add Plan
                       </button>
                     </div>
 
@@ -544,7 +544,7 @@ export default function SubmitLayoutClient() {
 
               <div className="form-section">
                 <div className="section-label">
-                  <i className="fa-solid fa-link" />
+                  <i data-lucide="link" aria-hidden="true" />
                   <span>Links</span>
                 </div>
 
@@ -564,7 +564,7 @@ export default function SubmitLayoutClient() {
                     onChange={(event) => updateForm("otherLinks", event.target.value)}
                   />
                   <div className="help-text">
-                    <i className="fa-solid fa-circle-info" />
+                    <i data-lucide="info" aria-hidden="true" />
                     <span>Format: Label: URL, one per line</span>
                   </div>
                 </div>
@@ -572,7 +572,7 @@ export default function SubmitLayoutClient() {
 
               <div className="form-section">
                 <div className="section-label">
-                  <i className="fa-solid fa-file-lines" />
+                  <i data-lucide="file-lines" aria-hidden="true" />
                   <span>Information</span>
                 </div>
 
@@ -613,7 +613,7 @@ export default function SubmitLayoutClient() {
 
               <div className="form-section">
                 <div className="section-label">
-                  <i className="fa-solid fa-square-check" />
+                  <i data-lucide="square-check" aria-hidden="true" />
                   <span>Verification</span>
                 </div>
                 <div className="checkbox-group">
@@ -638,7 +638,7 @@ export default function SubmitLayoutClient() {
 
               <div className="form-actions">
                 <button type="reset" className="btn btn-reset">
-                  <i className="fa-solid fa-rotate-left" /> Reset Form
+                  <i data-lucide="rotate-ccw" aria-hidden="true" /> Reset Form
                 </button>
                 <button
                   type="button"
@@ -646,14 +646,14 @@ export default function SubmitLayoutClient() {
                   disabled={!canCopy}
                   onClick={copyMessage}
                 >
-                  <i className="fa-solid fa-copy" /> Copy Message
+                  <i data-lucide="copy" aria-hidden="true" /> Copy Message
                 </button>
               </div>
 
               <div className="preview-container">
                 <div className="message-preview">
                   <div className="message-preview-title">
-                    <i className="fa-solid fa-code" />
+                    <i data-lucide="code" aria-hidden="true" />
                     <span>Message Preview (Raw Text)</span>
                   </div>
                   <div className="message-preview-content">
@@ -667,11 +667,11 @@ export default function SubmitLayoutClient() {
           <section className="builder-preview-card">
             <div className="preview-header">
               <h3 className="preview-title">
-                <i className="fa-brands fa-discord" />
+                <i data-lucide="message-circle" aria-hidden="true" />
                 Discord Message Preview
               </h3>
               <span className="preview-badge">
-                <i className="fa-solid fa-circle" />
+                <i data-lucide="circle" aria-hidden="true" />
                 Live
               </span>
             </div>
@@ -690,7 +690,7 @@ export default function SubmitLayoutClient() {
 
       {notification ? (
         <div className={`copy-notification ${notification.error ? "error" : "success"}`}>
-          <i className={`fa-solid ${notification.error ? "fa-circle-exclamation" : "fa-circle-check"}`} />
+          <i data-lucide={notification.error ? "circle-alert" : "circle-check"} aria-hidden="true" />
           <span>{notification.message}</span>
         </div>
       ) : null}

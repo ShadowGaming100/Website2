@@ -1,5 +1,18 @@
 import type { Metadata } from "next";
 import Link from "@/components/NoPrefetchLink";
+import {
+  BookOpen,
+  Crosshair,
+  HandHeart,
+  Heart,
+  Mail,
+  ShieldCheck,
+  Star,
+  Users,
+  Zap,
+} from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDiscord } from "@fortawesome/free-brands-svg-icons";
 
 export const metadata: Metadata = {
   title: "About FreeHosts - Our Mission, Team & Community",
@@ -113,7 +126,7 @@ export default function AboutPage() {
       <main className="wrap">
         <section className="about-hero">
           <div className="about-hero-icon">
-            <i className="fa-solid fa-heart" />
+            <Heart size={48} aria-hidden="true" />
           </div>
           <h1>About FreeHosts</h1>
           <p>
@@ -140,7 +153,7 @@ export default function AboutPage() {
         <div className="about-content">
           <section className="content-section">
             <div className="section-icon">
-              <i className="fa-solid fa-bullseye" />
+              <Crosshair size={24} aria-hidden="true" />
             </div>
             <h2>Our Mission</h2>
             <p>
@@ -159,13 +172,13 @@ export default function AboutPage() {
 
           <section className="content-section">
             <div className="section-icon">
-              <i className="fa-solid fa-star" />
+              <Star size={24} aria-hidden="true" />
             </div>
             <h2>Our Values</h2>
             <div className="values-grid">
               <div className="value-card">
                 <div className="value-icon">
-                  <i className="fa-solid fa-users" />
+                  <Users size={20} aria-hidden="true" />
                 </div>
                 <h3>Community First</h3>
                 <p>
@@ -175,7 +188,7 @@ export default function AboutPage() {
               </div>
               <div className="value-card">
                 <div className="value-icon">
-                  <i className="fa-solid fa-shield-check" />
+                  <ShieldCheck size={20} aria-hidden="true" />
                 </div>
                 <h3>Transparency</h3>
                 <p>
@@ -185,7 +198,7 @@ export default function AboutPage() {
               </div>
               <div className="value-card">
                 <div className="value-icon">
-                  <i className="fa-solid fa-bolt" />
+                  <Zap size={20} aria-hidden="true" />
                 </div>
                 <h3>Quality Over Quantity</h3>
                 <p>
@@ -195,9 +208,9 @@ export default function AboutPage() {
               </div>
               <div className="value-card">
                 <div className="value-icon">
-                  <i className="fa-solid fa-hand-holding-heart" />
+                  <HandHeart size={20} aria-hidden="true" />
                 </div>
-                <h3>Free & Accessible</h3>
+                <h3>Free &amp; Accessible</h3>
                 <p>
                   Our directory will always be free. No paywalls, no premium tiers,
                   just helpful resources for everyone.
@@ -208,7 +221,7 @@ export default function AboutPage() {
 
           <section className="content-section">
             <div className="section-icon">
-              <i className="fa-solid fa-hands-helping" />
+              <HandHeart size={24} aria-hidden="true" />
             </div>
             <h2>How You Can Help</h2>
             <p>
@@ -241,7 +254,7 @@ export default function AboutPage() {
 
           <section className="content-section">
             <div className="section-icon">
-              <i className="fa-solid fa-book" />
+              <BookOpen size={24} aria-hidden="true" />
             </div>
             <h2>Our Story</h2>
             <p>
@@ -282,7 +295,7 @@ export default function AboutPage() {
 
           <section className="content-section">
             <div className="section-icon">
-              <i className="fa-solid fa-envelope" />
+              <Mail size={24} aria-hidden="true" />
             </div>
             <h2>Get In Touch</h2>
             <p>
@@ -292,7 +305,7 @@ export default function AboutPage() {
             <div className="contact-cards">
               <div className="contact-card">
                 <div className="contact-icon">
-                  <i className="fa-brands fa-discord" />
+                  <FontAwesomeIcon icon={faDiscord} aria-hidden="true" />
                 </div>
                 <h3>Join Discord</h3>
                 <p>
@@ -305,13 +318,13 @@ export default function AboutPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="fa-brands fa-discord" />
+                  <FontAwesomeIcon icon={faDiscord} aria-hidden="true" />
                   Join Server
                 </a>
               </div>
               <div className="contact-card">
                 <div className="contact-icon">
-                  <i className="fa-solid fa-envelope" />
+                  <Mail size={28} aria-hidden="true" />
                 </div>
                 <h3>Email Us</h3>
                 <p>
@@ -319,7 +332,7 @@ export default function AboutPage() {
                   out via email.
                 </p>
                 <a href="mailto:support@freehosts.space" className="contact-btn">
-                  <i className="fa-solid fa-envelope" />
+                  <Mail size={14} aria-hidden="true" />
                   Send Email
                 </a>
               </div>
@@ -334,7 +347,7 @@ export default function AboutPage() {
             opportunities to join us.
           </p>
           <Link href="/staff" className="team-cta-btn">
-            <i className="fa-solid fa-users" />
+            <Users size={16} aria-hidden="true" />
             View Team
           </Link>
         </div>
