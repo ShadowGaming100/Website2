@@ -30,6 +30,11 @@ import {
 } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDiscord, faGithub, faInstagram, faTwitter } from "@fortawesome/free-brands-svg-icons";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+
+// Prevent FontAwesome from injecting its CSS at runtime (causes FOUC)
+config.autoAddCss = false;
 
 import "./src/css/globals.css";
 import "./src/css/styles.css";
