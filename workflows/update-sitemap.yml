@@ -26,58 +26,27 @@ jobs:
           cat <<'JS' > generate-sitemap.js
           const https = require('https');
           const fs = require('fs');
-          const path = require('path');
 
           const SITE_URL = 'https://freehosts.space';
           const API_URL = 'https://api.freehosts.space';
 
-          function fetchHosts() {
-            return new Promise((resolve, reject) => {
-              https.get(API_URL + '/api/hosts?limit=500', (res) => {
-                let data = '';
-                res.on('data', chunk => data += chunk);
-                res.on('end', () => {
-                  try {
-                    const jsonData = JSON.parse(data);
-                    resolve(jsonData.data || []);
-                  } catch (e) {
-                    reject(e);
-                  }
-                });
-              }).on('error', reject);
-            });
-          }
+          // Static routes — keep in sync with the app/  directory
+          const STATIC_ROUTES = [
+            '/',
+            '/hosts',
+            '/about',
+            '/faq',
+            '/staff',
+            '/submit-host',
+            '/submit-layout',
+            '/submission-rules',
+            '/server-rules',
+            '/other-free-hosts',
+            '/tos',
+            '/privacy-policy',
+          ];
 
-          // Recursively find all .html files (skip common ignored dirs)
-          function findHtmlFiles(dir) {
-            let results = [];
-            let list;
-            try {
-              list = fs.readdirSync(dir);
-            } catch (e) {
-              return results;
-            }
-            for (const file of list) {
-              const filePath = path.join(dir, file);
-              let stat;
-              try {
-                stat = fs.statSync(filePath);
-              } catch (e) {
-                continue;
-              }
-              if (stat.isDirectory()) {
-                const skip = ['node_modules', '.git', 'api', 'admin', 'private', '_includes', '_layouts', 'partials'];
-                if (!skip.includes(file)) {
-                  results = results.concat(findHtmlFiles(filePath));
-                }
-              } else if (file.toLowerCase().endsWith('.html')) {
-                results.push(filePath);
-              }
-            }
-            return results;
-          }
-
-          // Slugify function matching lib/slugify.ts
+          // Slugify — must match lib/slugify.ts exactly
           function slugify(name) {
             return name
               .toLowerCase()
@@ -87,42 +56,43 @@ jobs:
               .replace(/^-+|-+$/g, '');
           }
 
+          function fetchHosts() {
+            return new Promise((resolve, reject) => {
+              https.get(API_URL + '/api/hosts?limit=1000', (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                  try {
+                    const jsonData = JSON.parse(data);
+                    resolve(Array.isArray(jsonData.data) ? jsonData.data : []);
+                  } catch (e) {
+                    reject(e);
+                  }
+                });
+              }).on('error', reject);
+            });
+          }
+
           function generateSitemap(hosts) {
             const today = new Date().toISOString().split('T')[0];
 
-            // Get relative, normalized paths
-            const htmlFiles = findHtmlFiles('.')
-              .map(f => path.relative(process.cwd(), f).replace(/\\/g, '/'));
+            // Start with static routes, then append one slug URL per host
+            const urls = [...STATIC_ROUTES];
 
-            const urlSet = new Set();
-
-            htmlFiles.forEach(rel => {
-              // Convert index.html -> '/', other .html -> '/path'
-              let urlPath = '/' + rel.replace(/index\.html$/i, '').replace(/\.html$/i, '');
-              // Normalize repeated slashes and trailing slash rules
-              urlPath = urlPath.replace(/\/+/g, '/');
-              if (urlPath !== '/' && urlPath.endsWith('/')) {
-                urlPath = urlPath.slice(0, -1); // drop trailing slash for pretty URLs
-              }
-              if (urlPath === '') urlPath = '/';
-              urlSet.add(urlPath);
-            });
-
-            // Add host-specific slug URLs from API
             hosts.forEach(host => {
               if (host && host.name) {
                 const slug = slugify(host.name);
-                if (slug) {
-                  urlSet.add(`/hosts/${slug}`);
-                }
+                if (slug) urls.push(`/hosts/${slug}`);
               }
             });
 
-            // Build sitemap XML
+            // Deduplicate and sort
+            const sorted = [...new Set(urls)].sort();
+
             let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n' +
                           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
 
-            for (const p of Array.from(urlSet).sort()) {
+            for (const p of sorted) {
               sitemap += `  <url>\n` +
                          `    <loc>${SITE_URL}${p}</loc>\n` +
                          `    <lastmod>${today}</lastmod>\n` +
@@ -156,21 +126,20 @@ jobs:
             try {
               console.log('📡 Fetching hosts from API...');
               const hosts = await fetchHosts();
-              console.log('📝 Found ' + (Array.isArray(hosts) ? hosts.length : 0) + ' hosts');
+              console.log('✅ Found ' + hosts.length + ' hosts');
 
-              const sitemap = generateSitemap(Array.isArray(hosts) ? hosts : []);
+              const sitemap = generateSitemap(hosts);
               const robots = generateRobotsTxt();
 
               let currentSitemap = '';
               let currentRobots = '';
-
               try { currentSitemap = fs.readFileSync('public/sitemap.xml', 'utf8'); } catch {}
               try { currentRobots = fs.readFileSync('public/robots.txt', 'utf8'); } catch {}
 
               let changesMade = false;
 
               if (currentSitemap !== sitemap) {
-                fs.writeFileSync('sitemap.xml', sitemap);
+                fs.writeFileSync('public/sitemap.xml', sitemap);
                 console.log('✅ Sitemap updated');
                 changesMade = true;
               } else {
@@ -178,16 +147,14 @@ jobs:
               }
 
               if (currentRobots !== robots) {
-                fs.writeFileSync('robots.txt', robots);
+                fs.writeFileSync('public/robots.txt', robots);
                 console.log('✅ Robots.txt updated');
                 changesMade = true;
               } else {
                 console.log('ℹ️ Robots.txt unchanged');
               }
 
-              if (!changesMade) {
-                console.log('🚫 No changes detected');
-              }
+              if (!changesMade) console.log('🚫 No changes detected');
             } catch (err) {
               console.error('❌ Error:', err && err.message ? err.message : err);
               process.exit(1);
