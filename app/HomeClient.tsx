@@ -101,12 +101,47 @@ function fetchWithTimeout(url: string, timeout = 7000) {
 export default function HomeClient() {
   const [terminalCommand, setTerminalCommand] = useState("");
   const [terminalOutput, setTerminalOutput] = useState("");
+  const [typedText, setTypedText] = useState("");
   const [discord, setDiscord] = useState<DiscordState>({
     name: "Discord",
     status: "Loading server info...",
     count: "-",
     showInvite: false,
   });
+
+  // Hero typing effect
+  useEffect(() => {
+    const words = ["for demos", "for students", "for hobby projects", "for experiments"];
+    let i = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let timer: number;
+
+    function type() {
+      const currentWord = words[i % words.length];
+      if (isDeleting) {
+        charIndex--;
+        setTypedText(currentWord.substring(0, charIndex));
+      } else {
+        charIndex++;
+        setTypedText(currentWord.substring(0, charIndex));
+      }
+
+      if (!isDeleting && charIndex === currentWord.length) {
+        isDeleting = true;
+        timer = window.setTimeout(type, 1100);
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        i++;
+        timer = window.setTimeout(type, 500);
+      } else {
+        timer = window.setTimeout(type, isDeleting ? 40 : 90);
+      }
+    }
+
+    timer = window.setTimeout(type, 800);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -219,7 +254,7 @@ export default function HomeClient() {
             <h1 id="hero-title" className="hero-title">
               Discover free hosting that <span className="gradient-text">just works</span>.
               <span className="typed-wrap" aria-hidden="true">
-                <span className="typed" id="typedText" />
+                <span className="typed" id="typedText">{typedText}</span>
                 <span className="cursor" id="typedCursor">|</span>
               </span>
             </h1>
