@@ -100,7 +100,8 @@ html[data-theme=light] {
 }
 
 html {
-    scroll-behavior: smooth
+    scroll-behavior: smooth;
+    width: 100%;
 }
 
 .container,
@@ -119,7 +120,7 @@ body {
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    padding: max(env(safe-area-inset-top), var(--space-md)) max(env(safe-area-inset-right), var(--space-md)) max(env(safe-area-inset-bottom), var(--space-md)) max(env(safe-area-inset-left), var(--space-md));
+    padding: 0;
     background: radial-gradient(1200px 600px at 10% 10%, rgba(99, 102, 241, .05), transparent 8%), linear-gradient(180deg, #0a0f1e 0, #0a0f1e 100%)
 }
 
@@ -140,7 +141,8 @@ html[data-theme=light] body {
 
 .modal-title-section,
 main {
-    flex: 1
+    flex: 1;
+    padding: var(--space-md) var(--space-md) 0;
 }
 
 .sr-only {
@@ -160,10 +162,11 @@ main {
     position: sticky;
     top: 0;
     z-index: 100;
+    width: 100%;
     min-height: 70px;
     display: flex;
     align-items: flex-start;
-    padding-top: var(--space-md);
+    padding: var(--space-md) var(--space-md) 0;
     background: transparent;
     border-bottom: 0;
     backdrop-filter: blur(18px);
@@ -190,6 +193,7 @@ main {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(18px) saturate(1.15);
     -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    overflow: hidden;
 }
 
 /* Fallback for browsers without backdrop-filter support */
@@ -224,6 +228,16 @@ main {
     align-items: center;
     display: flex;
     gap: var(--space-sm)
+}
+
+.actions {
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.nav {
+    flex-shrink: 1;
+    min-width: 0;
 }
 
 /* Desktop Navigation Styles */
@@ -1647,7 +1661,8 @@ i[data-lucide] {
 
 /* Footer Styles */
 .site-footer {
-    padding: var(--space-2xl) 0 var(--space-lg);
+    width: 100%;
+    padding: var(--space-2xl) var(--space-md) max(env(safe-area-inset-bottom), var(--space-lg));
     border-top: 1px solid var(--border);
     background: transparent;
     margin-top: auto
@@ -3161,6 +3176,16 @@ html[data-theme=light] .rating-section {
 
 /* Mobile Responsiveness */
 @media (max-width:1024px) {
+    /* Collapse Discord button to icon-only to save header space */
+    .discord-btn-text {
+        display: none;
+    }
+    #discordBtn {
+        padding: var(--space-sm);
+        min-width: 40px;
+        justify-content: center;
+    }
+
     .hero-inner {
         flex-direction: column;
         text-align: center

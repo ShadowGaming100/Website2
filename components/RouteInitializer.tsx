@@ -3,23 +3,28 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-declare global {
-  interface Window {
-    initPageLogic?: () => void;
-    createSnowEffect?: () => void;
-  }
-}
-
 export default function RouteInitializer() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      window.initPageLogic?.();
-      window.createSnowEffect?.();
-    }, 100);
+    // Scroll-reveal animation for feature/staff cards
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("reveal");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
 
-    return () => window.clearTimeout(timer);
+    document
+      .querySelectorAll<Element>(".feature-card, .staff-card")
+      .forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
   }, [pathname]);
 
   return null;

@@ -234,6 +234,61 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   // Use ref to track if it's the component's mount phase
   const isMounted = useRef(false)
 
+  const SCROLL_KEY = 'hosts_scroll_y'
+  const RANDOM_ORDER_KEY = 'hosts_random_order'
+
+  // Stable random order — generated once per session, persisted so back-navigation
+  // restores the same order instead of reshuffling.
+  const randomOrder = useMemo<Map<number, number>>(() => {
+    try {
+      const saved = sessionStorage.getItem(RANDOM_ORDER_KEY)
+      if (saved) {
+        const parsed: [number, number][] = JSON.parse(saved)
+        return new Map(parsed)
+      }
+    } catch {
+      // ignore parse errors
+    }
+    // Generate a fresh random weight for each host id
+    const map = new Map<number, number>(
+      initialHosts.map(h => [h.id, Math.random()])
+    )
+    try {
+      sessionStorage.setItem(RANDOM_ORDER_KEY, JSON.stringify([...map]))
+    } catch {
+      // ignore storage errors
+    }
+    return map
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Restore scroll position on mount (after hydration)
+  useEffect(() => {
+    if (!hasMounted) return
+    const saved = sessionStorage.getItem(SCROLL_KEY)
+    if (saved) {
+      const y = parseInt(saved, 10)
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: y, behavior: 'instant' })
+        })
+      })
+      sessionStorage.removeItem(SCROLL_KEY)
+    }
+  }, [hasMounted])
+
+  // Save scroll position when navigating away to a host detail
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const link = (e.target as Element).closest<HTMLAnchorElement>('a[href^="/hosts/"]')
+      if (link) {
+        sessionStorage.setItem(SCROLL_KEY, String(window.scrollY))
+      }
+    }
+    document.addEventListener('click', handleClick)
+    return () => document.removeEventListener('click', handleClick)
+  }, [])
+
   const pageSize = 5
 
   // Memoize Filter Options
@@ -267,7 +322,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     return [...hostsToSort].sort((a, b) => {
       switch (sortBy) {
         case 'random':
-          return Math.random() - 0.5
+          return (randomOrder.get(a.id) ?? 0) - (randomOrder.get(b.id) ?? 0)
         case 'recent':
           if (a.created_at && b.created_at) return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
           return (b.id || 0) - (a.id || 0)
@@ -280,10 +335,10 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
         case 'storage':
           return parseMemoryToMB(b.disk, b.diskMB) - parseMemoryToMB(a.disk, a.diskMB)
         default:
-          return Math.random() - 0.5
+          return (randomOrder.get(a.id) ?? 0) - (randomOrder.get(b.id) ?? 0)
       }
     })
-  }, [])
+  }, [randomOrder])
 
   // Filter logic
   const filteredHosts = useMemo(() => {

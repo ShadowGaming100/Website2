@@ -2,9 +2,13 @@ import type { Metadata, Viewport } from "next";
 import React from "react";
 import Image from "next/image";
 import Link from "@/components/NoPrefetchLink";
-import Script from "next/script";
 import RouteInitializer from "../components/RouteInitializer";
 import GlobalStructuredData from "../components/GlobalStructuredData";
+import MatomoTracker from "../components/MatomoTracker";
+import ThemeProvider from "../components/ThemeProvider";
+import SidebarController from "../components/SidebarController";
+import SnowEffect from "../components/SnowEffect";
+import PreviewCard from "../components/PreviewCard";
 import {
   BookOpen,
   ChevronDown,
@@ -208,9 +212,19 @@ export default function RootLayout({
         />
       </head>
       <body>
+        {/* Inline script: apply theme before first paint to avoid flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('fh_theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
+          }}
+        />
+        <ThemeProvider />
+        <SidebarController />
+        <SnowEffect />
+        <PreviewCard />
         <RouteInitializer />
         <GlobalStructuredData />
-        <Script src="/Src/js/script.js" strategy="afterInteractive" />
+        <MatomoTracker />
 
         <header className="site-header">
           <div className="wrap header-inner">
@@ -260,7 +274,7 @@ export default function RootLayout({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> Join Discord
+                <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /><span className="discord-btn-text"> Join Discord</span>
               </a>
             </div>
           </div>
