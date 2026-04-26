@@ -193,7 +193,6 @@ main {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(18px) saturate(1.15);
     -webkit-backdrop-filter: blur(18px) saturate(1.15);
-    overflow: hidden;
 }
 
 /* Fallback for browsers without backdrop-filter support */
@@ -1875,19 +1874,34 @@ i[data-lucide] {
     flex-wrap: wrap;
     background: var(--glass);
     padding: var(--space-sm);
-    border-radius: 999px;
+    border-radius: var(--border-radius-lg);
     border: 1px solid var(--border);
     width: fit-content;
+    max-width: 100%;
     margin-left: auto;
     margin-right: auto;
     backdrop-filter: blur(12px);
+}
+
+@media (max-width: 768px) {
+    .staff-filters {
+        width: 100%;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        border-radius: var(--border-radius);
+    }
+    .staff-filters::-webkit-scrollbar { display: none; }
+    .filter-btn { flex-shrink: 0; }
 }
 
 .filter-btn {
     background: transparent;
     border: none;
     color: var(--muted);
-    padding: var(--space-sm) var(--space-lg);
+    padding: var(--space-sm) var(--space-md);
     border-radius: 999px;
     font-weight: 600;
     font-size: var(--font-size-sm);
@@ -1896,6 +1910,7 @@ i[data-lucide] {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
+    white-space: nowrap;
 }
 
 .filter-btn:hover {
@@ -2351,10 +2366,18 @@ i[data-lucide] {
 }
 
 @media (max-width: 640px) {
-    .staff-filters { border-radius: var(--border-radius); }
-    .filter-btn { flex: 1; justify-content: center; }
+    .staff-filters {
+        border-radius: var(--border-radius);
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .staff-filters::-webkit-scrollbar { display: none; }
+    .filter-btn { flex-shrink: 0; }
 }
-
 /* Search and Host Listing Styles */
 #sidebarToggle {
     display: none
@@ -3184,6 +3207,11 @@ html[data-theme=light] .rating-section {
         padding: var(--space-sm);
         min-width: 40px;
         justify-content: center;
+    }
+
+    /* Tighten nav link padding so items fit in the pill */
+    .nav-link {
+        padding: .5rem .6rem;
     }
 
     .hero-inner {
