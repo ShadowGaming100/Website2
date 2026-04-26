@@ -2,7 +2,7 @@
 
 export const runtime = 'edge';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, CheckCircle, ExternalLink, X } from 'lucide-react';
 import { push } from '@socialgouv/matomo-next';
@@ -21,6 +21,7 @@ export default function Page() {
   const [countdown, setCountdown] = useState(5);
   const [isCancelled, setIsCancelled] = useState(false);
   const [opened, setOpened] = useState(false);
+  const backBtnRef = useRef<HTMLButtonElement>(null);
 
   // Open the external link once and track it
   useEffect(() => {
@@ -86,10 +87,10 @@ export default function Page() {
             >
               <ExternalLink size={14} aria-hidden="true" /> Open Link
             </a>
-            <button className="redirect-cancel-btn" onClick={() => { window.location.href = backUrl; }}>
+            <button className="redirect-cancel-btn" onClick={() => { window.location.href = backUrl; }} ref={backBtnRef}>
               <ArrowLeft size={14} aria-hidden="true" /> Back
             </button>
-            <button className="redirect-cancel-btn" onClick={() => setIsCancelled(true)} disabled={isCancelled}>
+            <button className="redirect-cancel-btn" onClick={() => { setIsCancelled(true); setTimeout(() => backBtnRef.current?.focus(), 50); }} disabled={isCancelled}>
               <X size={14} aria-hidden="true" /> Cancel
             </button>
           </div>

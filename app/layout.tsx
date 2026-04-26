@@ -9,6 +9,8 @@ import ThemeProvider from "../components/ThemeProvider";
 import SidebarController from "../components/SidebarController";
 import SnowEffect from "../components/SnowEffect";
 import PreviewCard from "../components/PreviewCard";
+import ToastContainer from "../components/Toast";
+import BackToTop from "../components/BackToTop";
 import {
   BookOpen,
   ChevronDown,
@@ -431,6 +433,8 @@ export default function RootLayout({
         </footer>
 
         <div id="previewCard" className="preview-card" aria-hidden="true" />
+        <ToastContainer />
+        <BackToTop />
       </body>
     </html>
   );

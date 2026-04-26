@@ -5,9 +5,10 @@ import Link from '@/components/NoPrefetchLink'
 import { type Host } from '../lib/cache'
 import { slugify } from '../lib/slugify'
 import { getLanguageName } from '../lib/getLanguageName'
-import { ArrowLeft, Cpu, Crosshair, ExternalLink, Gift, HardDrive, Info, Languages, Link as LinkIcon, MemoryStick, Settings, ThumbsDown, ThumbsUp } from 'lucide-react'
+import { ArrowLeft, Check, Copy, Cpu, Crosshair, ExternalLink, Gift, HardDrive, Info, Languages, Link as LinkIcon, MemoryStick, Settings, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
+import { showToast } from './Toast'
 
 function buildTargetUrl(raw: string): string {
   try {
@@ -23,10 +24,22 @@ interface HostDetailClientProps { host: Host }
 
 export default function HostDetailClient({ host }: HostDetailClientProps) {
   const [showDiscordModal, setShowDiscordModal] = useState(false)
+  const [copied, setCopied] = useState(false)
   const totalReviews = (host.approvals || 0) + (host.disapprovals || 0)
   const rating = totalReviews > 0 ? Math.round(((host.approvals || 0) / totalReviews) * 100) : 0
   const statusClass = host.status && host.status.toLowerCase() === 'online' ? 'online' : 'closed'
   const typeDisplay = host.type ? host.type.split(',').map(t => t.trim().replace(/\s*\([^)]*\)/g, '').trim()).join(', ') : 'Unknown'
+
+  const handleCopyLink = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      setCopied(true)
+      showToast('Link copied to clipboard!')
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      showToast('Failed to copy link', 'error')
+    }
+  }, [])
 
   function escapeHtml(text: string): string {
     if (typeof text !== 'string') return ''
@@ -107,6 +120,15 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
                 ))}
               </div>
             </div>
+            <button
+              className="copy-link-btn"
+              onClick={handleCopyLink}
+              aria-label="Copy link to this host"
+              title="Copy link"
+            >
+              {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
+              <span>{copied ? 'Copied!' : 'Copy link'}</span>
+            </button>
           </div>
 
           <div className="host-detail-grid">

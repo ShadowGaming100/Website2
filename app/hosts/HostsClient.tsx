@@ -230,6 +230,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
 
   // Use debounced search to reduce unnecessary updates
   const debouncedSearch = useDebounce(currentFilters.search, 300)
+  const isSearching = currentFilters.search !== debouncedSearch
 
   // Use ref to track if it's the component's mount phase
   const isMounted = useRef(false)
@@ -497,7 +498,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
               <input
                 type="text"
                 id="search"
-                className="search-input"
+                className={`search-input${isSearching ? ' search-input--loading' : ''}`}
                 placeholder="🔍 Search for a host..."
                 value={currentFilters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
@@ -568,7 +569,21 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                   <Search size={48} aria-hidden="true" />
                 </div>
                 <div className="empty-title">No hosts found</div>
-                <p style={{ color: 'var(--muted)' }}>Try adjusting your filters to find more results</p>
+                <p style={{ color: 'var(--muted)', marginBottom: 'var(--space-md)' }}>
+                  No hosts match your current filters.
+                </p>
+                <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap', justifyContent: 'center' }}>
+                  {hasActiveFilters && (
+                    <button className="btn ghost" onClick={clearFilters}>
+                      <X size={14} aria-hidden="true" /> Clear all filters
+                    </button>
+                  )}
+                  {currentFilters.search && (
+                    <button className="btn ghost" onClick={() => handleFilterChange('search', '')}>
+                      Clear search
+                    </button>
+                  )}
+                </div>
               </div>
             ) : (
               currentPageHosts.map(host => (
