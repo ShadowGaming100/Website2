@@ -5,6 +5,6 @@ Disallow: /api/
 Disallow: /admin/
 Disallow: /private/
 Disallow: /cgi-bin/
-Disallow: /redirect/
+Disallow: /hosts/*/redirect/*
 
 Sitemap: https://freehosts.space/sitemap.xml
