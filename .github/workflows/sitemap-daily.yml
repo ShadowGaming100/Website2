@@ -152,7 +152,7 @@ jobs:
               'Disallow: /admin/',
               'Disallow: /private/',
               'Disallow: /cgi-bin/',
-              'Disallow: /redirect/',
+              'Disallow: /hosts/*/redirect/*',
               '',
               `Sitemap: ${SITE_URL}/sitemap.xml`,
               '',
