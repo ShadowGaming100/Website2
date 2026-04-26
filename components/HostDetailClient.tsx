@@ -94,11 +94,8 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
       hostname = url.replace(/^https?:\/\//, '').split('/')[0]
     }
 
-    const targetUrl = buildTargetUrl(url)
-    window.open(targetUrl, '_blank', 'noopener,noreferrer')
-
-    // Navigate to the redirect page
-    window.location.href = `/hosts/${slugify(host.name)}/redirect/${hostname}`
+    // Open redirect page in a new tab
+    window.open(`/hosts/${slugify(host.name)}/redirect/${hostname}`, '_blank', 'noopener,noreferrer')
   }, [host.name])
 
   return (

@@ -30,28 +30,28 @@ export default function Page() {
 
     // Track outbound link click in Matomo
     try {
-      push(['trackEvent', 'outlinks', 'Click', hostname]);
+      push(['trackLink', targetUrl, 'link']);
     } catch {
       // Matomo not loaded yet — ignore
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hostname]);
 
-  // Countdown to go back to host detail page
+  // Countdown to go to external link
   useEffect(() => {
     if (isCancelled || !hostname) return;
     const timer = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          window.location.href = backUrl;
+          window.location.href = targetUrl;
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [isCancelled, hostname, backUrl]);
+  }, [isCancelled, hostname, targetUrl]);
 
   const progress = (countdown / 5) * 100;
 
@@ -80,7 +80,7 @@ export default function Page() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => {
-                try { push(['trackEvent', 'outlinks', 'Click', hostname]); } catch {}
+                try { push(['trackLink', targetUrl, 'link']); } catch {}
               }}
             >
               <ExternalLink size={14} aria-hidden="true" /> Open Link
@@ -94,11 +94,11 @@ export default function Page() {
           </div>
           {isCancelled && (
             <div id="redirect-focus-error">
-              <div style={{ color: '#10b981', fontWeight: 600, marginBottom: 'var(--space-sm)' }}>
-                <CheckCircle size={14} aria-hidden="true" /> Redirect Completed
+              <div style={{ color: '#ef4444', fontWeight: 600, marginBottom: 'var(--space-sm)' }}>
+                <X size={14} aria-hidden="true" /> Redirect Cancelled
               </div>
               <p style={{ color: 'var(--muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>
-                The link has been opened in a new tab. You can now go back.
+                The automatic redirect has been stopped. You can click "Open Link" to proceed manually.
               </p>
             </div>
           )}
