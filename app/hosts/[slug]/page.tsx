@@ -13,18 +13,18 @@ export async function generateMetadata({ params }: Props) {
   if (/^\d+$/.test(slug)) return { title: 'Host Not Found | FreeHosts', description: 'The host you are looking for does not exist or has been removed.' }
   const host = await fetchHostBySlug(slug)
   if (!host) return { title: 'Host Not Found | FreeHosts', description: 'The host you are looking for does not exist or has been removed.' }
-  const targets = host.targets && host.targets.length ? host.targets.join(', ') : 'various purposes'
   const specs: string[] = []
   if (host.cpu && host.cpu !== 'Unknown') specs.push(host.cpu)
   if (host.ram && host.ram !== 'Unknown') specs.push(host.ram)
   if (host.disk && host.disk !== 'Unknown') specs.push(host.disk)
-  const specsText = specs.length > 0 ? `CPU: ${host.cpu || 'Unknown'}, Ram: ${host.ram || 'Unknown'}, Disk: ${host.disk || 'Unknown'}` : ''
+  const specsText = specs.length > 0 ? `Specs: CPU ${host.cpu || 'N/A'}, RAM ${host.ram || 'N/A'}, Storage ${host.disk || 'N/A'}.` : 'Find great features for your next project.'
   const typeText = host.type && host.type.toLowerCase().includes('trusted') ? 'Trusted & Free' : host.type || 'Free'
-  const description = `Free hosting provider ${host.name} offering ${targets}. ${specsText} — ${typeText}.`
+  let description = `Learn about ${host.name}, a ${typeText.toLowerCase()} hosting provider. ${specsText} Read user reviews and compare options on FreeHosts.`
+  if (description.length > 160) description = description.substring(0, 157) + '...'
   const site = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://freehosts.space').replace(/\/$/, '')
   const hostUrl = `${site}/hosts/${slugify(host.name)}`
   const ogImageUrl = host.image ?? `${site}/Src/Images/social-preview.png`
-  const title = `${host.name} | FreeHosts`
+  const title = `${host.name} - Free Hosting Provider Details | FreeHosts`
   const keywords = [host.name, 'free hosting', 'free hosts', ...(host.targets ?? [])].filter(Boolean)
   return {
     title, description,
@@ -68,19 +68,20 @@ export default async function HostDetailPage({ params }: Props) {
   }
   const host: Host | null = await fetchHostBySlug(slug)
   if (!host) return <HostNotFoundPage />
-  const targets = host.targets && host.targets.length ? host.targets.join(', ') : 'various purposes'
   const specs: string[] = []
   if (host.cpu && host.cpu !== 'Unknown') specs.push(host.cpu)
   if (host.ram && host.ram !== 'Unknown') specs.push(host.ram)
   if (host.disk && host.disk !== 'Unknown') specs.push(host.disk)
-  const specsText = specs.length > 0 ? `CPU: ${host.cpu || 'Unknown'}, Ram: ${host.ram || 'Unknown'}, Disk: ${host.disk || 'Unknown'}` : ''
+  const specsText = specs.length > 0 ? `Specs: CPU ${host.cpu || 'N/A'}, RAM ${host.ram || 'N/A'}, Storage ${host.disk || 'N/A'}.` : 'Find great features for your next project.'
   const typeText = host.type && host.type.toLowerCase().includes('trusted') ? 'Trusted & Free' : host.type || 'Free'
-  const description = `Free hosting provider ${host.name} offering ${targets}. ${specsText} — ${typeText}.`
+  let description = `Learn about ${host.name}, a ${typeText.toLowerCase()} hosting provider. ${specsText} Read user reviews and compare options on FreeHosts.`
+  if (description.length > 160) description = description.substring(0, 157) + '...'
   const site = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://freehosts.space').replace(/\/$/, '')
   const hostUrl = `${site}/hosts/${slugify(host.name)}`
   const totalReviews = host.approvals + host.disapprovals
   const ratingValue = totalReviews > 0 ? ((host.approvals / totalReviews) * 5).toFixed(1) : null
-  const jsonLd = { "@context": "https://schema.org", "@type": "WebPage", "@id": `${hostUrl}#webpage`, "url": hostUrl, "name": `${host.name} | FreeHosts`, "isPartOf": { "@id": "https://freehosts.space/#website" }, "inLanguage": "en", "description": description }
+  const title = `${host.name} - Free Hosting Provider Details | FreeHosts`
+  const jsonLd = { "@context": "https://schema.org", "@type": "WebPage", "@id": `${hostUrl}#webpage`, "url": hostUrl, "name": title, "isPartOf": { "@id": "https://freehosts.space/#website" }, "inLanguage": "en", "description": description }
   const serviceLd = {
     "@context": "https://schema.org", "@type": "Service", "name": host.name, "description": description, "url": hostUrl, "serviceType": "Web Hosting", "category": host.targets?.join(', ') || 'Web Hosting',
     "provider": { "@type": "Organization", "name": host.name, ...(host.links?.[0] ? { "url": host.links[0] } : {}) },
