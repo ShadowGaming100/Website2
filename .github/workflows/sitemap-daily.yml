@@ -182,7 +182,8 @@ jobs:
             const oldURLSet = extractURLs(oldSitemapXML);
             const newURLSet = newURLs.map(p => `${SITE_URL}${p}`).sort().join('\n');
 
-            const sitemapChanged = oldURLSet !== newURLSet;
+            const isWeeklyForceUpdate = new Date().getDay() === 1; // Force update on Mondays
+            const sitemapChanged = oldURLSet !== newURLSet || isWeeklyForceUpdate;
             const robotsChanged  = oldRobots !== newRobots;
 
             if (sitemapChanged) {
