@@ -23,7 +23,7 @@ export default function Page() {
   const [opened, setOpened] = useState(false);
   const backBtnRef = useRef<HTMLButtonElement>(null);
 
-  // Open the external link once and track it
+  // Track the external link click once
   useEffect(() => {
     if (!hostname || opened) return;
     setOpened(true);
@@ -34,8 +34,6 @@ export default function Page() {
     } catch {
       // Matomo not loaded yet — ignore
     }
-
-    window.open(targetUrl, '_blank', 'noopener,noreferrer');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hostname]);
 
