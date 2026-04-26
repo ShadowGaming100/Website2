@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState, useEffect } from "react";
+import Image from "next/image";
 import {
   Boxes,
   CheckSquare,
@@ -33,7 +34,7 @@ type FormState = {
   tosLink: string; privacyLink: string; planLink: string; websiteLink: string;
   discordLink: string; otherLinks: string; renewalStatus: RenewalStatus;
   renewalDuration: string; coinsNeeded: string; notes: string;
-  checkToS: boolean; checkPrivacy: boolean;
+  checkToS: boolean; checkPrivacy: boolean; checkRules: boolean;
 };
 
 type PlanSpec = { originalName: string; name: string; ram: string; cpu: string; disk: string };
@@ -43,7 +44,7 @@ const initialForm: FormState = {
   sameRam: "", sameCpu: "", sameDisk: "", tosLink: "", privacyLink: "",
   planLink: "", websiteLink: "", discordLink: "", otherLinks: "",
   renewalStatus: "", renewalDuration: "", coinsNeeded: "", notes: "",
-  checkToS: true, checkPrivacy: true,
+  checkToS: true, checkPrivacy: true, checkRules: false,
 };
 
 const emptyPreview = "Fill in the form to see the message preview here...";
@@ -100,7 +101,8 @@ function buildMessage(form: FormState, planSpecs: PlanSpec[], otherSpec: PlanSpe
   if (form.notes) lines.push(`- Notes: ${form.notes}`);
   lines.push("------------------------------------------------------------", "", "Verification",
     `[${form.checkToS ? "x" : " "}] I have included the ToS`,
-    `[${form.checkPrivacy ? "x" : " "}] I have included the Privacy Policy`);
+    `[${form.checkPrivacy ? "x" : " "}] I have included the Privacy Policy`,
+    `[${form.checkRules ? "x" : " "}] I have read the Submission Rules`);
   return lines.join("\n");
 }
 
@@ -125,11 +127,13 @@ export default function SubmitLayoutClient() {
     if (!form.locales.trim()) m.push("Locales");
     if (!form.tosLink.trim()) m.push("ToS Link");
     if (!form.privacyLink.trim()) m.push("Privacy Policy Link");
+    if (!form.websiteLink.trim() && !form.discordLink.trim()) m.push("Website Link or Discord Invite (at least one required)");
     if (!form.renewalStatus) m.push("Renewal Required");
     if (form.renewalStatus === "yes") {
       if (!form.renewalDuration.trim()) m.push("Renewal Duration");
       if (!form.coinsNeeded.trim()) m.push("Coins Needed");
     }
+    if (!form.checkRules) m.push("Submission Rules (must confirm you have read them)");
     return m;
   }, [form]);
 
@@ -297,8 +301,8 @@ export default function SubmitLayoutClient() {
                 <TInput id="tosLink" label="ToS Link" required value={form.tosLink} onChange={(v) => updateForm("tosLink", v)} placeholder="https://example.com/tos" />
                 <TInput id="privacyLink" label="Privacy Policy Link" required value={form.privacyLink} onChange={(v) => updateForm("privacyLink", v)} placeholder="https://example.com/privacy" />
                 <TInput id="planLink" label="Plan Link" value={form.planLink} onChange={(v) => updateForm("planLink", v)} placeholder="https://example.com/plan" />
-                <TInput id="websiteLink" label="Website Link" value={form.websiteLink} onChange={(v) => updateForm("websiteLink", v)} placeholder="https://example.com" />
-                <TInput id="discordLink" label="Discord Invite" value={form.discordLink} onChange={(v) => updateForm("discordLink", v)} placeholder="https://discord.gg/invite" />
+                <TInput id="websiteLink" label="Website Link" value={form.websiteLink} onChange={(v) => updateForm("websiteLink", v)} placeholder="https://example.com" required={!form.discordLink.trim()} />
+                <TInput id="discordLink" label="Discord Invite" value={form.discordLink} onChange={(v) => updateForm("discordLink", v)} placeholder="https://discord.gg/invite" required={!form.websiteLink.trim()} />
                 <div className="form-group">
                   <label htmlFor="otherLinks" className="form-label">Other Links</label>
                   <textarea id="otherLinks" className="form-textarea" value={form.otherLinks} placeholder={"One per line, e.g.:\nDocumentation: https://docs.example.com"} onChange={(e) => updateForm("otherLinks", e.target.value)} />
@@ -338,6 +342,16 @@ export default function SubmitLayoutClient() {
                   <label className="checkbox-option">
                     <input type="checkbox" checked={form.checkPrivacy} onChange={(e) => updateForm("checkPrivacy", e.target.checked)} />
                     <span>I have included the Privacy Policy</span>
+                  </label>
+                  <label className="checkbox-option">
+                    <input type="checkbox" checked={form.checkRules} onChange={(e) => updateForm("checkRules", e.target.checked)} />
+                    <span>
+                      I have read and agree to the{" "}
+                      <a href="/submission-rules" target="_blank" rel="noopener noreferrer" className="step-link" style={{ display: "inline" }}>
+                        Submission Rules
+                      </a>
+                      {" "}<span className="required">*</span>
+                    </span>
                   </label>
                 </div>
               </div>
@@ -392,14 +406,27 @@ function TInput({ id, label, value, onChange, placeholder, required = false }: {
 }
 
 function DiscordPreview({ form, planSpecs, otherSpec, otherPlans, missingFields, showRenewalDetails, setShowRenewalDetails }: { form: FormState; planSpecs: PlanSpec[]; otherSpec: PlanSpec | null; otherPlans: string[]; missingFields: string[]; showRenewalDetails: boolean; setShowRenewalDetails: (v: boolean) => void }) {
+  const [time, setTime] = useState("");
+
+  useEffect(() => {
+    function fmt() {
+      return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    }
+    setTime(fmt());
+    const id = setInterval(() => setTime(fmt()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
   return (
     <div className="discord-preview">
       <div className="discord-message">
-        <div className="discord-avatar">FH</div>
+        <div className="discord-avatar">
+          <Image src="/Src/icons/icon.png" alt="FreeHosts" width={40} height={40} />
+        </div>
         <div className="discord-message-content">
           <div className="discord-message-header">
             <span className="discord-username">FreeHosts Bot</span>
-            <span className="discord-timestamp">Today at 12:00 PM</span>
+            <span className="discord-timestamp">Today at {time}</span>
           </div>
           <div className="discord-message-text">
             <span className="discord-bold">Host Submission</span><br /><br />
@@ -444,6 +471,7 @@ function DiscordPreview({ form, planSpecs, otherSpec, otherPlans, missingFields,
             <span className="discord-bold">Verification</span><br />
             <span className={`discord-checkbox ${form.checkToS ? "checked" : ""}`}>{form.checkToS ? "x" : ""}</span> I have included the ToS<br />
             <span className={`discord-checkbox ${form.checkPrivacy ? "checked" : ""}`}>{form.checkPrivacy ? "x" : ""}</span> I have included the Privacy Policy<br />
+            <span className={`discord-checkbox ${form.checkRules ? "checked" : ""}`}>{form.checkRules ? "x" : ""}</span> I have read the Submission Rules<br />
             {missingFields.length > 0 && (
               <div className="discord-blockquote" style={{ color: "#faa81a", marginTop: "16px" }}>
                 <span className="discord-bold">Missing required fields:</span> {missingFields.join(", ")}
