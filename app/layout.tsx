@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import React from "react";
+import React, { Suspense } from "react";
 import Image from "next/image";
 import Link from "@/components/NoPrefetchLink";
 import RouteInitializer from "../components/RouteInitializer";
@@ -224,7 +224,9 @@ export default function RootLayout({
         <PreviewCard />
         <RouteInitializer />
         <GlobalStructuredData />
-        <MatomoTracker />
+        <Suspense fallback={null}>
+          <MatomoTracker />
+        </Suspense>
 
         <header className="site-header">
           <div className="wrap header-inner">

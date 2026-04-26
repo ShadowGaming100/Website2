@@ -70,15 +70,20 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
     } catch { return 'Website' }
   }
 
-  const handleRedirect = useCallback((url: string, hostName?: string, linkType?: string) => {
+  const handleRedirect = useCallback((url: string) => {
     if (typeof window === 'undefined') return
     window.open(buildTargetUrl(url), '_blank', 'noopener,noreferrer')
-    const encodedUrl = encodeURIComponent(btoa(url))
-    const encodedHostName = hostName ? `&hostName=${encodeURIComponent(hostName)}` : ''
-    const lt = linkType ? `&linkType=${encodeURIComponent(linkType)}` : ''
-    const returnTo = slugify(host.name)
-    window.location.href = `/redirect/${host.id}/${encodedUrl}?${encodedHostName}${lt}&returnTo=${returnTo}`
-  }, [host.id, host.name])
+
+    // Extract hostname for clean URL: /hosts/my-host/redirect/example.com
+    let hostname: string
+    try {
+      hostname = new URL(url).hostname
+    } catch {
+      hostname = url.replace(/^https?:\/\//, '').split('/')[0]
+    }
+
+    window.location.href = `/hosts/${slugify(host.name)}/redirect/${hostname}`
+  }, [host.name])
 
   return (
     <>
@@ -165,7 +170,7 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
                   <h3 className="info-title"><LinkIcon size={14} aria-hidden="true" /> Links</h3>
                   <div className="links-list">
                     {(host.links || []).map((link, index) => (
-                      <a key={index} href="#" className="link-item" onClick={(e) => { e.preventDefault(); handleRedirect(link, host.name, getLinkType(link)) }}>
+                      <a key={index} href="#" className="link-item" onClick={(e) => { e.preventDefault(); handleRedirect(link) }}>
                         <ExternalLink size={14} aria-hidden="true" /> {link}
                       </a>
                     ))}

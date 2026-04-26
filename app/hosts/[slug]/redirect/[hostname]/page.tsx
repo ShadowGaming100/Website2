@@ -3,43 +3,37 @@
 export const runtime = 'edge';
 
 import { useState, useEffect } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, CheckCircle, ExternalLink, X } from 'lucide-react';
 
-function buildTargetUrl(raw: string): string {
-  try {
-    const urlObj = new URL(raw);
-    urlObj.searchParams.append('ref', 'freehosts.space');
-    return urlObj.toString();
-  } catch {
-    return raw + (raw.includes('?') ? '&ref=freehosts.space' : '?ref=freehosts.space');
-  }
+function buildTargetUrl(hostname: string): string {
+  return `https://${hostname}?ref=freehosts.space`;
 }
 
 export default function Page() {
   const params = useParams() || {};
-  const searchParams = useSearchParams();
-  const urlParam = params.url ?? '';
-  const url = urlParam ? atob(decodeURIComponent(urlParam as string)) : '';
-  const hostName = searchParams?.get('hostName') || 'Host';
-  const linkType = searchParams?.get('linkType') || 'Website';
-  const returnTo = searchParams?.get('returnTo');
+  const hostname = (params.hostname as string) ?? '';
+  const targetUrl = hostname ? buildTargetUrl(hostname) : '#';
+
   const [countdown, setCountdown] = useState(5);
   const [isCancelled, setIsCancelled] = useState(false);
 
   useEffect(() => {
-    if (isCancelled || !url) return;
+    if (isCancelled || !hostname) return;
     const timer = setInterval(() => {
       setCountdown(prev => {
-        if (prev <= 1) { clearInterval(timer); window.location.href = returnTo ? `/hosts/${returnTo}` : '/hosts'; return 0; }
+        if (prev <= 1) {
+          clearInterval(timer);
+          history.back();
+          return 0;
+        }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [isCancelled, returnTo, url]);
+  }, [isCancelled, hostname]);
 
   const progress = (countdown / 5) * 100;
-  const targetUrl = url ? buildTargetUrl(url) : '#';
 
   return (
     <main id="main-content">
@@ -49,9 +43,8 @@ export default function Page() {
             <ArrowRight size={24} aria-hidden="true" />
           </div>
           <h2 className="redirect-title">Redirecting...</h2>
-          <p className="redirect-text">Connecting to</p>
-          <div className="redirect-host">{hostName} - {linkType}</div>
-          <div className="redirect-url">{url}</div>
+          <p className="redirect-text">You are being redirected to</p>
+          <div className="redirect-url">{hostname}</div>
           <div className="redirect-timer">
             <span className="redirect-timer-number" style={{ opacity: isCancelled ? 0.6 : 1 }}>
               {isCancelled ? '✓ Stopped' : countdown}
@@ -64,7 +57,7 @@ export default function Page() {
             <a href={targetUrl} className="redirect-link" target="_blank" rel="noopener noreferrer">
               <ExternalLink size={14} aria-hidden="true" /> Open Link
             </a>
-            <button className="redirect-cancel-btn" onClick={() => { window.location.href = returnTo ? `/hosts/${returnTo}` : '/hosts'; }}>
+            <button className="redirect-cancel-btn" onClick={() => history.back()}>
               <ArrowLeft size={14} aria-hidden="true" /> Back
             </button>
             <button className="redirect-cancel-btn" onClick={() => setIsCancelled(true)} disabled={isCancelled}>
@@ -77,7 +70,7 @@ export default function Page() {
                 <CheckCircle size={14} aria-hidden="true" /> Redirect Completed
               </div>
               <p style={{ color: 'var(--muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>
-                The link has been opened in a new tab. You can now return to the hosts list.
+                The link has been opened in a new tab. You can now go back.
               </p>
             </div>
           )}
