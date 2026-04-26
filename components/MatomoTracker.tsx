@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { initAppRouter, trackAppRouter } from "@socialgouv/matomo-next";
+import { trackAppRouter } from "@socialgouv/matomo-next";
 
 const MATOMO_URL = process.env.NEXT_PUBLIC_MATOMO_URL ?? "";
 const MATOMO_SITE_ID = process.env.NEXT_PUBLIC_MATOMO_SITE_ID ?? "";
@@ -13,11 +13,7 @@ export default function MatomoTracker() {
 
   useEffect(() => {
     if (!MATOMO_URL || !MATOMO_SITE_ID) return;
-    initAppRouter({ url: MATOMO_URL, siteId: MATOMO_SITE_ID });
-  }, []);
-
-  useEffect(() => {
-    if (!MATOMO_URL || !MATOMO_SITE_ID) return;
+    // trackAppRouter handles init on first call and page tracking on subsequent calls
     trackAppRouter({
       url: MATOMO_URL,
       siteId: MATOMO_SITE_ID,
