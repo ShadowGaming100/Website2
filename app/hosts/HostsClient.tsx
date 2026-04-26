@@ -237,9 +237,22 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   const SCROLL_KEY = 'hosts_scroll_y'
   const RANDOM_ORDER_KEY = 'hosts_random_order'
 
-  // Stable random order — generated once per session, persisted so back-navigation
-  // restores the same order instead of reshuffling.
-  const randomOrder = useMemo<Map<number, number>>(() => {
+  // Helper to generate and persist a fresh random order
+  const generateRandomOrder = (hostList: Host[]): Map<number, number> => {
+    const map = new Map<number, number>(
+      hostList.map(h => [h.id, Math.random()])
+    )
+    try {
+      sessionStorage.setItem(RANDOM_ORDER_KEY, JSON.stringify([...map]))
+    } catch {
+      // ignore storage errors
+    }
+    return map
+  }
+
+  // Stable random order as state — loaded from sessionStorage on first mount
+  // so back-navigation restores the same order. Can be regenerated on demand.
+  const [randomOrder, setRandomOrder] = useState<Map<number, number>>(() => {
     try {
       const saved = sessionStorage.getItem(RANDOM_ORDER_KEY)
       if (saved) {
@@ -249,18 +262,8 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     } catch {
       // ignore parse errors
     }
-    // Generate a fresh random weight for each host id
-    const map = new Map<number, number>(
-      initialHosts.map(h => [h.id, Math.random()])
-    )
-    try {
-      sessionStorage.setItem(RANDOM_ORDER_KEY, JSON.stringify([...map]))
-    } catch {
-      // ignore storage errors
-    }
-    return map
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    return generateRandomOrder(initialHosts)
+  })
 
   // Restore scroll position on mount (after hydration)
   useEffect(() => {
@@ -397,6 +400,12 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   }
 
   const handleSortChange = (sort: string) => {
+    // Clicking "Random" while already on random reshuffles the order
+    if (sort === 'random' && currentFilters.sort === 'random') {
+      setRandomOrder(generateRandomOrder(hosts))
+      setCurrentPage(1)
+      return
+    }
     setCurrentFilters(prev => ({
       ...prev,
       sort
