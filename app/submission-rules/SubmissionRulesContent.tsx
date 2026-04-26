@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   Ban,
   CheckCircle,
+  Clock,
   Code,
   FileText,
   Handshake,
@@ -24,6 +25,9 @@ export default function SubmissionRulesContent() {
         <p className="rules-subtitle">
           Read every rule carefully before submitting. Submissions that do not meet these standards will be rejected without review.
         </p>
+        <div className="rules-meta">
+          <span className="rules-meta-item"><Clock size={13} aria-hidden="true" /> Last updated: April 26, 2026</span>
+        </div>
         <div className="rules-notice">
           <AlertTriangle size={16} aria-hidden="true" />
           <span>Violations may result in permanent blacklisting from the directory.</span>
