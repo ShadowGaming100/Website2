@@ -72,9 +72,8 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
 
   const handleRedirect = useCallback((url: string) => {
     if (typeof window === 'undefined') return
-    window.open(buildTargetUrl(url), '_blank', 'noopener,noreferrer')
 
-    // Extract hostname for clean URL: /hosts/my-host/redirect/example.com
+    // Extract hostname for the redirect URL
     let hostname: string
     try {
       hostname = new URL(url).hostname
@@ -82,6 +81,7 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
       hostname = url.replace(/^https?:\/\//, '').split('/')[0]
     }
 
+    // Navigate to the redirect page — it will open the external link
     window.location.href = `/hosts/${slugify(host.name)}/redirect/${hostname}`
   }, [host.name])
 

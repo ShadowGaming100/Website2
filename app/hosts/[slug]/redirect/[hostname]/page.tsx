@@ -5,6 +5,7 @@ export const runtime = 'edge';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, CheckCircle, ExternalLink, X } from 'lucide-react';
+import { push } from '@socialgouv/matomo-next';
 
 function buildTargetUrl(hostname: string): string {
   return `https://${hostname}?ref=freehosts.space`;
@@ -13,25 +14,45 @@ function buildTargetUrl(hostname: string): string {
 export default function Page() {
   const params = useParams() || {};
   const hostname = (params.hostname as string) ?? '';
+  const slug = (params.slug as string) ?? '';
   const targetUrl = hostname ? buildTargetUrl(hostname) : '#';
+  const backUrl = slug ? `/hosts/${slug}` : '/hosts';
 
   const [countdown, setCountdown] = useState(5);
   const [isCancelled, setIsCancelled] = useState(false);
+  const [opened, setOpened] = useState(false);
 
+  // Open the external link once and track it
+  useEffect(() => {
+    if (!hostname || opened) return;
+    setOpened(true);
+
+    // Track outbound link click in Matomo
+    try {
+      push(['trackEvent', 'Outbound', 'Click', hostname]);
+    } catch {
+      // Matomo not loaded yet — ignore
+    }
+
+    window.open(targetUrl, '_blank', 'noopener,noreferrer');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hostname]);
+
+  // Countdown to go back to host detail page
   useEffect(() => {
     if (isCancelled || !hostname) return;
     const timer = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          history.back();
+          window.location.href = backUrl;
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [isCancelled, hostname]);
+  }, [isCancelled, hostname, backUrl]);
 
   const progress = (countdown / 5) * 100;
 
@@ -54,10 +75,18 @@ export default function Page() {
             <div className="redirect-progress-bar" style={{ width: `${progress}%` }} />
           </div>
           <div className="redirect-actions">
-            <a href={targetUrl} className="redirect-link" target="_blank" rel="noopener noreferrer">
+            <a
+              href={targetUrl}
+              className="redirect-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                try { push(['trackEvent', 'Outbound', 'Click', hostname]); } catch {}
+              }}
+            >
               <ExternalLink size={14} aria-hidden="true" /> Open Link
             </a>
-            <button className="redirect-cancel-btn" onClick={() => history.back()}>
+            <button className="redirect-cancel-btn" onClick={() => { window.location.href = backUrl; }}>
               <ArrowLeft size={14} aria-hidden="true" /> Back
             </button>
             <button className="redirect-cancel-btn" onClick={() => setIsCancelled(true)} disabled={isCancelled}>
