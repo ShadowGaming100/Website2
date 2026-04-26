@@ -30,7 +30,7 @@ export default function Page() {
 
     // Track outbound link click in Matomo
     try {
-      push(['trackEvent', 'Outbound', 'Click', hostname]);
+      push(['trackEvent', 'outlinks', 'Click', hostname]);
     } catch {
       // Matomo not loaded yet — ignore
     }
@@ -82,7 +82,7 @@ export default function Page() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => {
-                try { push(['trackEvent', 'Outbound', 'Click', hostname]); } catch {}
+                try { push(['trackEvent', 'outlinks', 'Click', hostname]); } catch {}
               }}
             >
               <ExternalLink size={14} aria-hidden="true" /> Open Link
