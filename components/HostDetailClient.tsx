@@ -5,26 +5,18 @@ import Link from '@/components/NoPrefetchLink'
 import { type Host } from '../lib/cache'
 import { slugify } from '../lib/slugify'
 import { getLanguageName } from '../lib/getLanguageName'
-import { ArrowLeft, Check, Copy, Cpu, Crosshair, ExternalLink, Gift, HardDrive, Info, Languages, Link as LinkIcon, MemoryStick, Settings, ThumbsDown, ThumbsUp } from 'lucide-react'
+import { ArrowLeft, Check, Copy, Cpu, Crosshair, ExternalLink, Gift, HardDrive, Info, Languages, Link as LinkIcon, MemoryStick, Settings, Star, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 import { showToast } from './Toast'
-
-function buildTargetUrl(raw: string): string {
-  try {
-    const urlObj = new URL(raw)
-    urlObj.searchParams.append('ref', 'freehosts.space')
-    return urlObj.toString()
-  } catch {
-    return raw + (raw.includes('?') ? '&ref=freehosts.space' : '?ref=freehosts.space')
-  }
-}
+import { useFavorites } from '../contexts/FavoritesContext'
 
 interface HostDetailClientProps { host: Host }
 
 export default function HostDetailClient({ host }: HostDetailClientProps) {
   const [showDiscordModal, setShowDiscordModal] = useState(false)
   const [copied, setCopied] = useState(false)
+  const { isFavorite, toggleFavorite } = useFavorites()
   const totalReviews = (host.approvals || 0) + (host.disapprovals || 0)
   const rating = totalReviews > 0 ? Math.round(((host.approvals || 0) / totalReviews) * 100) : 0
   const statusClass = host.status && host.status.toLowerCase() === 'online' ? 'online' : 'closed'
@@ -72,17 +64,6 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
     return Math.round(mb) + 'MB'
   }
 
-  function getLinkType(url: string): string {
-    try {
-      const u = url.toLowerCase()
-      if (u.includes('discord.gg') || u.includes('discord.com/invite')) return 'Discord'
-      if (u.includes('panel.')) return 'Panel'
-      if (u.includes('dash.') || u.includes('dashboard.')) return 'Dashboard'
-      if (u.includes('client.')) return 'Client'
-      return 'Website'
-    } catch { return 'Website' }
-  }
-
   const handleRedirect = useCallback((url: string) => {
     if (typeof window === 'undefined') return
 
@@ -120,15 +101,26 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
                 ))}
               </div>
             </div>
-            <button
-              className="copy-link-btn"
-              onClick={handleCopyLink}
-              aria-label="Copy link to this host"
-              title="Copy link"
-            >
-              {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
-              <span>{copied ? 'Copied!' : 'Copy link'}</span>
-            </button>
+            <div className="host-detail-header-actions">
+              <button
+                className={`favorite-btn icon-btn${isFavorite(host.id) ? ' active' : ''}`}
+                onClick={() => toggleFavorite(host.id)}
+                aria-pressed={isFavorite(host.id)}
+                aria-label={isFavorite(host.id) ? `Remove ${host.name} from favorites` : `Add ${host.name} to favorites`}
+                title={isFavorite(host.id) ? 'Remove from saved' : 'Save host'}
+                type="button"
+              >
+                <Star size={16} aria-hidden="true" fill={isFavorite(host.id) ? 'currentColor' : 'none'} />
+              </button>
+              <button
+                className="copy-link-btn"
+                onClick={handleCopyLink}
+                aria-label="Copy link to this host"
+                title={copied ? 'Copied!' : 'Copy link'}
+              >
+                {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
+              </button>
+            </div>
           </div>
 
           <div className="host-detail-grid">

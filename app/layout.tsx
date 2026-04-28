@@ -11,24 +11,30 @@ import SnowEffect from "../components/SnowEffect";
 import PreviewCard from "../components/PreviewCard";
 import ToastContainer from "../components/Toast";
 import BackToTop from "../components/BackToTop";
+import { ConsentProvider } from "../contexts/ConsentContext";
+import { ComparisonProvider } from "../contexts/ComparisonContext";
+import { FavoritesProvider } from "../contexts/FavoritesContext";
+import GdprConsentBanner from "../components/GdprConsentBanner";
+import ComparisonPanel from "../components/ComparisonPanel";
 import {
   BookOpen,
   ChevronDown,
   CircleHelp,
   FileText,
+  GitCompare,
   Info,
   Link as LinkIcon,
   ListChecks,
   Lock,
   Mail,
   Menu,
-  MessageCircle,
   Moon,
   Pencil,
   Plus,
   Scale,
   Server,
   Shield,
+  Star,
   Sun,
   Upload,
   Users,
@@ -202,6 +208,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700;800&family=Inter:wght@400;600;700;800&display=swap"
           rel="stylesheet"
@@ -230,6 +237,10 @@ export default function RootLayout({
           <MatomoTracker />
         </Suspense>
 
+        <ConsentProvider>
+        <ComparisonProvider>
+        <FavoritesProvider>
+
         <header className="site-header">
           <div className="wrap header-inner">
             <button
@@ -241,7 +252,7 @@ export default function RootLayout({
             </button>
 
             <Link className="logo" href="/" aria-label="FreeHosts Home">
-              <Image src="/Src/icons/icon.png" alt="FreeHosts" width={24} height={24} />
+              <Image src="/Src/icons/icon.png" alt="FreeHosts" width={24} height={24} className="logo-img" />
               FreeHosts
             </Link>
 
@@ -250,6 +261,12 @@ export default function RootLayout({
                 <Link href="/hosts" className="nav-link">
                   <Server size={14} aria-hidden="true" /> Hosts
                 </Link>
+              </div>
+              <div className="nav-item">
+                <Link href="/compare" className="nav-link"><GitCompare size={14} aria-hidden="true" /> Compare</Link>
+              </div>
+              <div className="nav-item">
+                <Link href="/saved" className="nav-link"><Star size={14} aria-hidden="true" /> Saved</Link>
               </div>
               <div className="nav-item">
                 <Link href="/#features" className="nav-link">
@@ -287,7 +304,7 @@ export default function RootLayout({
         <aside className="sidebar" id="sidebar" aria-hidden="true">
           <div className="sidebar-top">
             <Link className="logo" href="/">
-              <Image src="/Src/icons/icon.png" alt="FreeHosts" width={24} height={24} />
+              <Image src="/Src/icons/icon.png" alt="FreeHosts" width={24} height={24} className="logo-img" />
               FreeHosts
             </Link>
             <button id="sidebarClose" className="icon-btn" aria-label="Close menu">
@@ -299,6 +316,8 @@ export default function RootLayout({
             <Link href="/hosts" className="sidebar-link">
               <Server size={16} aria-hidden="true" /> Hosts
             </Link>
+            <Link href="/compare" className="sidebar-link"><GitCompare size={16} aria-hidden="true" /> Compare</Link>
+            <Link href="/saved" className="sidebar-link"><Star size={16} aria-hidden="true" /> Saved</Link>
             <Link href="/#features" className="sidebar-link">
               <ListChecks size={16} aria-hidden="true" /> Features
             </Link>
@@ -322,13 +341,16 @@ export default function RootLayout({
 
         <div className="overlay" id="overlay" tabIndex={-1} aria-hidden="true" />
 
+        <GdprConsentBanner />
+        <ComparisonPanel />
+
         {children}
 
         <footer className="site-footer">
           <div className="wrap footer-content">
             <div className="footer-section footer-brand">
               <div className="footer-logo">
-                <Image src="/Src/icons/icon.png" alt="FreeHosts" width={24} height={24} />
+                <Image src="/Src/icons/icon.png" alt="FreeHosts" width={24} height={24} className="logo-img" />
                 <span>FreeHosts</span>
               </div>
               <p className="footer-tagline">Discover free hosting that just works.</p>
@@ -433,6 +455,11 @@ export default function RootLayout({
         </footer>
 
         <div id="previewCard" className="preview-card" aria-hidden="true" />
+
+        </FavoritesProvider>
+        </ComparisonProvider>
+        </ConsentProvider>
+
         <ToastContainer />
         <BackToTop />
       </body>

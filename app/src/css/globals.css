@@ -3930,23 +3930,23 @@
 .copy-link-btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-sm) var(--space-md);
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   background: var(--glass);
   border: 1px solid var(--border);
   border-radius: 999px;
   color: var(--muted);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  white-space: nowrap;
   flex-shrink: 0;
 }
 
 .copy-link-btn:hover {
   border-color: var(--accent);
   color: var(--text);
+  background: var(--glass);
 }
 
 /* ============================================

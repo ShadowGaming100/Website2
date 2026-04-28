@@ -85,9 +85,9 @@ export default function SubmissionRulesContent() {
             <li><strong>Genuinely free plan required.</strong> Trials, time-limited offers, or plans that require payment after a period do not qualify.</li>
             <li><strong>Minimum 2 months of operation.</strong> The free service must have been available and stable for at least 2 months before submission.</li>
             <li><strong>Open registration.</strong> Signup must be publicly accessible with no invite codes, waitlists, or manual approval gates.</li>
-            <li><strong>Full specifications required.</strong> You must provide RAM, CPU (vCores), and disk space for every plan. "Unlimited" claims must be substantiated.</li>
+            <li><strong>Full specifications required.</strong> You must provide RAM, CPU (vCores), and disk space for every plan. &ldquo;Unlimited&rdquo; claims must be substantiated.</li>
             <li><strong>Separate specs per target.</strong> If your host offers different resources for different use cases (e.g. bots vs. websites), each must be listed separately.</li>
-            <li><strong>Direct plan link required.</strong> You must provide a link that directly shows the free plan — not just the homepage.</li>
+            <li><strong>Direct plan link required.</strong> You must provide a link that directly shows the free plan &mdash; not just the homepage.</li>
             <li><strong>Website or Discord required.</strong> At least one of a public website or Discord server must be provided.</li>
           </ul>
         </div>
@@ -124,7 +124,7 @@ export default function SubmissionRulesContent() {
           <ul>
             <li><strong>Public ToS required.</strong> A Terms of Service document must be publicly accessible and linked in your submission.</li>
             <li><strong>Public Privacy Policy required.</strong> A Privacy Policy must be publicly accessible and linked in your submission.</li>
-            <li><strong>Discord ToS compliance.</strong> Your service must comply with Discord's Terms of Service at all times.</li>
+            <li><strong>Discord ToS compliance.</strong> Your service must comply with Discord&apos;s Terms of Service at all times.</li>
             <li><strong>Legal compliance.</strong> Your host must comply with all applicable local and international laws, including GDPR where relevant.</li>
             <li><strong>No illegal content.</strong> Hosting of illegal content, piracy, CSAM, or any content that violates law is strictly prohibited and will result in permanent blacklisting.</li>
           </ul>
@@ -268,7 +268,7 @@ export default function SubmissionRulesContent() {
             <li><strong>Listings are reviewed periodically.</strong> Hosts that no longer meet standards will be flagged and may be removed.</li>
             <li><strong>Respond to staff requests.</strong> If our team contacts you about your listing, you must respond within a reasonable time. Ignoring staff may result in removal.</li>
             <li><strong>Update your listing when specs change.</strong> If your free plan changes significantly, you must notify us. Outdated or misleading listings will be corrected or removed.</li>
-            <li><strong>Community reports are reviewed.</strong> User reports about a host's quality or conduct are taken seriously and investigated.</li>
+            <li><strong>Community reports are reviewed.</strong> User reports about a host&apos;s quality or conduct are taken seriously and investigated.</li>
           </ul>
         </div>
       </section>

@@ -6,7 +6,10 @@ import { type Host } from '../../lib/cache';
 import Link from '@/components/NoPrefetchLink';
 import { slugify } from '../../lib/slugify';
 import { getLanguageName } from '../../lib/getLanguageName';
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, X, Shuffle, ArrowDownAZ, Cpu, MemoryStick, HardDrive, Clock } from 'lucide-react';
+import { parseCPUValue, parseMemoryToMB } from '../../lib/parseSpecs';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, X, Shuffle, ArrowDownAZ, Cpu, MemoryStick, HardDrive, Clock, GitCompare, Star } from 'lucide-react';
+import { useComparison } from '../../contexts/ComparisonContext';
+import { useFavorites } from '../../contexts/FavoritesContext';
 
 // ─── Custom Dropdown ──────────────────────────────────────────────────────────
 
@@ -139,31 +142,6 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue
 }
 
-// Helper functions - defined outside component to avoid recreation and satisfy linting
-const parseCPUValue = (cpuStr?: string): number => {
-  if (!cpuStr) return 0
-  const percentMatch = cpuStr.match(/([\d.]+)%/)
-  if (percentMatch) return parseFloat(percentMatch[1]) / 100
-  const coreMatch = cpuStr.match(/([\d.]+)\s*(vCores|cores|core)/i)
-  if (coreMatch) return parseFloat(coreMatch[1])
-  const numberMatch = cpuStr.match(/([\d.]+)/)
-  return numberMatch ? parseFloat(numberMatch[1]) : 0
-}
-
-const parseMemoryToMB = (memoryStr?: string, memoryMB?: number): number => {
-  if (memoryMB) return memoryMB
-  if (!memoryStr) return 0
-  const match = memoryStr.match(/([\d.]+)\s*(GB|MB|TB)/i)
-  if (!match) return 0
-  const value = parseFloat(match[1])
-  const unit = match[3].toUpperCase()
-  switch (unit) {
-    case 'TB': return value * 1024 * 1024
-    case 'GB': return value * 1024
-    case 'MB': return value
-    default: return value
-  }
-}
 
 export default function HostsClient({ initialHosts }: { initialHosts: Host[] }) {
   return (
@@ -495,14 +473,17 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
           {/* Search Section */}
           <div className="search-section">
             <div className="search-grid">
-              <input
-                type="text"
-                id="search"
-                className={`search-input${isSearching ? ' search-input--loading' : ''}`}
-                placeholder="🔍 Search for a host..."
-                value={currentFilters.search}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
-              />
+              <div className="search-input-wrapper">
+                <Search size={16} aria-hidden="true" className="search-icon" />
+                <input
+                  type="text"
+                  id="search"
+                  className={`search-input${isSearching ? ' search-input--loading' : ''}`}
+                  placeholder="Search for a host..."
+                  value={currentFilters.search}
+                  onChange={(e) => handleFilterChange('search', e.target.value)}
+                />
+              </div>
               <CustomDropdown
                 id="locale"
                 value={currentFilters.locale}
@@ -663,6 +644,8 @@ interface HostCardProps {
 }
 
 function HostCard({ host, isNew, formatSize }: HostCardProps) {
+  const { isSelected, addHost, removeHost, isFull } = useComparison();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const ramDisplay = host.ramMB ? formatSize(host.ramMB) : host.ram || 'Unknown'
   const storageDisplay = host.diskMB ? formatSize(host.diskMB) : host.disk || 'Unknown'
   const totalReviews = (host.approvals || 0) + (host.disapprovals || 0)
@@ -742,6 +725,25 @@ function HostCard({ host, isNew, formatSize }: HostCardProps) {
           </div>
         </div>
         <div className="host-card-actions">
+          <button
+            className={`compare-btn icon-btn${isSelected(host.id) ? ' active' : ''}`}
+            onClick={() => isSelected(host.id) ? removeHost(host.id) : addHost(host)}
+            disabled={isFull && !isSelected(host.id)}
+            aria-pressed={isSelected(host.id)}
+            aria-label={isSelected(host.id) ? `Remove ${host.name} from comparison` : `Add ${host.name} to comparison`}
+            type="button"
+          >
+            <GitCompare size={14} aria-hidden="true" />
+          </button>
+          <button
+            className={`favorite-btn icon-btn${isFavorite(host.id) ? ' active' : ''}`}
+            onClick={() => toggleFavorite(host.id)}
+            aria-pressed={isFavorite(host.id)}
+            aria-label={isFavorite(host.id) ? `Remove ${host.name} from favorites` : `Add ${host.name} to favorites`}
+            type="button"
+          >
+            <Star size={14} aria-hidden="true" fill={isFavorite(host.id) ? 'currentColor' : 'none'} />
+          </button>
           <Link href={`/hosts/${slugify(host.name)}`} className="view-details-btn">
             View Details
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>

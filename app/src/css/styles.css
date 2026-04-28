@@ -4070,3 +4070,102 @@ html[data-theme=light] .rating-section {
         gap: var(--space-md);
     }
 }
+
+/* ─── Logo Image ───────────────────────────────────────────────────────────── */
+.logo-img {
+  border-radius: var(--border-radius-sm);
+}
+
+/* ─── GDPR Consent Banner ──────────────────────────────────────────────────── */
+.gdpr-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 300;
+  background: var(--card);
+  border-top: 2px solid var(--border);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.gdpr-banner-text {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--muted);
+  margin: 0;
+  min-width: 200px;
+}
+
+.gdpr-banner-link {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.gdpr-banner-link:hover {
+  color: var(--accent-2);
+}
+
+.gdpr-banner-actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.gdpr-accept-btn {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+  border: none;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 999px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.gdpr-accept-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.gdpr-decline-btn {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 999px;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, transform 0.2s;
+}
+
+.gdpr-decline-btn:hover {
+  border-color: var(--text);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 600px) {
+  .gdpr-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--space-md);
+  }
+
+  .gdpr-banner-actions {
+    width: 100%;
+  }
+
+  .gdpr-accept-btn,
+  .gdpr-decline-btn {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+}

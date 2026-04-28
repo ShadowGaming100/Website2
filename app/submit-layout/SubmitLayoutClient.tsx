@@ -4,7 +4,6 @@ import { FormEvent, useMemo, useState, useEffect } from "react";
 import Image from "next/image";
 import {
   Boxes,
-  CheckSquare,
   Circle,
   CircleAlert,
   CircleCheck,
@@ -13,7 +12,6 @@ import {
   FileText,
   Info,
   Link as LinkIcon,
-  MessageCircle,
   Pencil,
   Pin,
   Plus,
@@ -412,6 +410,7 @@ function DiscordPreview({ form, planSpecs, otherSpec, otherPlans, missingFields,
     function fmt() {
       return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTime(fmt());
     const id = setInterval(() => setTime(fmt()), 1000);
     return () => clearInterval(id);

@@ -14,7 +14,6 @@ import {
   HandHeart,
   Info,
   ListChecks,
-  MessageCircle,
   Rocket,
   Sparkles,
   Users,

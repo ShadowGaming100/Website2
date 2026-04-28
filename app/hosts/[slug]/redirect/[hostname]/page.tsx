@@ -4,7 +4,7 @@ export const runtime = 'edge';
 
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, ArrowRight, CheckCircle, ExternalLink, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ExternalLink, X } from 'lucide-react';
 import { push } from '@socialgouv/matomo-next';
 
 function buildTargetUrl(hostname: string): string {
@@ -98,7 +98,7 @@ export default function Page() {
                 <X size={14} aria-hidden="true" /> Redirect Cancelled
               </div>
               <p style={{ color: 'var(--muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>
-                The automatic redirect has been stopped. You can click "Open Link" to proceed manually.
+                The automatic redirect has been stopped. You can click &ldquo;Open Link&rdquo; to proceed manually.
               </p>
             </div>
           )}
