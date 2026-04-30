@@ -2,59 +2,65 @@
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
-  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400
-
-
-# =========================
-# STATIC / LEGAL / INFO PAGES
-# =========================
-
-/about
-  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800
-
-/faq
-  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800
-
-/tos
-  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800
-
-/privacy-policy
-  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800
-
-/submission-rules
-  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800
-
-/server-rules
-  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800
-
-/staff
-  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800
-
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
 
 # =========================
-# LISTING / DIRECTORY PAGES
+# NEXT.JS HASHED ASSETS (immutable — filename changes on every build)
 # =========================
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
 
-/hosts/*
-  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400
-
-/other-free-hosts
-  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400
-
-# =========================
-# SUBMISSION PAGES
-# =========================
-
-/submit-host
-  Cache-Control: public, max-age=86400, s-maxage=259200, stale-while-revalidate=604800
-
-/submit-layout
-  Cache-Control: public, max-age=86400, s-maxage=259200, stale-while-revalidate=604800
-
+# Next.js image optimisation endpoint — vary on Accept for format negotiation
+/_next/image*
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800
+  Vary: Accept
 
 # =========================
 # STATIC ASSETS (PUBLIC FOLDER)
 # =========================
-
 /public/*
   Cache-Control: public, max-age=31536000, immutable
+
+# =========================
+# HOMEPAGE
+# =========================
+/
+  Cache-Control: max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+
+# =========================
+# STATIC / LEGAL / INFO PAGES
+# =========================
+/about
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+/faq
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+/tos
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+/privacy-policy
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+/submission-rules
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+/server-rules
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+/staff
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+
+# =========================
+# SUBMISSION PAGES
+# =========================
+/submit-host
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+/submit-layout
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+/other-free-hosts
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+
+# =========================
+# LISTING / DIRECTORY PAGES
+# =========================
+/other-free-hosts
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
+/hosts
+  Cache-Control: public, max-age=1800, s-maxage=43200, stale-while-revalidate=604800
+/hosts/*
+  Cache-Control: public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000
