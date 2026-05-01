@@ -1458,11 +1458,13 @@
     margin-bottom: var(--space-xl);
     box-shadow: var(--shadow-md);
     border: 2px solid var(--border);
-    animation: .6s ease-out slideInDown
+    animation: .6s ease-out slideInDown;
+    overflow: hidden; /* Prevent overflow */
 }
 
 .host-detail-title-section {
-    width: 100%
+    width: 100%;
+    min-width: 0; /* Allow flex shrinking */
 }
 
 .host-detail-title {
@@ -1472,12 +1474,15 @@
     margin-bottom: var(--space-md);
     display: flex;
     align-items: center;
-    gap: var(--space-md)
+    gap: var(--space-md);
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    word-break: break-word; /* Prevent long words from overflowing */
 }
 
 .host-detail-badges {
     display: flex;
     gap: var(--space-sm);
+    flex-wrap: wrap; /* Allow badges to wrap */
     flex-wrap: wrap;
     align-items: center
 }
@@ -1954,11 +1959,18 @@
 
     .host-detail-header,
     .info-section {
-        padding: var(--space-lg)
+        padding: var(--space-md);
+        overflow: visible; /* Allow content to be visible */
     }
 
     .host-detail-title {
-        font-size: var(--font-size-xl)
+        font-size: var(--font-size-lg);
+        gap: var(--space-sm);
+        word-break: break-word;
+    }
+    
+    .host-detail-badges {
+        width: 100%;
     }
 
     .specs-grid {
@@ -1978,6 +1990,28 @@
         flex-direction: column;
         gap: var(--space-md)
     }
+}
+
+/* Extra small screens - prevent content cutoff */
+@media (max-width: 480px) {
+    .host-detail-header {
+        padding: var(--space-sm);
+    }
+    
+    .host-detail-title {
+        font-size: var(--font-size-base);
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .host-detail-badges {
+        gap: var(--space-xs);
+    }
+    
+    .info-section {
+        padding: var(--space-sm);
+    }
+}
 
     .not-found-title {
         font-size: var(--font-size-2xl)
@@ -1987,7 +2021,6 @@
         width: 100%;
         justify-content: center
     }
-}
 
 
 /* ============================================
@@ -2337,7 +2370,7 @@
 .host-card-actions {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
 }
 
 /* ─── Comparison Panel (bottom tray) ───────────────────────────────────────── */

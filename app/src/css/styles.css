@@ -193,6 +193,7 @@ main {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(18px) saturate(1.15);
     -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    overflow: hidden; /* Prevent content from overflowing */
 }
 
 /* Fallback for browsers without backdrop-filter support */
@@ -237,6 +238,7 @@ main {
 .nav {
     flex-shrink: 1;
     min-width: 0;
+    overflow: hidden; /* Prevent nav from overflowing */
 }
 
 /* Desktop Navigation Styles */
@@ -3321,9 +3323,17 @@ html[data-theme=light] .rating-section {
 
     .header-inner {
         flex-wrap: nowrap;
-        gap: var(--space-sm);
-        padding: .65rem .75rem;
-        min-height: 64px
+        gap: var(--space-xs);
+        padding: .5rem .65rem;
+        min-height: 60px;
+        overflow-x: auto; /* Allow horizontal scroll if needed */
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Hide scrollbar */
+    }
+    
+    .header-inner::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for Chrome/Safari */
     }
 
     .nav {
