@@ -67,16 +67,33 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
   const handleRedirect = useCallback((url: string) => {
     if (typeof window === 'undefined') return
 
-    // Extract hostname for the redirect URL
-    let hostname: string
+    // Extract hostname (and path for Discord invites) for the redirect URL
+    let redirectPath: string
     try {
-      hostname = new URL(url).hostname
+      const urlObj = new URL(url)
+      // For Discord invites, include the invite code in the path
+      if (urlObj.hostname === 'discord.gg' || urlObj.hostname === 'discord.com') {
+        // discord.gg/CODE or discord.com/invite/CODE
+        redirectPath = urlObj.hostname + urlObj.pathname
+      } else {
+        // For other URLs, just use hostname
+        redirectPath = urlObj.hostname
+      }
     } catch {
-      hostname = url.replace(/^https?:\/\//, '').split('/')[0]
+      // Fallback for malformed URLs
+      const cleaned = url.replace(/^https?:\/\//, '')
+      // Check if it's a Discord link
+      if (cleaned.startsWith('discord.gg/') || cleaned.includes('discord.com/invite/')) {
+        // Keep the full path for Discord
+        redirectPath = cleaned.split('?')[0] // Remove query params
+      } else {
+        // For other URLs, just use hostname
+        redirectPath = cleaned.split('/')[0]
+      }
     }
 
     // Open redirect page in a new tab
-    window.open(`/hosts/${slugify(host.name)}/redirect/${hostname}`, '_blank', 'noopener,noreferrer')
+    window.open(`/hosts/${slugify(host.name)}/redirect/${redirectPath}`, '_blank', 'noopener,noreferrer')
   }, [host.name])
 
   return (

@@ -7,15 +7,25 @@ import { useParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, ExternalLink, X } from 'lucide-react';
 import { push } from '@socialgouv/matomo-next';
 
-function buildTargetUrl(hostname: string): string {
-  return `https://${hostname}?ref=freehosts.space`;
+function buildTargetUrl(hostnameOrPath: string): string {
+  // If it already starts with http/https, return as-is with ref param
+  if (hostnameOrPath.startsWith('http://') || hostnameOrPath.startsWith('https://')) {
+    const url = new URL(hostnameOrPath)
+    url.searchParams.set('ref', 'freehosts.space')
+    return url.toString()
+  }
+  
+  // Otherwise, add https:// prefix and ref param
+  const hasQueryParams = hostnameOrPath.includes('?')
+  const separator = hasQueryParams ? '&' : '?'
+  return `https://${hostnameOrPath}${separator}ref=freehosts.space`
 }
 
 export default function Page() {
   const params = useParams() || {};
-  const hostname = (params.hostname as string) ?? '';
+  const hostnameOrPath = (params.hostname as string) ?? '';
   const slug = (params.slug as string) ?? '';
-  const targetUrl = hostname ? buildTargetUrl(hostname) : '#';
+  const targetUrl = hostnameOrPath ? buildTargetUrl(hostnameOrPath) : '#';
   const backUrl = slug ? `/hosts/${slug}` : '/hosts';
 
   const [countdown, setCountdown] = useState(5);
@@ -25,7 +35,7 @@ export default function Page() {
 
   // Track the external link click once
   useEffect(() => {
-    if (!hostname || opened) return;
+    if (!hostnameOrPath || opened) return;
     setOpened(true);
 
     // Track outbound link click in Matomo
@@ -35,11 +45,11 @@ export default function Page() {
       // Matomo not loaded yet — ignore
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hostname]);
+  }, [hostnameOrPath]);
 
   // Countdown to go to external link
   useEffect(() => {
-    if (isCancelled || !hostname) return;
+    if (isCancelled || !hostnameOrPath) return;
     const timer = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
@@ -51,7 +61,7 @@ export default function Page() {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [isCancelled, hostname, targetUrl]);
+  }, [isCancelled, hostnameOrPath, targetUrl]);
 
   const progress = (countdown / 5) * 100;
 
@@ -64,7 +74,7 @@ export default function Page() {
           </div>
           <h2 className="redirect-title">Redirecting...</h2>
           <p className="redirect-text">You are being redirected to</p>
-          <div className="redirect-url">{hostname}</div>
+          <div className="redirect-url">{hostnameOrPath}</div>
           <div className="redirect-timer">
             <span className="redirect-timer-number" style={{ opacity: isCancelled ? 0.6 : 1 }}>
               {isCancelled ? '✓ Stopped' : countdown}

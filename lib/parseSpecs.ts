@@ -5,6 +5,7 @@
 
 /**
  * Parses a CPU spec string into a comparable numeric value.
+ * - "Unlimited" or "Infinity" → Infinity (sorts to top)
  * - Percentage strings (e.g. "50%") → fraction (0.5)
  * - Core strings (e.g. "2 vCores") → core count (2)
  * - Plain numbers → that number
@@ -12,6 +13,10 @@
  */
 export const parseCPUValue = (cpuStr?: string): number => {
   if (!cpuStr) return 0
+  const normalized = cpuStr.toLowerCase()
+  if (normalized.includes('unlimited') || normalized.includes('infinity') || normalized.includes('∞')) {
+    return Infinity
+  }
   const percentMatch = cpuStr.match(/([\d.]+)%/)
   if (percentMatch) return parseFloat(percentMatch[1]) / 100
   const coreMatch = cpuStr.match(/([\d.]+)\s*(vCores|cores|core)/i)
@@ -22,6 +27,7 @@ export const parseCPUValue = (cpuStr?: string): number => {
 
 /**
  * Converts a memory spec string (or pre-parsed MB value) to megabytes.
+ * - "Unlimited" or "Infinity" → Infinity (sorts to top)
  * - If `memoryMB` is provided it takes precedence.
  * - Recognises TB / GB / MB suffixes (case-insensitive).
  * - Unrecognised / undefined → 0
@@ -29,6 +35,10 @@ export const parseCPUValue = (cpuStr?: string): number => {
 export const parseMemoryToMB = (memoryStr?: string, memoryMB?: number): number => {
   if (memoryMB) return memoryMB
   if (!memoryStr) return 0
+  const normalized = memoryStr.toLowerCase()
+  if (normalized.includes('unlimited') || normalized.includes('infinity') || normalized.includes('∞')) {
+    return Infinity
+  }
   const match = memoryStr.match(/([\d.]+)\s*(GB|MB|TB)/i)
   if (!match) return 0
   const value = parseFloat(match[1])

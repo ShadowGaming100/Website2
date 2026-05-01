@@ -7,7 +7,7 @@ import Link from '@/components/NoPrefetchLink';
 import { slugify } from '../../lib/slugify';
 import { getLanguageName } from '../../lib/getLanguageName';
 import { parseCPUValue, parseMemoryToMB } from '../../lib/parseSpecs';
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, X, Shuffle, ArrowDownAZ, Cpu, MemoryStick, HardDrive, Clock, GitCompare, Star } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, X, Shuffle, ArrowDownAZ, Cpu, MemoryStick, HardDrive, Clock, GitCompare, Star, ThumbsUp } from 'lucide-react';
 import { useComparison } from '../../contexts/ComparisonContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
 
@@ -316,6 +316,16 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
           return parseMemoryToMB(b.ram, b.ramMB) - parseMemoryToMB(a.ram, a.ramMB)
         case 'storage':
           return parseMemoryToMB(b.disk, b.diskMB) - parseMemoryToMB(a.disk, a.diskMB)
+        case 'reviews': {
+          // Sort by approval percentage (most positive reviews first)
+          const totalA = (a.approvals || 0) + (a.disapprovals || 0)
+          const totalB = (b.approvals || 0) + (b.disapprovals || 0)
+          const ratingA = totalA > 0 ? (a.approvals || 0) / totalA : 0
+          const ratingB = totalB > 0 ? (b.approvals || 0) / totalB : 0
+          // If ratings are equal, sort by total review count
+          if (ratingB === ratingA) return totalB - totalA
+          return ratingB - ratingA
+        }
         default:
           return (randomOrder.get(a.id) ?? 0) - (randomOrder.get(b.id) ?? 0)
       }
@@ -512,7 +522,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
             <div className="sort-left">
               <div className="sort-label">Sort by:</div>
               <div className="sort-buttons">
-                {['random', 'name', 'cpu', 'ram', 'storage', 'recent'].map(sortType => (
+                {['random', 'name', 'cpu', 'ram', 'storage', 'reviews', 'recent'].map(sortType => (
                   <button
                     key={sortType}
                     className={`sort-btn ${currentFilters.sort === sortType ? 'active' : ''}`}
@@ -762,6 +772,7 @@ function getSortIcon(sortType: string): React.ReactNode {
     case 'cpu': return <Cpu size={13} aria-hidden="true" />
     case 'ram': return <MemoryStick size={13} aria-hidden="true" />
     case 'storage': return <HardDrive size={13} aria-hidden="true" />
+    case 'reviews': return <ThumbsUp size={13} aria-hidden="true" />
     case 'recent': return <Clock size={13} aria-hidden="true" />
     default: return <Shuffle size={13} aria-hidden="true" />
   }
@@ -774,6 +785,7 @@ function getSortLabel(sortType: string): string {
     case 'cpu': return 'Most CPU'
     case 'ram': return 'Most Memory'
     case 'storage': return 'Most Storage'
+    case 'reviews': return 'Most Positive Reviews'
     case 'recent': return 'Recently Added'
     default: return 'Random'
   }
