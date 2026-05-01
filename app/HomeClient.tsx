@@ -27,43 +27,40 @@ const inviteUrl = `https://discord.gg/${inviteCode}`;
 const commands = [
   {
     cmd: "npm start",
-    output: `<span class="success">✓</span> Server initialized successfully
-
-<span class="success">✓</span> Connected to FreeHosts Community
-
-<span class="terminal-status">Status: <span class="status-online">Online</span><span class="status-cursor">▮</span></span>`,
+    output: [
+      { type: "success", text: "Server initialized successfully" },
+      { type: "success", text: "Connected to FreeHosts Community" },
+      { type: "status", text: "Status: ", status: "Online" },
+    ],
   },
   {
     cmd: "freehosts --info",
-    output: `<span class="info">╔══════════════════════════════╗
-║     FreeHosts Directory      ║
-╚══════════════════════════════╝</span>
-
-<span class="success">✓</span> Community-curated hosting lists
-<span class="success">✓</span> 100+ verified free hosting options
-<span class="success">✓</span> Real user reviews & ratings
-
-<span class="terminal-status">Status: <span class="status-online">Active</span><span class="status-cursor">▮</span></span>`,
+    output: [
+      { type: "info-block", text: "╔══════════════════════════════╗\n║     FreeHosts Directory      ║\n╚══════════════════════════════╝" },
+      { type: "success", text: "Community-curated hosting lists" },
+      { type: "success", text: "100+ verified free hosting options" },
+      { type: "success", text: "Real user reviews & ratings" },
+      { type: "status", text: "Status: ", status: "Active" },
+    ],
   },
   {
     cmd: "freehosts search --category bots",
-    output: `<span class="info">Searching directory...</span>
-
-<span class="success">✓</span> Found 30+ Discord bot hosting providers
-<span class="success">✓</span> Found 15+ Telegram bot hosts
-<span class="success">✓</span> All entries community-verified
-
-<span class="terminal-status">Status: <span class="status-online">Ready</span><span class="status-cursor">▮</span></span>`,
+    output: [
+      { type: "info", text: "Searching directory..." },
+      { type: "success", text: "Found 30+ Discord bot hosting providers" },
+      { type: "success", text: "Found 15+ Telegram bot hosts" },
+      { type: "success", text: "All entries community-verified" },
+      { type: "status", text: "Status: ", status: "Ready" },
+    ],
   },
   {
     cmd: "community --stats",
-    output: `<span class="success">✓</span> 400+ active members joined
-
-<span class="success">✓</span> 100+ hosting reviews published
-
-<span class="success">✓</span> Platform updates daily
-
-<span class="terminal-status">Status: <span class="status-online">Growing</span><span class="status-cursor">▮</span></span>`,
+    output: [
+      { type: "success", text: "400+ active members joined" },
+      { type: "success", text: "100+ hosting reviews published" },
+      { type: "success", text: "Platform updates daily" },
+      { type: "status", text: "Status: ", status: "Growing" },
+    ],
   },
 ];
 
@@ -80,6 +77,8 @@ const choiceChecklist = [
   "Read community reviews to spot hidden limits and real-world reliability.",
   "Pick a host with an upgrade path if your project may grow quickly.",
 ];
+
+type TerminalLine = { type: string; text: string; status?: string };
 
 type DiscordState = {
   name: string;
@@ -99,7 +98,7 @@ function fetchWithTimeout(url: string, timeout = 7000) {
 
 export default function HomeClient() {
   const [terminalCommand, setTerminalCommand] = useState("");
-  const [terminalOutput, setTerminalOutput] = useState("");
+  const [terminalOutput, setTerminalOutput] = useState<TerminalLine[]>([]);
   const [typedText, setTypedText] = useState("");
   const [discord, setDiscord] = useState<DiscordState>({
     name: "Discord",
@@ -164,7 +163,7 @@ export default function HomeClient() {
     const runCommand = async () => {
       while (!cancelled) {
         const command = commands[currentIndex];
-        setTerminalOutput("");
+        setTerminalOutput([]);
         await typeText(command.cmd, 60);
         await sleep(500);
         if (cancelled) return;
@@ -330,8 +329,15 @@ export default function HomeClient() {
                 <div
                   className="terminal-output"
                   id="terminalOutput"
-                  dangerouslySetInnerHTML={{ __html: terminalOutput }}
-                />
+                >
+                  {terminalOutput.map((line, i) => {
+                    if (line.type === "success") return <div key={i}><span className="success">✓</span> {line.text}</div>;
+                    if (line.type === "info") return <div key={i}><span className="info">{line.text}</span></div>;
+                    if (line.type === "info-block") return <div key={i}><span className="info" style={{ whiteSpace: "pre" }}>{line.text}</span></div>;
+                    if (line.type === "status") return <div key={i} className="terminal-status">{line.text}<span className="status-online">{line.status}</span><span className="status-cursor">▮</span></div>;
+                    return <div key={i}>{line.text}</div>;
+                  })}
+                </div>
               </div>
             </div>
           </div>

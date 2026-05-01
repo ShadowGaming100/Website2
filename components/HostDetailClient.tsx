@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import Link from '@/components/NoPrefetchLink'
 import { type Host } from '../lib/cache'
 import { slugify } from '../lib/slugify'
@@ -17,17 +17,6 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
   const [showDiscordModal, setShowDiscordModal] = useState(false)
   const [copied, setCopied] = useState(false)
   const { isFavorite, toggleFavorite } = useFavorites()
-
-  // Check for invalid redirect error via cookie (avoids reflected URL param attacks)
-  useEffect(() => {
-    const match = document.cookie.split('; ').find(r => r.startsWith('fh_redirect_error='));
-    if (match) {
-      // Clear the cookie immediately
-      document.cookie = 'fh_redirect_error=; Max-Age=0; Path=' + window.location.pathname + '; SameSite=Strict';
-      showToast('Invalid redirect — that link is not associated with this host.', 'error');
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
   const totalReviews = (host.approvals || 0) + (host.disapprovals || 0)
   const rating = totalReviews > 0 ? Math.round(((host.approvals || 0) / totalReviews) * 100) : 0
   const statusClass = host.status && host.status.toLowerCase() === 'online' ? 'online' : 'closed'
@@ -43,11 +32,6 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
       showToast('Failed to copy link', 'error')
     }
   }, [])
-
-  function escapeHtml(text: string): string {
-    if (typeof text !== 'string') return ''
-    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
-  }
 
   function formatInfoLines(text?: string): React.ReactNode {
     if (!text) return null
@@ -85,33 +69,35 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
   const handleRedirect = useCallback((url: string) => {
     if (typeof window === 'undefined') return
 
-    // Extract hostname (and path for Discord invites) for the redirect URL
+    // Normalise the URL — add scheme if missing so new URL() can parse it
+    const normalised = url.startsWith('http://') || url.startsWith('https://')
+      ? url
+      : `https://${url}`
+
     let redirectPath: string
     try {
-      const urlObj = new URL(url)
-      // For Discord invites, include the invite code in the path
-      if (urlObj.hostname === 'discord.gg' || urlObj.hostname === 'discord.com') {
-        // discord.gg/CODE or discord.com/invite/CODE
-        redirectPath = urlObj.hostname + urlObj.pathname
-      } else {
-        // For other URLs, just use hostname
-        redirectPath = urlObj.hostname
-      }
+      const urlObj = new URL(normalised)
+      // Build path as: hostname + pathname + search (query string)
+      // We keep the full path so the server can validate the domain and
+      // reconstruct the correct target URL including query params.
+      const pathAndQuery = urlObj.pathname !== '/'
+        ? urlObj.pathname + urlObj.search
+        : urlObj.search
+      redirectPath = urlObj.hostname + pathAndQuery
     } catch {
-      // Fallback for malformed URLs
-      const cleaned = url.replace(/^https?:\/\//, '')
-      // Check if it's a Discord link
-      if (cleaned.startsWith('discord.gg/') || cleaned.includes('discord.com/invite/')) {
-        // Keep the full path for Discord
-        redirectPath = cleaned.split('?')[0] // Remove query params
-      } else {
-        // For other URLs, just use hostname
-        redirectPath = cleaned.split('/')[0]
-      }
+      // Truly malformed URL — strip scheme and use as-is
+      redirectPath = url.replace(/^https?:\/\//, '')
     }
 
-    // Open redirect page in a new tab
-    window.open(`/hosts/${slugify(host.name)}/redirect/${redirectPath}`, '_blank', 'noopener,noreferrer')
+    // Each segment of the path must be individually encoded so that special
+    // characters like ?, &, =, # don't get interpreted as URL syntax by the
+    // browser or Next.js router before the server receives them.
+    const encodedPath = redirectPath
+      .split('/')
+      .map(segment => encodeURIComponent(segment))
+      .join('/')
+
+    window.open(`/hosts/${slugify(host.name)}/redirect/${encodedPath}`, '_blank', 'noopener,noreferrer')
   }, [host.name])
 
   return (

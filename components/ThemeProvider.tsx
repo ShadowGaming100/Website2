@@ -21,7 +21,8 @@ function setTheme(theme: string) {
     localStorage.setItem("fh_theme", theme);
     const date = new Date();
     date.setTime(date.getTime() + 365 * 24 * 60 * 60 * 1000);
-    document.cookie = `fh_theme=${theme};expires=${date.toUTCString()};path=/;SameSite=Lax`;
+    const secure = location.protocol === "https:" ? ";Secure" : "";
+    document.cookie = `fh_theme=${theme};expires=${date.toUTCString()};path=/;SameSite=Lax${secure}`;
   } catch {
     // storage unavailable
   }

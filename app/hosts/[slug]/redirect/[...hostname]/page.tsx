@@ -1,48 +1,75 @@
 export const runtime = 'edge';
 
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { fetchHostBySlug } from '../../../../../lib/cache';
 import RedirectClient from './RedirectClient';
 
 function extractDomain(urlOrPath: string): string {
   try {
-    // If it's a full URL, parse it
-    if (urlOrPath.startsWith('http://') || urlOrPath.startsWith('https://')) {
-      const url = new URL(urlOrPath);
-      return url.hostname.toLowerCase();
-    }
-    
-    // Otherwise, extract the domain from the path (first segment)
-    const firstSegment = urlOrPath.split('/')[0].split('?')[0];
-    return firstSegment.toLowerCase();
+    // Decode any percent-encoding first so bypass attempts like
+    // evil%2ecom, evil%40discord.gg, or discord.gg%2F@evil.com are normalised
+    // before we inspect the value.
+    const decoded = decodeURIComponent(urlOrPath);
+
+    // Always parse through the URL constructor for consistent, spec-compliant
+    // hostname extraction — add a scheme if one is missing.
+    const withScheme =
+      decoded.startsWith('http://') || decoded.startsWith('https://')
+        ? decoded
+        : `https://${decoded}`;
+
+    const url = new URL(withScheme);
+
+    // url.hostname strips port, credentials (@), and path — exactly what we want.
+    // Convert to ASCII (Punycode) to block IDN homograph attacks where a
+    // visually identical Unicode character is used instead of the ASCII one.
+    // e.g. "dіscord.gg" (Cyrillic і) must not match "discord.gg"
+    const ascii = url.hostname.toLowerCase();
+
+    // Reject if the hostname contains non-ASCII characters after normalisation
+    // (means it's an IDN that wasn't punycode-encoded — treat as invalid)
+    if (/[^\x00-\x7F]/.test(ascii)) return '';
+
+    return ascii;
   } catch {
+    // URL constructor threw — malformed input, reject it
     return '';
   }
 }
 
 function isValidRedirect(hostnameOrPath: string, allowedLinks: string[]): boolean {
   const targetDomain = extractDomain(hostnameOrPath);
-  
+
   if (!targetDomain) return false;
-  
+
   // Extract domains from all allowed links — exact match only
   const allowedDomains = allowedLinks.map(link => extractDomain(link)).filter(Boolean);
-  
+
   return allowedDomains.some(allowed => targetDomain === allowed);
 }
 
 function buildTargetUrl(hostnameSegments: string[]): string {
-  const hostnameOrPath = hostnameSegments.join('/');
-  
-  if (hostnameOrPath.startsWith('http://') || hostnameOrPath.startsWith('https://')) {
-    const url = new URL(hostnameOrPath);
+  // Segments from Next.js are already decoded by the router.
+  // Re-join with '/' to reconstruct the full path including any
+  // query string that was encoded into the last segment by the client.
+  const hostnameOrPath = hostnameSegments
+    .map(s => decodeURIComponent(s))
+    .join('/');
+
+  try {
+    const withScheme =
+      hostnameOrPath.startsWith('http://') || hostnameOrPath.startsWith('https://')
+        ? hostnameOrPath
+        : `https://${hostnameOrPath}`;
+
+    const url = new URL(withScheme);
     url.searchParams.set('ref', 'freehosts.space');
     return url.toString();
+  } catch {
+    // Malformed URL — should never reach here since isValidRedirect already
+    // validated it, but fall back to a safe no-op
+    return '#';
   }
-  
-  const hasQueryParams = hostnameOrPath.includes('?');
-  const separator = hasQueryParams ? '&' : '?';
-  return `https://${hostnameOrPath}${separator}ref=freehosts.space`;
 }
 
 type Props = { params: Promise<{ slug: string; hostname: string[] }> };
@@ -61,25 +88,26 @@ export default async function Page({ params }: Props) {
     notFound();
   }
   
-  const hostnameOrPath = hostnameSegments.join('/');
-  
-  // Validate that the redirect URL is in the host's allowed links
-  if (!isValidRedirect(hostnameOrPath, host.links)) {
-    // Use a cookie-based flash message instead of a URL param to avoid
-    // reflected parameter attacks (attacker crafting ?error= on any page)
-    const { cookies } = await import('next/headers');
-    const cookieStore = await cookies();
-    cookieStore.set('fh_redirect_error', '1', {
-      path: `/hosts/${slug}`,
-      maxAge: 10,
-      httpOnly: false, // needs to be readable by client JS
-      sameSite: 'strict',
-    });
-    redirect(`/hosts/${slug}`);
-  }
-  
-  const targetUrl = buildTargetUrl(hostnameSegments);
+  const hostnameOrPath = hostnameSegments.map(s => decodeURIComponent(s)).join('/');
   const backUrl = `/hosts/${slug}`;
-  
+
+  // Validate that the redirect URL is in the host's allowed links
+  const valid = isValidRedirect(hostnameOrPath, host.links);
+
+  if (!valid) {
+    // Show the invalid redirect warning page — do NOT redirect away,
+    // so the user can see what URL was attempted and understand the risk.
+    return (
+      <RedirectClient
+        targetUrl=""
+        hostnameOrPath={hostnameOrPath}
+        backUrl={backUrl}
+        invalid
+      />
+    );
+  }
+
+  const targetUrl = buildTargetUrl(hostnameSegments);
+
   return <RedirectClient targetUrl={targetUrl} hostnameOrPath={hostnameOrPath} backUrl={backUrl} />;
 }

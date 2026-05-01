@@ -2,12 +2,6 @@
 
 import { useEffect } from "react";
 
-function escapeHtml(text: string): string {
-  return String(text).replace(/[&<>"']/g, (m) => {
-    return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" } as Record<string, string>)[m];
-  });
-}
-
 export default function PreviewCard() {
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -21,19 +15,76 @@ export default function PreviewCard() {
 
         const title = link.getAttribute("data-title") || link.textContent || "";
         const desc = link.getAttribute("data-desc") || "";
-        const image = link.getAttribute("data-image") || "";
+        const rawImage = link.getAttribute("data-image") || "";
         const href = link.href;
 
-        card.innerHTML = `
-          ${image ? `<div class="img" style="background-image:url(${escapeHtml(image)})"></div>` : ""}
-          <div class="meta">
-            <div class="title">${escapeHtml(title)}</div>
-            <div class="desc">${escapeHtml(desc)}</div>
-            <div style="margin-top:10px">
-              <a class="btn primary" href="${escapeHtml(href)}" target="_blank">Open</a>
-              <button id="closePreview" class="btn ghost">Close</button>
-            </div>
-          </div>`;
+        // Validate href — only allow http/https to prevent javascript: URLs
+        let safeHref = "#";
+        try {
+          const parsed = new URL(href);
+          if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+            safeHref = href;
+          }
+        } catch {
+          // malformed URL — keep "#"
+        }
+
+        // Build DOM nodes safely instead of using innerHTML
+        card.textContent = "";
+
+        if (rawImage) {
+          // Validate image URL — only allow http/https
+          let safeImage = "";
+          try {
+            const parsed = new URL(rawImage);
+            if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+              safeImage = rawImage;
+            }
+          } catch {
+            // invalid image URL — skip
+          }
+
+          if (safeImage) {
+            const imgDiv = document.createElement("div");
+            imgDiv.className = "img";
+            imgDiv.style.backgroundImage = `url(${CSS.escape(safeImage)})`;
+            card.appendChild(imgDiv);
+          }
+        }
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+
+        const titleEl = document.createElement("div");
+        titleEl.className = "title";
+        titleEl.textContent = title;
+
+        const descEl = document.createElement("div");
+        descEl.className = "desc";
+        descEl.textContent = desc;
+
+        const actions = document.createElement("div");
+        actions.style.marginTop = "10px";
+
+        const openBtn = document.createElement("a");
+        openBtn.className = "btn primary";
+        openBtn.href = safeHref;
+        openBtn.target = "_blank";
+        openBtn.rel = "noopener noreferrer";
+        openBtn.textContent = "Open";
+
+        const closeBtn = document.createElement("button");
+        closeBtn.id = "closePreview";
+        closeBtn.className = "btn ghost";
+        closeBtn.textContent = "Close";
+
+        actions.appendChild(openBtn);
+        actions.appendChild(closeBtn);
+        meta.appendChild(titleEl);
+        meta.appendChild(descEl);
+        meta.appendChild(actions);
+        card.appendChild(meta);
+
         card.style.display = "block";
         return;
       }
