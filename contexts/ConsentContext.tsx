@@ -31,12 +31,13 @@ function readConsentCookie(): ConsentState {
 
 function writeConsentCookie(value: 'accepted' | 'declined'): void {
   try {
+    const secure = location.protocol === 'https:' ? '; Secure' : '';
     if (value === 'accepted') {
       const maxAge = 90 * 24 * 60 * 60; // 90 days in seconds
-      document.cookie = `fh_consent=accepted; Max-Age=${maxAge}; Path=/; SameSite=Lax`;
+      document.cookie = `fh_consent=accepted; Max-Age=${maxAge}; Path=/; SameSite=Lax${secure}`;
     } else {
       // Session cookie — no Max-Age
-      document.cookie = `fh_consent=declined; Path=/; SameSite=Lax`;
+      document.cookie = `fh_consent=declined; Path=/; SameSite=Lax${secure}`;
     }
   } catch {
     // Cookie write failed (e.g., cookies disabled); state still works in-memory.

@@ -38,7 +38,8 @@ function writeFavoritesCookie(ids: number[]): void {
   try {
     const maxAge = 90 * 24 * 60 * 60; // 90 days in seconds
     const value = encodeURIComponent(JSON.stringify(ids));
-    document.cookie = `fh_favorites=${value}; Max-Age=${maxAge}; Path=/; SameSite=Lax`;
+    const secure = location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie = `fh_favorites=${value}; Max-Age=${maxAge}; Path=/; SameSite=Lax${secure}`;
   } catch {
     // Cookie write failed (e.g., cookies disabled); state still works in-memory.
   }

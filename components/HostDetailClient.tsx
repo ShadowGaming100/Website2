@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import Link from '@/components/NoPrefetchLink'
 import { type Host } from '../lib/cache'
 import { slugify } from '../lib/slugify'
@@ -17,6 +17,17 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
   const [showDiscordModal, setShowDiscordModal] = useState(false)
   const [copied, setCopied] = useState(false)
   const { isFavorite, toggleFavorite } = useFavorites()
+
+  // Check for invalid redirect error via cookie (avoids reflected URL param attacks)
+  useEffect(() => {
+    const match = document.cookie.split('; ').find(r => r.startsWith('fh_redirect_error='));
+    if (match) {
+      // Clear the cookie immediately
+      document.cookie = 'fh_redirect_error=; Max-Age=0; Path=' + window.location.pathname + '; SameSite=Strict';
+      showToast('Invalid redirect — that link is not associated with this host.', 'error');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const totalReviews = (host.approvals || 0) + (host.disapprovals || 0)
   const rating = totalReviews > 0 ? Math.round(((host.approvals || 0) / totalReviews) * 100) : 0
   const statusClass = host.status && host.status.toLowerCase() === 'online' ? 'online' : 'closed'
@@ -38,24 +49,31 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
     return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
   }
 
-  function formatInfoText(text?: string): string {
-    if (!text) return ''
+  function formatInfoLines(text?: string): React.ReactNode {
+    if (!text) return null
     const lines = text.split('\n').filter(l => l.trim())
-    let html = '<ul>'
-    let inSublist = false
-    lines.forEach(line => {
+    const items: React.ReactNode[] = []
+    let subItems: React.ReactNode[] = []
+
+    const flushSub = () => {
+      if (subItems.length > 0) {
+        items.push(<ul key={`sub-${items.length}`}>{subItems}</ul>)
+        subItems = []
+      }
+    }
+
+    lines.forEach((line, i) => {
       const trimmed = line.trim()
       if (trimmed.startsWith('-')) {
-        if (!inSublist) { html += '<ul>'; inSublist = true }
-        html += `<li>${escapeHtml(trimmed.substring(1).trim())}</li>`
+        subItems.push(<li key={i}>{trimmed.substring(1).trim()}</li>)
       } else {
-        if (inSublist) { html += '</ul>'; inSublist = false }
-        html += `<li>${escapeHtml(trimmed)}</li>`
+        flushSub()
+        items.push(<li key={i}>{trimmed}</li>)
       }
     })
-    if (inSublist) html += '</ul>'
-    html += '</ul>'
-    return html
+    flushSub()
+
+    return <ul>{items}</ul>
   }
 
   function formatSize(mb?: number): string {
@@ -145,14 +163,14 @@ export default function HostDetailClient({ host }: HostDetailClientProps) {
               {host.info && host.info.trim() && (
                 <div className="info-section">
                   <h3 className="info-title"><Info size={14} aria-hidden="true" /> Information</h3>
-                  <div className="info-box" dangerouslySetInnerHTML={{ __html: formatInfoText(host.info) }} />
+                  <div className="info-box">{formatInfoLines(host.info)}</div>
                 </div>
               )}
 
               {host.free_plan && host.free_plan.trim() && (
                 <div className="info-section">
                   <h3 className="info-title"><Gift size={14} aria-hidden="true" /> Free Plan</h3>
-                  <div className="info-box" dangerouslySetInnerHTML={{ __html: formatInfoText(host.free_plan) }} />
+                  <div className="info-box">{formatInfoLines(host.free_plan)}</div>
                 </div>
               )}
 

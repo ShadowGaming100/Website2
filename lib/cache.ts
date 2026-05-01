@@ -61,7 +61,7 @@ export async function fetchHosts(): Promise<Host[]> {
 
   try {
     const response = await fetch(`${process.env.API_URL}/api/hosts?limit=1000`, {
-      next: { revalidate: 300 }, // Revalidate every 5 minutes
+      next: { revalidate: 3600 }, // Revalidate every 5 minutes
     })
     if (!response.ok) throw new Error(`API ${response.status}`)
     const data = await response.json()

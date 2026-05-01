@@ -1,124 +1,85 @@
-'use client';
-
 export const runtime = 'edge';
 
-import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'next/navigation';
-import { ArrowLeft, ArrowRight, ExternalLink, X } from 'lucide-react';
-import { push } from '@socialgouv/matomo-next';
+import { notFound, redirect } from 'next/navigation';
+import { fetchHostBySlug } from '../../../../../lib/cache';
+import RedirectClient from './RedirectClient';
 
-function buildTargetUrl(hostnameSegments: string[]): string {
-  // Join all segments back together with slashes
-  const hostnameOrPath = hostnameSegments.join('/');
-  
-  // If it already starts with http/https, return as-is with ref param
-  if (hostnameOrPath.startsWith('http://') || hostnameOrPath.startsWith('https://')) {
-    const url = new URL(hostnameOrPath)
-    url.searchParams.set('ref', 'freehosts.space')
-    return url.toString()
+function extractDomain(urlOrPath: string): string {
+  try {
+    // If it's a full URL, parse it
+    if (urlOrPath.startsWith('http://') || urlOrPath.startsWith('https://')) {
+      const url = new URL(urlOrPath);
+      return url.hostname.toLowerCase();
+    }
+    
+    // Otherwise, extract the domain from the path (first segment)
+    const firstSegment = urlOrPath.split('/')[0].split('?')[0];
+    return firstSegment.toLowerCase();
+  } catch {
+    return '';
   }
-  
-  // Otherwise, add https:// prefix and ref param
-  const hasQueryParams = hostnameOrPath.includes('?')
-  const separator = hasQueryParams ? '&' : '?'
-  return `https://${hostnameOrPath}${separator}ref=freehosts.space`
 }
 
-export default function Page() {
-  const params = useParams() || {};
-  // hostname is now an array of path segments due to catch-all route
-  const hostnameSegments = (params.hostname as string[]) ?? [];
+function isValidRedirect(hostnameOrPath: string, allowedLinks: string[]): boolean {
+  const targetDomain = extractDomain(hostnameOrPath);
+  
+  if (!targetDomain) return false;
+  
+  // Extract domains from all allowed links — exact match only
+  const allowedDomains = allowedLinks.map(link => extractDomain(link)).filter(Boolean);
+  
+  return allowedDomains.some(allowed => targetDomain === allowed);
+}
+
+function buildTargetUrl(hostnameSegments: string[]): string {
   const hostnameOrPath = hostnameSegments.join('/');
-  const slug = (params.slug as string) ?? '';
-  const targetUrl = hostnameOrPath ? buildTargetUrl(hostnameSegments) : '#';
-  const backUrl = slug ? `/hosts/${slug}` : '/hosts';
+  
+  if (hostnameOrPath.startsWith('http://') || hostnameOrPath.startsWith('https://')) {
+    const url = new URL(hostnameOrPath);
+    url.searchParams.set('ref', 'freehosts.space');
+    return url.toString();
+  }
+  
+  const hasQueryParams = hostnameOrPath.includes('?');
+  const separator = hasQueryParams ? '&' : '?';
+  return `https://${hostnameOrPath}${separator}ref=freehosts.space`;
+}
 
-  const [countdown, setCountdown] = useState(5);
-  const [isCancelled, setIsCancelled] = useState(false);
-  const [opened, setOpened] = useState(false);
-  const backBtnRef = useRef<HTMLButtonElement>(null);
+type Props = { params: Promise<{ slug: string; hostname: string[] }> };
 
-  // Track the external link click once
-  useEffect(() => {
-    if (!hostnameOrPath || opened) return;
-    setOpened(true);
-
-    // Track outbound link click in Matomo
-    try {
-      push(['trackLink', targetUrl, 'link']);
-    } catch {
-      // Matomo not loaded yet — ignore
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hostnameOrPath]);
-
-  // Countdown to go to external link
-  useEffect(() => {
-    if (isCancelled || !hostnameOrPath) return;
-    const timer = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          window.location.href = targetUrl;
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [isCancelled, hostnameOrPath, targetUrl]);
-
-  const progress = (countdown / 5) * 100;
-
-  return (
-    <main id="main-content">
-      <div className="redirect-container">
-        <div className="redirect-box">
-          <div className="redirect-icon">
-            <ArrowRight size={24} aria-hidden="true" />
-          </div>
-          <h2 className="redirect-title">Redirecting...</h2>
-          <p className="redirect-text">You are being redirected to</p>
-          <div className="redirect-url">{hostnameOrPath}</div>
-          <div className="redirect-timer">
-            <span className="redirect-timer-number" style={{ opacity: isCancelled ? 0.6 : 1 }}>
-              {isCancelled ? '✓ Stopped' : countdown}
-            </span>
-          </div>
-          <div className="redirect-progress">
-            <div className="redirect-progress-bar" style={{ width: `${progress}%` }} />
-          </div>
-          <div className="redirect-actions">
-            <a
-              href={targetUrl}
-              className="redirect-link"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => {
-                try { push(['trackLink', targetUrl, 'link']); } catch {}
-              }}
-            >
-              <ExternalLink size={14} aria-hidden="true" /> Open Link
-            </a>
-            <button className="redirect-cancel-btn" onClick={() => { window.location.href = backUrl; }} ref={backBtnRef}>
-              <ArrowLeft size={14} aria-hidden="true" /> Back
-            </button>
-            <button className="redirect-cancel-btn" onClick={() => { setIsCancelled(true); setTimeout(() => backBtnRef.current?.focus(), 50); }} disabled={isCancelled}>
-              <X size={14} aria-hidden="true" /> Cancel
-            </button>
-          </div>
-          {isCancelled && (
-            <div id="redirect-focus-error">
-              <div style={{ color: '#ef4444', fontWeight: 600, marginBottom: 'var(--space-sm)' }}>
-                <X size={14} aria-hidden="true" /> Redirect Cancelled
-              </div>
-              <p style={{ color: 'var(--muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>
-                The automatic redirect has been stopped. You can click &ldquo;Open Link&rdquo; to proceed manually.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-    </main>
-  );
+export default async function Page({ params }: Props) {
+  const { slug, hostname: hostnameSegments } = await params;
+  
+  if (!slug || !hostnameSegments || hostnameSegments.length === 0) {
+    notFound();
+  }
+  
+  // Fetch the host to validate the redirect
+  const host = await fetchHostBySlug(slug);
+  
+  if (!host) {
+    notFound();
+  }
+  
+  const hostnameOrPath = hostnameSegments.join('/');
+  
+  // Validate that the redirect URL is in the host's allowed links
+  if (!isValidRedirect(hostnameOrPath, host.links)) {
+    // Use a cookie-based flash message instead of a URL param to avoid
+    // reflected parameter attacks (attacker crafting ?error= on any page)
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    cookieStore.set('fh_redirect_error', '1', {
+      path: `/hosts/${slug}`,
+      maxAge: 10,
+      httpOnly: false, // needs to be readable by client JS
+      sameSite: 'strict',
+    });
+    redirect(`/hosts/${slug}`);
+  }
+  
+  const targetUrl = buildTargetUrl(hostnameSegments);
+  const backUrl = `/hosts/${slug}`;
+  
+  return <RedirectClient targetUrl={targetUrl} hostnameOrPath={hostnameOrPath} backUrl={backUrl} />;
 }
