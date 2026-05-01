@@ -7,7 +7,10 @@ import { useParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, ExternalLink, X } from 'lucide-react';
 import { push } from '@socialgouv/matomo-next';
 
-function buildTargetUrl(hostnameOrPath: string): string {
+function buildTargetUrl(hostnameSegments: string[]): string {
+  // Join all segments back together with slashes
+  const hostnameOrPath = hostnameSegments.join('/');
+  
   // If it already starts with http/https, return as-is with ref param
   if (hostnameOrPath.startsWith('http://') || hostnameOrPath.startsWith('https://')) {
     const url = new URL(hostnameOrPath)
@@ -23,9 +26,11 @@ function buildTargetUrl(hostnameOrPath: string): string {
 
 export default function Page() {
   const params = useParams() || {};
-  const hostnameOrPath = (params.hostname as string) ?? '';
+  // hostname is now an array of path segments due to catch-all route
+  const hostnameSegments = (params.hostname as string[]) ?? [];
+  const hostnameOrPath = hostnameSegments.join('/');
   const slug = (params.slug as string) ?? '';
-  const targetUrl = hostnameOrPath ? buildTargetUrl(hostnameOrPath) : '#';
+  const targetUrl = hostnameOrPath ? buildTargetUrl(hostnameSegments) : '#';
   const backUrl = slug ? `/hosts/${slug}` : '/hosts';
 
   const [countdown, setCountdown] = useState(5);
