@@ -191,8 +191,16 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     setHasMounted(true)
   }, [])
 
-  // Initialize filters from URL parameters directly
+  // Initialize filters from URL parameters or sessionStorage (for back-navigation)
   const [currentFilters, setCurrentFilters] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(FILTERS_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch {
+      // ignore parse errors
+    }
     return {
       search: searchParams.get('search') || '',
       locale: searchParams.get('locale') || '',
@@ -202,6 +210,15 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   })
 
   const [currentPage, setCurrentPage] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(PAGE_KEY);
+      if (saved) {
+        const page = parseInt(saved);
+        if (!isNaN(page) && page > 0) return page;
+      }
+    } catch {
+      // ignore parse errors
+    }
     const page = parseInt(searchParams.get('page') || '1')
     return !isNaN(page) && page > 0 ? page : 1
   })
@@ -215,6 +232,8 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
 
   const SCROLL_KEY = 'hosts_scroll_y'
   const RANDOM_ORDER_KEY = 'hosts_random_order'
+  const FILTERS_KEY = 'hosts_filters'
+  const PAGE_KEY = 'hosts_page'
 
   // Helper to generate and persist a fresh random order
   const generateRandomOrder = (hostList: Host[]): Map<number, number> => {
@@ -258,6 +277,16 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
       sessionStorage.removeItem(SCROLL_KEY)
     }
   }, [hasMounted])
+
+  // Save filters and page to sessionStorage whenever they change
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(FILTERS_KEY, JSON.stringify(currentFilters))
+      sessionStorage.setItem(PAGE_KEY, String(currentPage))
+    } catch {
+      // ignore storage errors
+    }
+  }, [currentFilters, currentPage])
 
   // Save scroll position when navigating away to a host detail
   useEffect(() => {
@@ -381,7 +410,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   }, [debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, currentPage])
 
   const handleFilterChange = (filter: keyof typeof currentFilters, value: string) => {
-    setCurrentFilters(prev => ({
+    setCurrentFilters((prev: typeof currentFilters) => ({
       ...prev,
       [filter]: value
     }))
@@ -395,7 +424,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
       setCurrentPage(1)
       return
     }
-    setCurrentFilters(prev => ({
+    setCurrentFilters((prev: typeof currentFilters) => ({
       ...prev,
       sort
     }))
