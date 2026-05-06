@@ -15,15 +15,15 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               // Scripts: self + inline theme script + Matomo + unsafe-eval for React Dev
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://matomo.codelabworks.is-a.dev",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://matomo.codelabworks.is-a.dev https://*.cloudflareinsights.com",
               // Styles: self + inline + Google Fonts
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               // Fonts: self + Google Fonts CDN
               "font-src 'self' https://fonts.gstatic.com",
               // Images: self + data URIs (favicons/inline) + any https image
               "img-src 'self' data: https:",
-              // Fetch/XHR: self + API + Matomo + Discord
-              "connect-src 'self' https://matomo.codelabworks.is-a.dev https://discord.com",
+              // Fetch/XHR: self + API + Matomo + Discord + Cloudflare
+              "connect-src 'self' https://matomo.codelabworks.is-a.dev https://*.discord.com https://*.cloudflareinsights.com",
               // Frames: none
               "frame-src 'none'",
               // Objects: none
