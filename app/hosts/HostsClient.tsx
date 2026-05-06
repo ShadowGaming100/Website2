@@ -184,56 +184,35 @@ function HostsLoading() {
 function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   const searchParams = useSearchParams()
   const [hosts] = useState<Host[]>(initialHosts)
-  const [hasMounted, setHasMounted] = useState(false)
-  
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setHasMounted(true)
-  }, [])
-
-  // Initialize filters from URL parameters or sessionStorage (for back-navigation)
-  const [currentFilters, setCurrentFilters] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem(FILTERS_KEY);
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch {
-      // ignore parse errors
-    }
-    return {
-      search: searchParams.get('search') || '',
-      locale: searchParams.get('locale') || '',
-      target: searchParams.get('target') || '',
-      sort: searchParams.get('sort') || 'random'
-    }
-  })
-
-  const [currentPage, setCurrentPage] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem(PAGE_KEY);
-      if (saved) {
-        const page = parseInt(saved);
-        if (!isNaN(page) && page > 0) return page;
-      }
-    } catch {
-      // ignore parse errors
-    }
-    const page = parseInt(searchParams.get('page') || '1')
-    return !isNaN(page) && page > 0 ? page : 1
-  })
-
-  // Use debounced search to reduce unnecessary updates
-  const debouncedSearch = useDebounce(currentFilters.search, 300)
-  const isSearching = currentFilters.search !== debouncedSearch
-
-  // Use ref to track if it's the component's mount phase
-  const isMounted = useRef(false)
 
   const SCROLL_KEY = 'hosts_scroll_y'
   const RANDOM_ORDER_KEY = 'hosts_random_order'
   const FILTERS_KEY = 'hosts_filters'
   const PAGE_KEY = 'hosts_page'
+
+  // Initialize from URL params only — safe for SSR, no sessionStorage on server.
+  // sessionStorage overrides are applied in a useEffect after hydration.
+  const [currentFilters, setCurrentFilters] = useState({
+    search: searchParams.get('search') || '',
+    locale: searchParams.get('locale') || '',
+    target: searchParams.get('target') || '',
+    sort: searchParams.get('sort') || 'random'
+  })
+
+  const [currentPage, setCurrentPage] = useState(() => {
+    const page = parseInt(searchParams.get('page') || '1')
+    return !isNaN(page) && page > 0 ? page : 1
+  })
+
+  const debouncedSearch = useDebounce(currentFilters.search, 300)
+  const isSearching = currentFilters.search !== debouncedSearch
+
+  const isMounted = useRef(false)
+  const [hasMounted, setHasMounted] = useState(false)
+
+  useEffect(() => {
+    setHasMounted(true)
+  }, [])
 
   // Helper to generate and persist a fresh random order
   const generateRandomOrder = (hostList: Host[]): Map<number, number> => {
@@ -248,35 +227,57 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     return map
   }
 
-  // Stable random order as state — loaded from sessionStorage on first mount
-  // so back-navigation restores the same order. Can be regenerated on demand.
-  const [randomOrder, setRandomOrder] = useState<Map<number, number>>(() => {
+  // Initialize random order with a stable value — sessionStorage restore happens in useEffect
+  const [randomOrder, setRandomOrder] = useState<Map<number, number>>(() =>
+    new Map<number, number>(initialHosts.map(h => [h.id, Math.random()]))
+  )
+
+  // After hydration: restore filters, page, random order, and scroll from sessionStorage.
+  // This runs once and avoids any SSR/client mismatch.
+  useEffect(() => {
     try {
-      const saved = sessionStorage.getItem(RANDOM_ORDER_KEY)
-      if (saved) {
-        const parsed: [number, number][] = JSON.parse(saved)
-        return new Map(parsed)
+      // Restore random order
+      const savedOrder = sessionStorage.getItem(RANDOM_ORDER_KEY)
+      if (savedOrder) {
+        const parsed: [number, number][] = JSON.parse(savedOrder)
+        setRandomOrder(new Map(parsed))
+      } else {
+        // Persist the initial random order
+        const map = randomOrder
+        sessionStorage.setItem(RANDOM_ORDER_KEY, JSON.stringify([...map]))
+      }
+
+      // Restore filters and page (back-navigation)
+      const savedFilters = sessionStorage.getItem(FILTERS_KEY)
+      const savedPage = sessionStorage.getItem(PAGE_KEY)
+      if (savedFilters) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setCurrentFilters(JSON.parse(savedFilters))
+      }
+      if (savedPage) {
+        const page = parseInt(savedPage)
+        if (!isNaN(page) && page > 0) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setCurrentPage(page)
+        }
+      }
+
+      // Restore scroll position
+      const savedScroll = sessionStorage.getItem(SCROLL_KEY)
+      if (savedScroll) {
+        const y = parseInt(savedScroll, 10)
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            window.scrollTo({ top: y, behavior: 'instant' })
+          })
+        })
+        sessionStorage.removeItem(SCROLL_KEY)
       }
     } catch {
-      // ignore parse errors
+      // sessionStorage unavailable — ignore
     }
-    return generateRandomOrder(initialHosts)
-  })
-
-  // Restore scroll position on mount (after hydration)
-  useEffect(() => {
-    if (!hasMounted) return
-    const saved = sessionStorage.getItem(SCROLL_KEY)
-    if (saved) {
-      const y = parseInt(saved, 10)
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          window.scrollTo({ top: y, behavior: 'instant' })
-        })
-      })
-      sessionStorage.removeItem(SCROLL_KEY)
-    }
-  }, [hasMounted])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Save filters and page to sessionStorage whenever they change
   useEffect(() => {

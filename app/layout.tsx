@@ -289,13 +289,25 @@ export default function RootLayout({
                 <Sun size={18} aria-hidden="true" className="theme-icon-light" />
               </button>
               <a
-                className="btn primary"
+                className="icon-btn"
+                href="https://trustpilot.com/review/freehosts.space"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Review us on Trustpilot"
+                title="Trustpilot"
+              >
+                <Star size={18} aria-hidden="true" style={{ color: '#00b67a' }} />
+              </a>
+              <a
+                className="icon-btn"
                 id="discordBtn"
                 href="https://discord.gg/QbeZ3b5CQd"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Join Discord"
+                title="Join Discord"
               >
-                <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /><span className="discord-btn-text"> Join Discord</span>
+                <FontAwesomeIcon icon={faDiscord} aria-hidden="true" style={{ color: '#5865F2' }} />
               </a>
             </div>
           </div>
@@ -398,6 +410,7 @@ export default function RootLayout({
                 <li><Link href="/about">About Us</Link></li>
                 <li><Link href="/staff">Our Team</Link></li>
                 <li><Link href="/faq">FAQ</Link></li>
+                <li><a href="https://trustpilot.com/review/freehosts.space" target="_blank" rel="noopener noreferrer">Trustpilot</a></li>
               </ul>
             </div>
 
