@@ -14,16 +14,16 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              // Scripts: self + inline theme script + Matomo
-              "script-src 'self' 'unsafe-inline' https://matomo.codelabworks.is-a.dev",
+              // Scripts: self + inline theme script + Matomo + unsafe-eval for React Dev
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://matomo.codelabworks.is-a.dev",
               // Styles: self + inline + Google Fonts
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               // Fonts: self + Google Fonts CDN
               "font-src 'self' https://fonts.gstatic.com",
               // Images: self + data URIs (favicons/inline) + any https image
               "img-src 'self' data: https:",
-              // Fetch/XHR: self + API + Matomo
-              "connect-src 'self' https://matomo.codelabworks.is-a.dev",
+              // Fetch/XHR: self + API + Matomo + Discord
+              "connect-src 'self' https://matomo.codelabworks.is-a.dev https://discord.com",
               // Frames: none
               "frame-src 'none'",
               // Objects: none

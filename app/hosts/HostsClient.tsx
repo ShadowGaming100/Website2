@@ -251,13 +251,13 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
       const savedFilters = sessionStorage.getItem(FILTERS_KEY)
       const savedPage = sessionStorage.getItem(PAGE_KEY)
       if (savedFilters) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+         
         setCurrentFilters(JSON.parse(savedFilters))
       }
       if (savedPage) {
         const page = parseInt(savedPage)
         if (!isNaN(page) && page > 0) {
-          // eslint-disable-next-line react-hooks/set-state-in-effect
+           
           setCurrentPage(page)
         }
       }

@@ -1,7 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useConsent } from './ConsentContext';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -56,11 +55,7 @@ const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
-  const { consentState, requestConsent } = useConsent();
   const [favorites, setFavorites] = useState<number[]>([]);
-
-  // Stores a pending host ID when the user tries to favorite before consent is given.
-  const pendingIdRef = useRef<number | null>(null);
 
   // Initialize favorites from cookie on mount (client-side only).
   useEffect(() => {
@@ -68,33 +63,14 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     setFavorites(readFavoritesCookie());
   }, []);
 
-  // When consent transitions to 'accepted', process any pending favorite action.
-  useEffect(() => {
-    if (consentState === 'accepted' && pendingIdRef.current !== null) {
-      const pendingId = pendingIdRef.current;
-      pendingIdRef.current = null;
-      setFavorites((prev) => {
-        const next = applyToggle(prev, pendingId);
-        writeFavoritesCookie(next);
-        return next;
-      });
-    }
-  }, [consentState]);
-
   const isFavorite = (id: number): boolean => favorites.includes(id);
 
   const toggleFavorite = (id: number): void => {
-    if (consentState === 'accepted') {
-      setFavorites((prev) => {
-        const next = applyToggle(prev, id);
-        writeFavoritesCookie(next);
-        return next;
-      });
-    } else if (consentState === 'unknown') {
-      pendingIdRef.current = id;
-      requestConsent();
-    }
-    // consentState === 'declined': no-op
+    setFavorites((prev) => {
+      const next = applyToggle(prev, id);
+      writeFavoritesCookie(next);
+      return next;
+    });
   };
 
   return (

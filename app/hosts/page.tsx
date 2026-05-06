@@ -2,10 +2,7 @@ import { fetchHosts } from '../../lib/cache'
 import HostsClient from './HostsClient'
 import { slugify } from '../../lib/slugify'
 
-// Remove edge runtime — ISR (revalidate) requires Node.js runtime.
-// Edge runtime has no persistent memory so the in-memory cache is useless there.
-export const revalidate = 300; // Regenerate page in background every 5 minutes
-
+export const runtime = 'edge';
 export const metadata = {
   title: 'Free Hosting Directory - Browse 100+ Providers | FreeHosts',
   description: 'Browse 100+ free hosting providers for websites, Discord bots, and apps. Filter by CPU, RAM, storage, language, and target. Find the best free host for your project.',
