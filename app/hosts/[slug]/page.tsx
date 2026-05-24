@@ -56,19 +56,63 @@ export default async function HostDetailPage({ params }: Props) {
   const site = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://freehosts.space').replace(/\/$/, '')
   const hostUrl = `${site}/hosts/${slugify(host.name)}`
   const totalReviews = host.approvals + host.disapprovals
-  const ratingValue = totalReviews > 0 ? ((host.approvals / totalReviews) * 5).toFixed(1) : null
+  const ratingValue = totalReviews > 0 ? Number(((host.approvals / totalReviews) * 5).toFixed(1)) : null
   const title = `${host.name} - Free Hosting Provider Details | FreeHosts`
-  const jsonLd = { "@context": "https://schema.org", "@type": "WebPage", "@id": `${hostUrl}#webpage`, "url": hostUrl, "name": title, "isPartOf": { "@id": "https://freehosts.space/#website" }, "inLanguage": "en", "description": description }
+  const organizationId = `${hostUrl}#organization`
+  const serviceId = `${hostUrl}#service`
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${hostUrl}#webpage`,
+    "url": hostUrl,
+    "name": title,
+    "description": description,
+    "inLanguage": "en",
+    "mainEntity": { "@id": serviceId },
+    "isPartOf": { "@id": "https://freehosts.space/#website" },
+  }
+  const organizationLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": organizationId,
+    "name": host.name,
+    ...(host.links?.[0] ? { "url": host.links[0] } : { "url": hostUrl }),
+    ...(host.image ? { "logo": host.image } : {}),
+    ...(ratingValue ? {
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": ratingValue,
+        "bestRating": 5,
+        "worstRating": 1,
+        "ratingCount": totalReviews,
+        "reviewCount": totalReviews,
+      },
+    } : {}),
+  }
   const serviceLd = {
-    "@context": "https://schema.org", "@type": "Service", "name": host.name, "description": description, "url": hostUrl, "serviceType": "Web Hosting", "category": host.targets?.join(', ') || 'Web Hosting',
-    "provider": { "@type": "Organization", "name": host.name, ...(host.links?.[0] ? { "url": host.links[0] } : {}) },
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": serviceId,
+    "name": host.name,
+    "description": description,
+    "url": hostUrl,
+    "serviceType": "Web Hosting",
+    "category": host.targets?.join(', ') || 'Web Hosting',
+    "provider": { "@id": organizationId, "@type": "Organization", "name": host.name },
     ...(host.image ? { "image": host.image } : {}),
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": host.status?.toLowerCase() === "online" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock", "url": hostUrl, "description": `Free ${host.targets?.join(', ') || 'hosting'} — ${host.cpu || 'Unknown'} CPU, ${host.ram || 'Unknown'} RAM, ${host.disk || 'Unknown'} storage` },
-    ...(ratingValue ? { "aggregateRating": { "@type": "AggregateRating", "ratingValue": ratingValue, "bestRating": "5", "worstRating": "1", "ratingCount": totalReviews, "reviewCount": totalReviews } } : {}),
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": host.status?.toLowerCase() === "online" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      "url": hostUrl,
+      "description": `Free ${host.targets?.join(', ') || 'hosting'} — ${host.cpu || 'Unknown'} CPU, ${host.ram || 'Unknown'} RAM, ${host.disk || 'Unknown'} storage`,
+    },
   }
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceLd) }} />
       <HostDetailClient host={host} />
     </>
