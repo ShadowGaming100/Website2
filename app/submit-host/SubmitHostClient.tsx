@@ -8,6 +8,7 @@ import { faDiscord } from "@fortawesome/free-brands-svg-icons";
 const inviteUrl = "https://discord.gg/QbeZ3b5CQd";
 
 export default function SubmitHostClient() {
+  const supportEmail = `support@${process.env.EMAIL_DOMAIN}`;
   return (
     <main className="submit-host-page">
       <section className="submit-hero">
@@ -76,7 +77,7 @@ export default function SubmitHostClient() {
               </a>
               <p className="support-text">
                 Need help with a listing? Contact us at{" "}
-                <a href="mailto:support@freehosts.space">support@freehosts.space</a>
+                <a href={"mailto:" + supportEmail}>{supportEmail}</a>
               </p>
             </div>
           </aside>
