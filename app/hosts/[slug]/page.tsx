@@ -69,7 +69,7 @@ export default async function HostDetailPage({ params }: Props) {
     "description": description,
     "inLanguage": "en",
     "mainEntity": { "@id": serviceId },
-    "isPartOf": { "@id": "https://freehosts.space/#website" },
+    "isPartOf": { "@id": process.env.APP_URL + "/#website" },
   }
   const organizationLd = {
     "@context": "https://schema.org",
