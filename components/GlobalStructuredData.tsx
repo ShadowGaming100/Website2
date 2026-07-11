@@ -25,7 +25,7 @@ export default function GlobalStructuredData() {
       "@type": "ListItem",
       position: 1,
       name: "Home",
-      item: process.env.APP_URL,
+      item: process.env.APP_URL ?? "https://freehosts.space"
     },
   ];
 
@@ -60,7 +60,7 @@ export default function GlobalStructuredData() {
       "@type": "ListItem",
       position: index + 2,
       name,
-      item: process.env.APP_URL + currentPath,
+      item: `${process.env.APP_URL}${currentPath}`,
     });
   });
 

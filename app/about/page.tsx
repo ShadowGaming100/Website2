@@ -42,7 +42,7 @@ export const metadata: Metadata = {
       "A community-driven directory to discover, compare and review free hosting services for websites, bots, and apps.",
     images: [
       {
-        url: process.env.APP_URL + "/Src/Images/social-preview.png",
+        url: process.env.APP_URL + "/Src/Images/banner.png",
         width: 1280,
         height: 720,
         alt: "FreeHosts - Discover Free Hosting",
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
       "A community-driven directory to discover, compare and review free hosting services for websites, bots, and apps.",
     images: [
       {
-        url: process.env.APP_URL + "/Src/Images/social-preview.png",
+        url: process.env.APP_URL + "/Src/Images/banner.png",
         alt: "FreeHosts - Discover Free Hosting",
       },
     ],
@@ -72,7 +72,7 @@ const structuredData = {
       "@type": "Organization",
       "@id": process.env.APP_URL + "/#organization",
       name: "FreeHosts",
-      url:  process.env.APP_URL,
+      url: process.env.APP_URL,
       logo: {
         "@type": "ImageObject",
         url: process.env.APP_URL + "/Src/icons/icon.png",

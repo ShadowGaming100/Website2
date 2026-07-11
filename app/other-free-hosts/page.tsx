@@ -12,17 +12,17 @@ export const metadata: Metadata = {
   keywords: ["other free hosting platforms", "free hosting directories", "free minecraft hosting list", "hosting resource list"],
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   alternates: { canonical: process.env.APP_URL + "/other-free-hosts" },
-  openGraph: { locale: "en_US", siteName: "FreeHosts", type: "website", url: process.env.APP_URL + "/other-free-hosts", title: "Other Free Hosting Platforms & Directories - FreeHosts", description: "Discover other trusted platforms and directories that list free hosting services for websites, Minecraft servers, and applications.", images: [{ url: process.env.APP_URL + "/Src/Images/social-preview.png", width: 1280, height: 720, alt: "FreeHosts - Other Free Hosting Platforms" }] },
-  twitter: { card: "summary_large_image", title: "Other Free Hosting Platforms & Directories - FreeHosts", description: "Discover other trusted platforms and directories that list free hosting services for websites, Minecraft servers, and applications.", images: [{ url: process.env.APP_URL + "/Src/Images/social-preview.png", alt: "FreeHosts - Other Free Hosting Platforms" }], site: "@freehosts_", creator: "@freehosts_" },
+  openGraph: { locale: "en_US", siteName: "FreeHosts", type: "website", url: process.env.APP_URL + "/other-free-hosts", title: "Other Free Hosting Platforms & Directories - FreeHosts", description: "Discover other trusted platforms and directories that list free hosting services for websites, Minecraft servers, and applications.", images: [{ url: process.env.APP_URL + "/Src/Images/banner.png", width: 1280, height: 720, alt: "FreeHosts - Other Free Hosting Platforms" }] },
+  twitter: { card: "summary_large_image", title: "Other Free Hosting Platforms & Directories - FreeHosts", description: "Discover other trusted platforms and directories that list free hosting services for websites, Minecraft servers, and applications.", images: [{ url: process.env.APP_URL + "/Src/Images/banner.png", alt: "FreeHosts - Other Free Hosting Platforms" }], site: "@freehosts_", creator: "@freehosts_" },
 };
 
 type HostLink = { href: string; lucideIcon?: LucideIcon; faIcon?: IconDefinition; label: string };
 
 const externalHosts: { initials?: string; image?: string; name: string; description: string; links: HostLink[] }[] = [
   {
-    initials: "FMH",
+    image: "/Src/Images/free-minecraft-hostings.png",
     name: "Free Minecraft Hostings",
-    description: "Curated collection of free hosting providers specifically for Minecraft servers featuring detailed reviews, comparisons, and community ratings with various configurations and performance options.",
+    description: "The best collection of free minecraft server hosting providers. Includings a tons of free minecraft hostings. Allow you to write your own experiences while using free hostings. Founded by the best handsome human in the entire world.",
     links: [
       { href: "https://freeminecrafthostings.com/", lucideIcon: ExternalLink, label: "Website" },
       { href: "https://discord.gg/sc2kauFE3D", faIcon: faDiscord, label: "Discord" },
@@ -38,9 +38,9 @@ const externalHosts: { initials?: string; image?: string; name: string; descript
     ],
   },
   {
-    initials: "FLMH",
+    image: "/Src/Images/flhl.png",
     name: "Free Low Minecraft Hostings",
-    description: "Specialized directory for low-resource Minecraft hosting solutions that are optimized for budget-conscious users.",
+    description: "A specialized free hostings catalog which is intended for new and non-recommended hosting providers, with a brief description of reputation to warn against fraud.",
     links: [
       { href: "https://flhl.whiteik.xyz/", lucideIcon: ExternalLink, label: "Website" },
     ],

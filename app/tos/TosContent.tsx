@@ -1,7 +1,6 @@
 import React from "react";
 
 export default function TosContent() {
-  const legalEmail = `legal@${process.env.EMAIL_DOMAIN}`;
   return (
     <div className="tos-content wrap">
       <h1>TERMS OF SERVICE</h1>
@@ -135,7 +134,7 @@ export default function TosContent() {
       <p>
         You can contact us by email at{" "}
         <span className="question">
-          <a href={"mailto:" + legalEmail}>{legalEmail}</a>
+          <a href={"mailto:legal@" + process.env.EMAIL_DOMAIN} >legal@{process.env.EMAIL_DOMAIN}</a>
         </span>
         .
       </p>
@@ -272,7 +271,7 @@ export default function TosContent() {
         as set out in this section or elsewhere in our Legal Terms, please
         address your request to:{" "}
         <span className="question">
-          <a href={"mailto:" + legalEmail}>{legalEmail}</a>
+          <a href={"mailto:legal@" + process.env.EMAIL_DOMAIN}>legal@{process.env.EMAIL_DOMAIN}</a>
         </span>
         . If we ever grant you the permission to post, reproduce, or publicly
         display any part of our Services or Content, you must identify us as the
@@ -1121,7 +1120,7 @@ export default function TosContent() {
 
       <p>
         Law enforcement and other formal legal inquiries must be submitted to{" "}
-        <a href={"mailto:" + legalEmail}>{legalEmail}</a> by
+        <a href={"mailto:legal@" + process.env.EMAIL_DOMAIN}>legal@{process.env.EMAIL_DOMAIN}</a> by
         authorized law enforcement officials or licensed attorneys acting on
         behalf of such agencies.
       </p>
@@ -1145,7 +1144,7 @@ export default function TosContent() {
       <p>
         <strong>FreeHosts</strong>
         <br />
-        Email: <a href={"mailto:" + legalEmail}>{legalEmail}</a>
+        Email: <a href={"mailto:legal@" + process.env.EMAIL_DOMAIN}>legal@{process.env.EMAIL_DOMAIN}</a>
       </p>
     </div>
   );

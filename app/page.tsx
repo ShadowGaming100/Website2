@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     "freehosts",
   ],
   alternates: {
-    canonical: process.env.APP_URL
+    canonical: process.env.APP_URL,
   },
 };
 
