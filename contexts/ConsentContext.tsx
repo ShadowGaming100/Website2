@@ -62,44 +62,6 @@ export function ConsentProvider({ children }: { children: React.ReactNode }) {
     setConsentState(stored);
   }, []);
 
-  // Prevent scrolling when consent is required
-  useEffect(() => {
-    if (consentState === 'declined' || consentState === 'unknown') {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.height = '100%';
-      document.body.style.touchAction = 'none';
-      document.documentElement.style.overflow = 'hidden';
-      // Prevent all scroll events
-      const preventScroll = (e: Event) => {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        return false;
-      };
-      window.addEventListener('scroll', preventScroll, { capture: true, passive: false });
-      window.addEventListener('wheel', preventScroll, { capture: true, passive: false });
-      window.addEventListener('touchmove', preventScroll, { capture: true, passive: false });
-      window.addEventListener('keydown', (e) => {
-        if (['PageUp','PageDown','ArrowUp','ArrowDown','Space'].includes(e.code)) {
-          e.preventDefault();
-        }
-      }, { capture: true });
-
-      return () => {
-        document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
-        document.body.style.height = '';
-        document.body.style.touchAction = '';
-        document.documentElement.style.overflow = '';
-        window.removeEventListener('scroll', preventScroll, { capture: true });
-        window.removeEventListener('wheel', preventScroll, { capture: true });
-        window.removeEventListener('touchmove', preventScroll, { capture: true });
-      };
-    }
-  }, [consentState]);
-
   const acceptConsent = () => {
     writeConsentCookie('accepted');
     setConsentState('accepted');

@@ -233,9 +233,6 @@ export default function RootLayout({
         <PreviewCard />
         <RouteInitializer />
         <GlobalStructuredData />
-        <Suspense fallback={null}>
-          <MatomoTracker />
-        </Suspense>
 
         <ConsentProvider>
           <ComparisonProvider>
@@ -353,10 +350,20 @@ export default function RootLayout({
 
               <div className="overlay" id="overlay" tabIndex={-1} aria-hidden="true" />
 
-              <GdprConsentBanner />
               <ComparisonPanel />
 
-              <ConsentGate>{children}</ConsentGate>
+              <ConsentGate>
+                <GdprConsentBanner className="consent-banner" />
+
+                <div className="consentable">
+                    <Suspense fallback={null}>
+                      <MatomoTracker />
+                    </Suspense>
+                </div>
+                <div className="skippable">
+                    {children}
+                </div>
+              </ConsentGate>
 
               <footer className="site-footer">
                 <div className="wrap footer-content">
