@@ -3,7 +3,7 @@
 import { useConsent } from '@/contexts/ConsentContext';
 import { ShieldCheck, Lock, ChevronRight, X, FileText, AlertTriangle } from 'lucide-react';
 
-export default function GdprConsentBanner({className}) {
+export default function GdprConsentBanner({className}: {className: string}) {
   const { acceptConsent, declineConsent, consentState } = useConsent();
 
   // Only hide when the user has EXPLICITLY accepted — nothing else hides this
@@ -15,7 +15,7 @@ export default function GdprConsentBanner({className}) {
     <>
       {/* Backdrop — blocks interaction with page below */}
       <div
-        className={`gdpr-backdrop ${isRestricted ? 'restricted' : ''}`}
+        className={`gdpr-backdrop ${className} ${isRestricted ? 'restricted' : ''}`}
         aria-hidden="true"
         onClick={(e) => e.stopPropagation()}
       />
