@@ -1,16 +1,10 @@
 'use client';
 
-import React from 'react';
-import { usePathname } from 'next/navigation';
 import { useConsent } from '@/contexts/ConsentContext';
 import { ShieldCheck, Lock, ChevronRight, X, FileText, AlertTriangle } from 'lucide-react';
 
-export default function GdprConsentBanner() {
+export default function GdprConsentBanner({className}: {className: string}) {
   const { acceptConsent, declineConsent, consentState } = useConsent();
-  const pathname = usePathname();
-
-  // Never show on legal pages — let the user read before deciding
-  if (pathname === '/tos' || pathname === '/privacy-policy') return null;
 
   // Only hide when the user has EXPLICITLY accepted — nothing else hides this
   if (consentState === 'accepted') return null;
@@ -21,7 +15,7 @@ export default function GdprConsentBanner() {
     <>
       {/* Backdrop — blocks interaction with page below */}
       <div
-        className={`gdpr-backdrop ${isRestricted ? 'restricted' : ''}`}
+        className={`gdpr-backdrop ${className} ${isRestricted ? 'restricted' : ''}`}
         aria-hidden="true"
         onClick={(e) => e.stopPropagation()}
       />
