@@ -353,9 +353,9 @@ export default function RootLayout({
               <ComparisonPanel />
 
               <ConsentGate>
-                <GdprConsentBanner className="consent-banner" />
+                <GdprConsentBanner className="fh-gate" />
 
-                <div className="consentable">
+                <div className="fh-locked">
                     <Suspense fallback={null}>
                       <MatomoTracker />
                     </Suspense>

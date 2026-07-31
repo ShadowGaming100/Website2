@@ -37,14 +37,14 @@ export default function ConsentGate({ children }: { children: React.ReactNode })
     const className = child.props.className ?? "";
 
     if (accepted) {
-      return !className.includes("consent-banner");
+      return !className.includes("fh-gate");
     }
 
     if (skippable) {
       return className.includes("skippable");
     }
 
-    return className.includes("consent-banner");
+    return className.includes("fh-gate");
   });
 
   // Fake background page for human visitors

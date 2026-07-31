@@ -15,28 +15,28 @@ export default function GdprConsentBanner({className}: {className: string}) {
     <>
       {/* Backdrop — blocks interaction with page below */}
       <div
-        className={`gdpr-backdrop ${className} ${isRestricted ? 'restricted' : ''}`}
+        className={`fh-gate-backdrop ${className} ${isRestricted ? 'restricted' : ''}`}
         aria-hidden="true"
         onClick={(e) => e.stopPropagation()}
       />
 
       <div
-        className="gdpr-banner-container"
+        className="fh-gate-wrap"
         role="dialog"
         aria-modal="true"
         aria-label={isRestricted ? 'Access Restricted' : 'Terms of Service Agreement'}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="gdpr-banner-content">
+        <div className="fh-gate-card">
 
           {/* Header */}
-          <div className="gdpr-header">
-            <div className={`gdpr-icon-wrap ${isRestricted ? 'restricted' : ''}`}>
+          <div className="fh-gate-header">
+            <div className={`fh-gate-icon-wrap ${isRestricted ? 'restricted' : ''}`}>
               {isRestricted
                 ? <AlertTriangle size={22} aria-hidden="true" />
                 : <ShieldCheck size={22} aria-hidden="true" />}
             </div>
-            <div className="gdpr-title-area">
+            <div className="fh-gate-title-area">
               <h3>{isRestricted ? 'Access Restricted' : 'Before You Continue'}</h3>
               <p>
                 {isRestricted
@@ -46,18 +46,18 @@ export default function GdprConsentBanner({className}: {className: string}) {
             </div>
           </div>
 
-          <div className="gdpr-divider" />
+          <div className="fh-gate-divider" />
 
           {/* Body — links open in new tab so the banner stays visible */}
-          <div className="gdpr-body">
-            <p className="gdpr-description">
+          <div className="fh-gate-body">
+            <p className="fh-gate-description">
               {isRestricted ? 'To use FreeHosts, you must accept our ' : 'By continuing, you agree to our '}
-              <a href="/tos" className="gdpr-link" target="_blank" rel="noopener noreferrer">
+              <a href="/tos" className="fh-gate-link" target="_blank" rel="noopener noreferrer">
                 <FileText size={13} aria-hidden="true" />
                 Terms of Service
               </a>
               {' '}and{' '}
-              <a href="/privacy-policy" className="gdpr-link" target="_blank" rel="noopener noreferrer">
+              <a href="/privacy-policy" className="fh-gate-link" target="_blank" rel="noopener noreferrer">
                 <Lock size={13} aria-hidden="true" />
                 Privacy Policy
               </a>
@@ -69,9 +69,9 @@ export default function GdprConsentBanner({className}: {className: string}) {
           </div>
 
           {/* Buttons */}
-          <div className="gdpr-footer">
+          <div className="fh-gate-footer">
             <button
-              className="btn-gdpr secondary"
+              className="fh-gate-btn secondary"
               onClick={declineConsent}
               type="button"
             >
@@ -79,7 +79,7 @@ export default function GdprConsentBanner({className}: {className: string}) {
               <span>{isRestricted ? 'Keep Declined' : 'Decline'}</span>
             </button>
             <button
-              className="btn-gdpr primary"
+              className="fh-gate-btn primary"
               onClick={acceptConsent}
               type="button"
             >
@@ -89,7 +89,7 @@ export default function GdprConsentBanner({className}: {className: string}) {
           </div>
 
           {/* Quick legal links */}
-          <div className="gdpr-legal-links">
+          <div className="fh-gate-legal-links">
             <a href="/tos" target="_blank" rel="noopener noreferrer">Terms of Service</a>
             <span aria-hidden="true">·</span>
             <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
