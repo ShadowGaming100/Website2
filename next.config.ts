@@ -3,7 +3,6 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // Apply security and global cache headers to all paths
         source: '/((?!api|_next/static|_next/image|favicon.ico).*)',
         headers: [
           { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -12,7 +11,7 @@ const nextConfig = {
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
           {
             key: 'Cache-Control',
-            value: 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000',
+            value: 'public, max-age=86400, s-maxage=2592000, stale-while-revalidate=2592000',
           },
           {
             key: 'Content-Security-Policy',
@@ -32,7 +31,6 @@ const nextConfig = {
         ],
       },
       {
-        // Specific override for hosts listing page (shorter cache)
         source: '/hosts',
         headers: [
           {
@@ -41,8 +39,25 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: '/hosts/:slug',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=1800, s-maxage=43200, stale-while-revalidate=604800',
+          },
+        ],
+      },
+      {
+        source: '/sitemap.xml',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, s-maxage=3600, stale-while-revalidate=43200',
+          },
+        ],
+      },
     ];
   },
 };
-
 module.exports = nextConfig;
