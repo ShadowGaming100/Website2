@@ -58,7 +58,6 @@ export default function ConsentGate({ children }: { children: React.ReactNode })
         inset: 0,
         width: '100vw',
         height: '100vh',
-        backgroundImage: 'url(/Src/Images/preview-bg.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         filter: 'blur(12px) saturate(0.8)',

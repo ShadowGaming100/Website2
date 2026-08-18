@@ -48,6 +48,15 @@ const nextConfig = {
           },
         ],
       },
+            {
+        source: '/hosts/og/:slug',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=1800, s-maxage=43200, stale-while-revalidate=604800',
+          },
+        ],
+      },
       {
         source: '/sitemap.xml',
         headers: [
