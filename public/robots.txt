@@ -6,5 +6,6 @@ Disallow: /admin/
 Disallow: /private/
 Disallow: /cgi-bin/
 Disallow: /hosts/*/redirect/*
+Disallow: /hosts/*/og/*
 
 Sitemap: https://freehosts.eu/sitemap.xml
