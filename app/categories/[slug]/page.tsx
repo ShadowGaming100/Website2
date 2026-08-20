@@ -11,6 +11,8 @@ export function generateStaticParams() {
   return categories.map((c) => ({ slug: c.slug }));
 }
 
+export const dynamicParams = false;
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const category = getCategory(slug);
