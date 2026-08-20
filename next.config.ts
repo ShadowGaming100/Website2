@@ -66,7 +66,27 @@ const nextConfig = {
           },
         ],
       },
+      {
+
+        source: '/saved',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'private, no-store',
+          },
+        ],
+      },
+      {
+        source: '/hosts/:slug/redirect/:hostname*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'private, no-store',
+          },
+        ],
+      },
     ];
   },
 };
 module.exports = nextConfig;
+
