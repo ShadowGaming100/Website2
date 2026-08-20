@@ -67,18 +67,11 @@ export async function GET() {
 ${urlset}
 </urlset>`
 
-  const body = new Blob([xml]).stream()
-  const compressed = body.pipeThrough(new CompressionStream('gzip'))
-  const buffer = Buffer.from(await new Response(compressed).arrayBuffer())
-
-  return new Response(buffer, {
+  return new Response(xml, {
     status: 200,
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      'Content-Encoding': 'gzip',
-      'Content-Length': String(buffer.byteLength),
       'Cache-Control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=43200, no-transform',
-      'Vary': 'Accept-Encoding',
     },
   })
 }
