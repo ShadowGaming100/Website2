@@ -1,23 +1,3 @@
-// middleware.ts — project root, alongside app/
-//
-// WHY THIS FILE EXISTS:
-// next.config.ts defines headers() for security headers, CSP, and
-// Cache-Control. That mechanism is reliable for standard (Node.js runtime)
-// Next.js routes. But four routes in this app opt into
-// `export const runtime = 'edge'` — /hosts, /hosts/[slug],
-// /hosts/[slug]/redirect/[...hostname], and /hosts/og/[slug] — and edge
-// routes deployed to Cloudflare (via @cloudflare/next-on-pages / OpenNext)
-// do not reliably inherit next.config.ts's headers() output, since edge
-// routes are compiled closer to a raw Worker and can bypass Next's own
-// header-injection layer.
-//
-// Middleware runs as a genuine Cloudflare-native execution point on every
-// matched request regardless of which runtime the destination route uses,
-// so it's used here as the guaranteed enforcement point. next.config.ts is
-// left in place as the source of truth for routes it does reach correctly,
-// and as documentation of intent; this file mirrors the same values so the
-// two layers don't drift apart.
-
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -47,9 +27,6 @@ const CACHE_DEFAULT =
 const CACHE_HOSTS =
   "public, max-age=1800, s-maxage=43200, stale-while-revalidate=604800";
 
-// Since this route now servers a pre-gzipped body, no-transform tells
-// Cloudflare to pass it through exactly as-is instead of re-encoding it
-// to Brotli (which Google's sitemap fetcher cannot decode).
 const CACHE_SITEMAP =
   "public, max-age=0, s-maxage=3600, stale-while-revalidate=43200, no-transform";
 

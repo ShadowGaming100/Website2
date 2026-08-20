@@ -12,26 +12,26 @@ FreeHosts was created to help developers, students, and makers discover reliable
 
 ## Key Pages
 
-- Home: https://freehosts.eu/
-- Free Hosting Directory (browse 100+ providers): https://freehosts.eu/hosts
-- Compare Hosts (side-by-side spec comparison): https://freehosts.eu/compare
-- FAQ: https://freehosts.eu/faq
-- About FreeHosts: https://freehosts.eu/about
-- Staff & Curators: https://freehosts.eu/staff
-- Other Free Hosting Platforms: https://freehosts.eu/other-free-hosts
-- Submit a Host: https://freehosts.eu/submit-host
-- Submit a Layout: https://freehosts.eu/submit-layout
-- Submission Rules: https://freehosts.eu/submission-rules
-- Server Rules: https://freehosts.eu/server-rules
-- Terms of Service: https://freehosts.eu/tos
-- Privacy Policy: https://freehosts.eu/privacy-policy
+- [Home](https://freehosts.eu/): Landing page for the FreeHosts directory
+- [Free Hosting Directory](https://freehosts.eu/hosts): Browse 100+ free hosting providers
+- [Compare Hosts](https://freehosts.eu/compare): Side-by-side spec comparison tool
+- [FAQ](https://freehosts.eu/faq): Frequently asked questions
+- [About FreeHosts](https://freehosts.eu/about): Background and mission
+- [Staff & Curators](https://freehosts.eu/staff): Directory team and volunteer curators
+- [Other Free Hosting Platforms](https://freehosts.eu/other-free-hosts): Related free hosting resources
+- [Submit a Host](https://freehosts.eu/submit-host): Propose a new host for review
+- [Submit a Layout](https://freehosts.eu/submit-layout): Contribute a directory layout
+- [Submission Rules](https://freehosts.eu/submission-rules): Guidelines for submitting hosts
+- [Server Rules](https://freehosts.eu/server-rules): Rules for the FreeHosts community servers
+- [Terms of Service](https://freehosts.eu/tos): Terms governing use of FreeHosts
+- [Privacy Policy](https://freehosts.eu/privacy-policy): How FreeHosts handles your data
 
 ## How to Use the Directory
 
-1. Browse the directory at https://freehosts.eu/hosts — every provider lists CPU, RAM, storage, supported languages, target use cases, and its status.
+1. Browse the [Free Hosting Directory](https://freehosts.eu/hosts) — every provider lists CPU, RAM, storage, supported languages, target use cases, and its status.
 2. Filter by search term, target use case (websites, Discord bots, apps, databases), language, or sort by rating.
 3. Open any host page for full details, community ratings, website links, and similar providers.
-4. Use the compare tool at https://freehosts.eu/compare to evaluate hosts side by side.
+4. Use the [Compare Hosts](https://freehosts.eu/compare) tool to evaluate hosts side by side.
 5. Save favorite hosts using the star button (stored locally in your browser, no account needed).
 
 ## Common Questions
@@ -45,12 +45,15 @@ FreeHosts was created to help developers, students, and makers discover reliable
 
 ## Contact and Community
 
-- Discord community: https://discord.gg/QbeZ3b5CQd (submissions, support, host discussions)
+- [Discord community](https://discord.gg/QbeZ3b5CQd): Submissions, support, and host discussions
+- [X (Twitter)](https://x.com/freehosts_): FreeHosts announcements on X
+- [Instagram](https://www.instagram.com/freehosts/): FreeHosts photos and updates on Instagram
+- [GitHub](https://github.com/freehostsofficial): FreeHosts open-source projects on GitHub
+- [Trustpilot](https://trustpilot.com/review/freehosts.eu): FreeHosts reviews on Trustpilot
 - Email: support@freehosts.eu
-- Social: https://x.com/freehosts_ , https://www.instagram.com/freehosts/ , https://github.com/freehostsofficial
-- Trustpilot: https://trustpilot.com/review/freehosts.eu
 
-## Legal
+## Optional
 
-- All content is provided "as is"; FreeHosts encourages users to maintain backups of important data and verify limits with providers before relying on a free service.
-- See Terms of Service (https://freehosts.eu/tos) and Privacy Policy (https://freehosts.eu/privacy-policy) for details.
+- [Terms of Service](https://freehosts.eu/tos): Legal terms for using FreeHosts
+- [Privacy Policy](https://freehosts.eu/privacy-policy): Data handling practices
+- [Server Rules](https://freehosts.eu/server-rules): Community server conduct rules
