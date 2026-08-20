@@ -4,6 +4,27 @@ import Link from "@/components/NoPrefetchLink";
 import { categories, getCategory } from "@/lib/categories";
 import { safeJsonLd } from "@/lib/safeJsonLd";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import {
+  AlertTriangle,
+  Bot,
+  CircleHelp,
+  Database,
+  Gamepad2,
+  GitBranch,
+  Globe,
+  Rocket,
+  Scale,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
+
+const categoryIcons: Record<string, LucideIcon> = {
+  "free-website-hosting": Globe,
+  "free-app-hosting": GitBranch,
+  "free-game-server-hosting": Gamepad2,
+  "free-discord-bot-hosting": Bot,
+  "free-database-hosting": Database,
+};
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -37,6 +58,7 @@ export default async function CategoryPage({ params }: Props) {
 
   const topic = category.name.toLowerCase();
   const url = `${process.env.APP_URL}/categories/${category.slug}`;
+  const HeroIcon = categoryIcons[category.slug] ?? Globe;
 
   const webPageSchema = {
     "@context": "https://schema.org",
@@ -71,58 +93,82 @@ export default async function CategoryPage({ params }: Props) {
         ]}
       />
       <main className="wrap">
-        <header className="external-page-header">
-          <h1 className="external-page-title">{category.h1}</h1>
-          <p className="external-page-subtitle">{category.description}</p>
+        <section className="faq-hero">
+          <div className="faq-hero-icon">
+            <HeroIcon size={40} aria-hidden="true" />
+          </div>
+          <h1>{category.h1}</h1>
+          <p>{category.description}</p>
           <p className="page-updated">Last updated: {category.updated}</p>
-        </header>
+        </section>
 
-        <div className="page-intro">
-          {category.intro.map((paragraph, i) => (
-            <p key={i}>{paragraph}</p>
-          ))}
-        </div>
-
-        <h2 className="category-subtitle">How {topic} actually works</h2>
-        <div className="category-prose">
-          {category.howItWorks.map((paragraph, i) => (
-            <p key={i}>{paragraph}</p>
-          ))}
-        </div>
-
-        <h2 className="category-subtitle">Free vs paid: where the line really is</h2>
-        <div className="category-prose">
-          {category.freeVsPaid.map((paragraph, i) => (
-            <p key={i}>{paragraph}</p>
-          ))}
-        </div>
-
-        <h2 className="category-subtitle">Common mistakes and how to avoid them</h2>
-        <ul className="host-check-list">
-          {category.commonMistakes.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-
-        <h2 className="category-subtitle">Getting started in five steps</h2>
-        <ol className="host-check-list steps">
-          {category.gettingStarted.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ol>
-
-        <h2 className="category-subtitle">Frequently asked questions</h2>
-        <div className="category-faq">
-          {category.faq.map((item) => (
-            <div className="category-faq-item" key={item.q}>
-              <h3>{item.q}</h3>
-              <p>{item.a}</p>
+        <div className="about-content">
+          <section className="content-section">
+            <div className="section-icon">
+              <Wrench size={24} aria-hidden="true" />
             </div>
-          ))}
+            <h2>How {topic} actually works</h2>
+            {category.howItWorks.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </section>
+
+          <section className="content-section">
+            <div className="section-icon">
+              <Scale size={24} aria-hidden="true" />
+            </div>
+            <h2>Free vs paid: where the line really is</h2>
+            {category.freeVsPaid.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </section>
+
+          <section className="content-section">
+            <div className="section-icon">
+              <AlertTriangle size={24} aria-hidden="true" />
+            </div>
+            <h2>Common mistakes and how to avoid them</h2>
+            <ul className="host-check-list">
+              {category.commonMistakes.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="content-section">
+            <div className="section-icon">
+              <Rocket size={24} aria-hidden="true" />
+            </div>
+            <h2>Getting started in five steps</h2>
+            <ol className="host-check-list steps">
+              {category.gettingStarted.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ol>
+          </section>
+
+          <section className="content-section">
+            <div className="section-icon">
+              <CircleHelp size={24} aria-hidden="true" />
+            </div>
+            <h2>Frequently asked questions</h2>
+            <div className="category-faq">
+              {category.faq.map((item) => (
+                <div className="category-faq-item" key={item.q}>
+                  <h3>{item.q}</h3>
+                  <p>{item.a}</p>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
 
-        <div className="category-cta">
-          <Link className="btn primary" href="/hosts">Browse the free host directory</Link>
+        <div className="faq-cta">
+          <h2>Ready to get started?</h2>
+          <p>Browse verified providers in the FreeHosts directory and find the right free host for your project.</p>
+          <div className="faq-cta-buttons">
+            <Link className="faq-cta-btn primary" href="/hosts">Browse the free host directory</Link>
+          </div>
         </div>
       </main>
     </>
