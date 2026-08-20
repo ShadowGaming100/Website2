@@ -160,12 +160,19 @@ export async function GET(req: NextRequest, { params }: Props) {
       {
         width: 1200,
         height: 675,
+        headers: {
+          'Cache-Control':
+            'public, max-age=1800, s-maxage=43200, stale-while-revalidate=604800',
+        },
       }
     );
   } catch (e: unknown) {
     console.log(`${(e as Error).message}`);
     return new Response(`Failed to generate the image`, {
       status: 500,
+      headers: {
+        'Cache-Control': 'no-store',
+      },
     });
   }
 }
