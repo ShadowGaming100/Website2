@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { safeJsonLd } from "../lib/safeJsonLd";
 
 /**
  * Client component — renders breadcrumb structured data based on the current
@@ -12,6 +13,14 @@ export default function GlobalStructuredData() {
 
   // No breadcrumbs needed on the home page
   if (!pathname || pathname === "/") return null;
+
+  // NOTE: this is a client component ("use client" above), and Next.js
+  // only inlines env vars prefixed NEXT_PUBLIC_ into the client bundle.
+  // process.env.APP_URL (unprefixed, server-only per .env.local.example)
+  // is `undefined` here at runtime — using it previously produced
+  // "undefined/hosts", "undefined/about", etc. in the breadcrumb JSON-LD.
+  // NEXT_PUBLIC_SITE_URL is the correctly client-exposed equivalent.
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://freehosts.eu";
 
   const pathParts = pathname.split("/").filter(Boolean);
 
@@ -25,7 +34,7 @@ export default function GlobalStructuredData() {
       "@type": "ListItem",
       position: 1,
       name: "Home",
-      item: process.env.APP_URL ?? "https://freehosts.space"
+      item: siteUrl
     },
   ];
 
@@ -60,7 +69,7 @@ export default function GlobalStructuredData() {
       "@type": "ListItem",
       position: index + 2,
       name,
-      item: `${process.env.APP_URL}${currentPath}`,
+      item: `${siteUrl}${currentPath}`,
     });
   });
 
@@ -73,7 +82,7 @@ export default function GlobalStructuredData() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbSchema) }}
     />
   );
 }

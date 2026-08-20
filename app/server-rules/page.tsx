@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ServerRulesContent from "./ServerRulesContent";
+import { safeJsonLd } from "../../lib/safeJsonLd";
 
 export const metadata: Metadata = {
   title: "Discord Server Rules & Community Guidelines - FreeHosts",
@@ -64,7 +65,7 @@ export default function ServerRulesPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
       />
       <main className="wrap section">
         <ServerRulesContent />

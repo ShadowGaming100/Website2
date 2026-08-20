@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import TosContent from "./TosContent";
+import { safeJsonLd } from "../../lib/safeJsonLd";
 
 export const metadata: Metadata = {
   title: "Terms of Service - FreeHosts",
@@ -59,7 +60,7 @@ export default function TermsOfServicePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
       />
       <main>
         <TosContent />

@@ -36,7 +36,7 @@ export async function GET(req: NextRequest, { params }: Props) {
     const rating = totalReviews > 0 ? Math.round(((host.approvals || 0) / totalReviews) * 100) : 0;
 
     // Base URL for assets
-    const host_header = req.headers.get('host') || 'freehosts.space';
+    const host_header = req.headers.get('host') || 'freehosts.eu';
     const protocol = host_header.includes('localhost') ? 'http' : 'https';
     const siteUrl = `${protocol}://${host_header}`;
     const logoUrl = `${siteUrl}/Src/icons/icon-transparent.png`;

@@ -1,6 +1,7 @@
 import { fetchHosts } from '../../lib/cache'
 import HostsClient from './HostsClient'
 import { slugify } from '../../lib/slugify'
+import { safeJsonLd } from "../../lib/safeJsonLd";
 
 export const runtime = 'edge';
 export const metadata = {
@@ -93,11 +94,11 @@ export default async function HostsPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(webPageSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(itemListSchema) }}
       />
       <HostsClient initialHosts={hosts} />
     </>

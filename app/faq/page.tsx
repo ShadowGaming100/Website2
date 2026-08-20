@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import FaqClient from "./FaqClient";
 import { faqItems } from "./data";
+import { safeJsonLd } from "../../lib/safeJsonLd";
 
 export const metadata: Metadata = {
   title: "FAQ - Frequently Asked Questions About FreeHosts & Free Hosting",
@@ -84,11 +85,11 @@ export default function FaqPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(webPageSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(faqSchema) }}
       />
       <FaqClient />
     </>

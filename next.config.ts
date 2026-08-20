@@ -1,92 +1,22 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  async headers() {
-    return [
-      {
-        source: '/((?!api|_next/static|_next/image|favicon.ico).*)',
-        headers: [
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=86400, s-maxage=2592000, stale-while-revalidate=2592000',
-          },
-          {
-            key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' https://matomo.codelabworks.is-a.dev https://*.cloudflareinsights.com",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: https:",
-              "connect-src 'self' https://matomo.codelabworks.is-a.dev https://discord.com https://*.discord.com https://*.cloudflareinsights.com",
-              "frame-src 'none'",
-              "object-src 'none'",
-              "base-uri 'self'",
-              "form-action 'self'",
-            ].join('; '),
-          },
-        ],
-      },
-      {
-        source: '/hosts',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=1800, s-maxage=43200, stale-while-revalidate=604800',
-          },
-        ],
-      },
-      {
-        source: '/hosts/:slug',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=1800, s-maxage=43200, stale-while-revalidate=604800',
-          },
-        ],
-      },
-            {
-        source: '/hosts/og/:slug',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=1800, s-maxage=43200, stale-while-revalidate=604800',
-          },
-        ],
-      },
-      {
-        source: '/sitemap.xml',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=0, s-maxage=3600, stale-while-revalidate=43200',
-          },
-        ],
-      },
-      {
-
-        source: '/saved',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'private, no-store',
-          },
-        ],
-      },
-      {
-        source: '/hosts/:slug/redirect/:hostname*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'private, no-store',
-          },
-        ],
-      },
-    ];
-  },
-};
+//
+// Security headers, CSP, and Cache-Control are now defined in
+// middleware.ts (project root) instead of here.
+//
+// Reason: four routes in this app (/hosts, /hosts/[slug],
+// /hosts/[slug]/redirect/[...hostname], /hosts/og/[slug]) run on
+// `export const runtime = 'edge'`, and edge routes deployed to Cloudflare
+// do not reliably inherit headers set via next.config.ts's headers()
+// function — this was confirmed empirically on the OG image route, which
+// had no Cache-Control at all until it was set directly on the response.
+// middleware.ts runs as a genuine Cloudflare-native execution point
+// regardless of route runtime, so it's the single source of truth for
+// headers now. Keeping the logic in one place (rather than here AND in
+// middleware.ts) avoids the two ever drifting out of sync.
+//
+// See middleware.ts for the actual header values and per-route Cache-Control
+// tiers, and app/hosts/og/[slug]/route.tsx for the OG route's own
+// self-contained Cache-Control (set directly on the ImageResponse, since
+// that route is the most edge-sensitive one in the app).
+const nextConfig = {};
 module.exports = nextConfig;
-

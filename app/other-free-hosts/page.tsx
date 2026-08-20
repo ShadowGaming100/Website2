@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDiscord } from "@fortawesome/free-brands-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import type { LucideIcon } from "lucide-react";
+import { safeJsonLd } from "../../lib/safeJsonLd";
 
 export const metadata: Metadata = {
   title: "Other Free Hosting Platforms & Directories - FreeHosts",
@@ -57,7 +58,7 @@ export default function OtherFreeHostsPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <main className="wrap">
         <div className="external-page-header">
           <h1 className="external-page-title">Other Free Hosting Platforms</h1>

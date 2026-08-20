@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "@/components/NoPrefetchLink";
+import { safeJsonLd } from "../../lib/safeJsonLd";
 import {
   BookOpen,
   Crosshair,
@@ -121,7 +122,7 @@ export default function AboutPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
       />
       <main className="wrap">
         <section className="about-hero">

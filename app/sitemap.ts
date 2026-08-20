@@ -3,7 +3,7 @@ import { fetchHosts } from '../lib/cache'
 import { slugify } from '../lib/slugify'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.APP_URL ?? 'https://freehosts.space';
+  const baseUrl = process.env.APP_URL ?? 'https://freehosts.eu';
   
   // Static routes
   const staticRoutes = [
@@ -31,8 +31,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const hosts = await fetchHosts()
     const hostRoutes = hosts.map(host => ({
       url: `${baseUrl}/hosts/${slugify(host.name)}`,
+      // NOTE: host.created_at reflects when the host was first added, not
+      // when it was last edited. If the API ever exposes an `updated_at`
+      // field, prefer that here for a more accurate freshness signal.
       lastModified: host.created_at ? new Date(host.created_at) : new Date(),
-      changeFrequency: 'monthly' as const,
+      changeFrequency: 'weekly' as const,
       priority: 0.6,
     }))
 

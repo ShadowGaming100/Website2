@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import StaffClient from "./StaffClient";
 import { staffData } from "./data";
+import { safeJsonLd } from "../../lib/safeJsonLd";
 
 export const metadata: Metadata = {
   title: "Meet the FreeHosts Team - Staff & Contributors",
@@ -96,11 +97,11 @@ export default function StaffPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(webPageSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(teamSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(teamSchema) }}
       />
       <StaffClient />
     </>

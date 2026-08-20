@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SubmitHostClient from "./SubmitHostClient";
+import { safeJsonLd } from "../../lib/safeJsonLd";
 
 export const metadata: Metadata = {
   title: "Submit a Free Host - Get Listed on FreeHosts",
@@ -65,7 +66,7 @@ export default function SubmitHostPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
       />
       <SubmitHostClient />
     </>

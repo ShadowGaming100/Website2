@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import HomeClient from "./HomeClient";
+import { safeJsonLd } from "../lib/safeJsonLd";
 
 export const metadata: Metadata = {
   title: "FreeHosts - Free Hosting for Anything You Build",
@@ -96,7 +97,7 @@ export default function HomePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
       />
       <HomeClient />
     </>

@@ -44,24 +44,22 @@ interface RawHost {
   image?: string
 }
 
-// Server-side cache
-let hostsCache: Host[] | null = null
-let cacheTimestamp: number | null = null
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+// NOTE: We intentionally do NOT keep a hand-rolled module-level cache here
+// (no `let hostsCache`, no `cacheTimestamp`). On edge/Workers runtimes,
+// module-level state is not guaranteed to persist reliably across requests
+// (isolates can be fresh or reused unpredictably), which previously caused
+// inconsistent cache hits and a bug where a freshly-added host could 404
+// for up to 5 minutes even after a re-fetch was triggered. Next's own
+// fetch-level cache (`next: { revalidate }` below) already provides
+// request memoization + time-based revalidation and is safe across
+// runtimes, so we rely on that exclusively.
+
+const REVALIDATE_SECONDS = 300 // 5 minutes
 
 export async function fetchHosts(): Promise<Host[]> {
-  // Check if we have a valid cache
-  if (
-    hostsCache &&
-    cacheTimestamp &&
-    Date.now() - cacheTimestamp < CACHE_DURATION
-  ) {
-    return hostsCache
-  }
-
   try {
     const response = await fetch(`${process.env.API_URL}/api/hosts?limit=1000`, {
-      next: { revalidate: 300 }, // Revalidate every 5 minutes
+      next: { revalidate: REVALIDATE_SECONDS },
     })
     if (!response.ok) throw new Error(`API ${response.status}`)
     const data = await response.json()
@@ -94,26 +92,18 @@ export async function fetchHosts(): Promise<Host[]> {
       image: host.image,
     }))
 
-    // Update cache
-    hostsCache = cleanedHosts
-    cacheTimestamp = Date.now()
-
     return cleanedHosts
   } catch (err) {
     console.error('Failed to fetch hosts list:', err)
-    // Return cached data if available, even if stale
-    return hostsCache || []
+    // No local fallback cache to fall back to anymore — an empty list is
+    // safer than silently serving arbitrarily stale in-memory data from a
+    // previous, unrelated request on a reused edge isolate.
+    return []
   }
-}
-
-export function getHostFromCache(id: number): Host | undefined {
-  if (!hostsCache) return undefined
-  return hostsCache.find((h) => h.id === id)
 }
 
 /**
  * Finds a host whose slugified name matches the given slug.
- * Uses the existing in-memory cache; calls fetchHosts() if cache is cold.
  */
 export async function fetchHostBySlug(slug: string): Promise<Host | null> {
   return (await fetchHosts()).find(h => slugify(h.name) === slug) ?? null
@@ -126,24 +116,6 @@ export async function fetchHostById(
   const hostId = Number(id)
   if (!Number.isFinite(hostId)) return null
 
-  try {
-    // Use cached list if fresh
-    if (
-      hostsCache &&
-      cacheTimestamp &&
-      Date.now() - cacheTimestamp < CACHE_DURATION
-    ) {
-      const cached = hostsCache.find((h) => h.id === hostId)
-      if (cached) return cached
-    }
-
-    // Otherwise fetch all hosts
-    const allHosts = await fetchHosts()
-    const host = allHosts.find((h) => h.id === hostId)
-    return host || null
-  } catch (err) {
-    console.error('fetchHostById error:', err)
-    const fallback = getHostFromCache(hostId)
-    return fallback ?? null
-  }
+  const allHosts = await fetchHosts()
+  return allHosts.find((h) => h.id === hostId) ?? null
 }

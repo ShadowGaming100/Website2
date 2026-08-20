@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import PrivacyPolicyContent from "./PrivacyPolicyContent";
+import { safeJsonLd } from "../../lib/safeJsonLd";
 
 export const metadata: Metadata = {
   title: "Privacy Policy - FreeHosts",
@@ -59,7 +60,7 @@ export default function PrivacyPolicyPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
       />
       <main>
         <PrivacyPolicyContent />

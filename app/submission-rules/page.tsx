@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SubmissionRulesContent from "./SubmissionRulesContent";
+import { safeJsonLd } from "../../lib/safeJsonLd";
 
 export const metadata: Metadata = {
   title: "Host Submission Rules & Guidelines - FreeHosts",
@@ -64,7 +65,7 @@ export default function SubmissionRulesPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
       />
       <main className="wrap">
         <SubmissionRulesContent />
