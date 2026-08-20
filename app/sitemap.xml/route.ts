@@ -1,10 +1,10 @@
 import { fetchHosts } from '../../lib/cache'
 import { slugify } from '../../lib/slugify'
 
-export const dynamic = 'force-dynamic'
+export const runtime = 'edge';
 
 export async function GET() {
-  const baseUrl = process.env.APP_URL ?? 'https://freehosts.eu'
+  const baseUrl = process.env.APP_URL
 
   // Static routes
   const staticRoutes = [

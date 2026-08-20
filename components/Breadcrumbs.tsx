@@ -5,14 +5,13 @@ export default function Breadcrumbs({
   siteUrl,
   items,
 }: {
-  siteUrl?: string;
+  siteUrl: string;
   items: { name: string; path: string }[];
 }) {
-  const base = siteUrl ?? "https://freehosts.eu";
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbSchema(base, items)) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbSchema(siteUrl, items)) }}
     />
   );
 }
