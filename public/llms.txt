@@ -1,0 +1,56 @@
+# FreeHosts
+
+> FreeHosts is a community-curated directory of genuinely free hosting providers for websites, Discord bots, mobile apps, and databases. Every listing is reviewed by volunteer curators and includes verified specifications (CPU, RAM, storage), supported languages, target use cases, website links, and community approval ratings. All services featured are free to use with no hidden charges or premium tiers.
+
+## About FreeHosts
+
+FreeHosts was created to help developers, students, and makers discover reliable zero-cost hosting without marketing fluff. The directory prioritizes quality over quantity: hosts are only listed when they provide clear information about features, specifications, and contact methods. The community verifies listings and can report incorrect or fraudulent providers for removal.
+
+- The website itself is free to use for everyone — no accounts required to browse.
+- Host listings are maintained by volunteer curators and community submissions.
+- Free hosting typically includes trade-offs: reduced CPU/RAM, storage limits, server slot restrictions, idle shutdown policies, or ads. FreeHosts surfaces these limits so users can choose the right provider.
+
+## Key Pages
+
+- Home: https://freehosts.eu/
+- Free Hosting Directory (browse 100+ providers): https://freehosts.eu/hosts
+- Compare Hosts (side-by-side spec comparison): https://freehosts.eu/compare
+- FAQ: https://freehosts.eu/faq
+- About FreeHosts: https://freehosts.eu/about
+- Staff & Curators: https://freehosts.eu/staff
+- Other Free Hosting Platforms: https://freehosts.eu/other-free-hosts
+- Submit a Host: https://freehosts.eu/submit-host
+- Submit a Layout: https://freehosts.eu/submit-layout
+- Submission Rules: https://freehosts.eu/submission-rules
+- Server Rules: https://freehosts.eu/server-rules
+- Terms of Service: https://freehosts.eu/tos
+- Privacy Policy: https://freehosts.eu/privacy-policy
+
+## How to Use the Directory
+
+1. Browse the directory at https://freehosts.eu/hosts — every provider lists CPU, RAM, storage, supported languages, target use cases, and its status.
+2. Filter by search term, target use case (websites, Discord bots, apps, databases), language, or sort by rating.
+3. Open any host page for full details, community ratings, website links, and similar providers.
+4. Use the compare tool at https://freehosts.eu/compare to evaluate hosts side by side.
+5. Save favorite hosts using the star button (stored locally in your browser, no account needed).
+
+## Common Questions
+
+- Are the listed hosts really free? Yes — every featured service is genuinely free to use with no hidden charges. Free tiers include limits (CPU, RAM, storage, bandwidth, or idle timeouts) that vary per provider and are listed on each page.
+- Do I keep my computer running? No. These are cloud-based services; servers run independently of your device. Some providers stop inactive servers after days or weeks — you can usually restart them from the provider's dashboard.
+- Can I use multiple hosts at once? Yes. Many users run different projects across several free hosts for redundancy or to evaluate providers before paying.
+- Managed vs unmanaged? Managed hosts handle maintenance, updates, and support; unmanaged hosts give you full control. Most free hosts are managed or semi-managed.
+- How are hosts added? Community members submit hosts through the FreeHosts Discord server; curators review each submission (typically 3–7 days) before it is published.
+- How do ratings work? Each host page shows community approvals and disapprovals collected from directory visitors.
+
+## Contact and Community
+
+- Discord community: https://discord.gg/QbeZ3b5CQd (submissions, support, host discussions)
+- Email: support@freehosts.eu
+- Social: https://x.com/freehosts_ , https://www.instagram.com/freehosts/ , https://github.com/freehostsofficial
+- Trustpilot: https://trustpilot.com/review/freehosts.eu
+
+## Legal
+
+- All content is provided "as is"; FreeHosts encourages users to maintain backups of important data and verify limits with providers before relying on a free service.
+- See Terms of Service (https://freehosts.eu/tos) and Privacy Policy (https://freehosts.eu/privacy-policy) for details.

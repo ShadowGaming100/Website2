@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import Image from "next/image";
 import { ExternalLink, Info, List } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -59,6 +60,7 @@ export default function OtherFreeHostsPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
+      <Breadcrumbs siteUrl={process.env.APP_URL} items={[{ name: "Other Free Hosts", path: "/other-free-hosts" }]} />
       <main className="wrap">
         <div className="external-page-header">
           <h1 className="external-page-title">Other Free Hosting Platforms</h1>

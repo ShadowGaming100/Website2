@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import ServerRulesContent from "./ServerRulesContent";
 import { safeJsonLd } from "../../lib/safeJsonLd";
 
@@ -67,6 +68,7 @@ export default function ServerRulesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
       />
+      <Breadcrumbs siteUrl={process.env.APP_URL} items={[{ name: "Server Rules", path: "/server-rules" }]} />
       <main className="wrap section">
         <ServerRulesContent />
       </main>

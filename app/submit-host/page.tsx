@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SubmitHostClient from "./SubmitHostClient";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { safeJsonLd } from "../../lib/safeJsonLd";
 
 export const metadata: Metadata = {
@@ -68,6 +69,7 @@ export default function SubmitHostPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
       />
+      <Breadcrumbs siteUrl={process.env.APP_URL} items={[{ name: "Submit a Host", path: "/submit-host" }]} />
       <SubmitHostClient />
     </>
   );

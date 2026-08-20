@@ -39,7 +39,7 @@
     --input-border: rgba(255, 255, 255, 0.15);
     
     /* Typography System */
-    --font-primary: "Geist", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-primary: var(--font-geist), var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --font-size-xs: 0.75rem;
     --font-size-sm: 0.875rem;
     --font-size-base: 1.0625rem;

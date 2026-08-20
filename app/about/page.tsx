@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "@/components/NoPrefetchLink";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { safeJsonLd } from "../../lib/safeJsonLd";
 import {
   BookOpen,
@@ -124,6 +125,7 @@ export default function AboutPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
       />
+      <Breadcrumbs siteUrl={process.env.APP_URL} items={[{ name: "About", path: "/about" }]} />
       <main className="wrap">
         <section className="about-hero">
           <div className="about-hero-icon">

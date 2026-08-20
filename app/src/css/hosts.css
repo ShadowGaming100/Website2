@@ -3253,3 +3253,23 @@
   gap: 4px;
   flex-wrap: wrap;
 }
+/* --- Category landing pages ----------------------------------------------- */
+.page-updated { font-size: var(--font-size-sm); color: var(--text-muted, #94a3b8); margin: 12px 0 0; }
+.page-intro { margin: 16px 0; font-size: var(--font-size-base); line-height: 1.6; }
+.page-intro p, .category-prose p { margin: 0 0 14px; line-height: 1.7; max-width: 78ch; }
+.host-check-list { margin: 0 0 24px; padding-left: 20px; display: grid; gap: 6px; max-width: 78ch; }
+.host-check-list li { color: var(--text-muted, #94a3b8); line-height: 1.65; }
+.host-check-list.steps li { color: var(--text-strong, #e2e8f0); }
+
+/* --- Category page text sections ------------------------------------------ */
+.category-subtitle { font-size: var(--font-size-2xl); margin: 28px 0 12px; }
+.category-faq { display: grid; gap: 14px; margin-bottom: 28px; max-width: 78ch; }
+.category-faq-item {
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+  border: 1px solid var(--input-border);
+}
+.category-faq-item h3 { font-size: var(--font-size-base); margin-bottom: 6px; }
+.category-faq-item p { font-size: var(--font-size-sm); line-height: 1.65; color: var(--text-muted, #94a3b8); margin: 0; }
+.category-cta { margin-top: 8px; }

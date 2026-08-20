@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import PrivacyPolicyContent from "./PrivacyPolicyContent";
 import { safeJsonLd } from "../../lib/safeJsonLd";
 
@@ -62,6 +63,7 @@ export default function PrivacyPolicyPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
       />
+      <Breadcrumbs siteUrl={process.env.APP_URL} items={[{ name: "Privacy Policy", path: "/privacy-policy" }]} />
       <main>
         <PrivacyPolicyContent />
       </main>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import TosContent from "./TosContent";
 import { safeJsonLd } from "../../lib/safeJsonLd";
 
@@ -62,6 +63,7 @@ export default function TermsOfServicePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
       />
+      <Breadcrumbs siteUrl={process.env.APP_URL} items={[{ name: "Terms of Service", path: "/tos" }]} />
       <main>
         <TosContent />
       </main>

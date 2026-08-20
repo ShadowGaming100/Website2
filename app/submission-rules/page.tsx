@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SubmissionRulesContent from "./SubmissionRulesContent";
 import { safeJsonLd } from "../../lib/safeJsonLd";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Host Submission Rules & Guidelines - FreeHosts",
@@ -67,6 +68,7 @@ export default function SubmissionRulesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
       />
+      <Breadcrumbs siteUrl={process.env.APP_URL} items={[{ name: "Submission Rules", path: "/submission-rules" }]} />
       <main className="wrap">
         <SubmissionRulesContent />
       </main>

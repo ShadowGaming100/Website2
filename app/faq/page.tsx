@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import FaqClient from "./FaqClient";
 import { faqItems } from "./data";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { safeJsonLd } from "../../lib/safeJsonLd";
 
 export const metadata: Metadata = {
@@ -91,6 +92,7 @@ export default function FaqPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(faqSchema) }}
       />
+      <Breadcrumbs siteUrl={process.env.APP_URL} items={[{ name: "FAQ", path: "/faq" }]} />
       <FaqClient />
     </>
   );

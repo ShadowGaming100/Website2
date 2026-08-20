@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { Geist as GeistFont, Inter as InterFont } from "next/font/google";
 import React, { Suspense } from "react";
 import Image from "next/image";
 import Link from "@/components/NoPrefetchLink";
 import RouteInitializer from "../components/RouteInitializer";
-import GlobalStructuredData from "../components/GlobalStructuredData";
 import MatomoTracker from "../components/MatomoTracker";
 import ThemeProvider from "../components/ThemeProvider";
 import SidebarController from "../components/SidebarController";
@@ -52,6 +52,20 @@ config.autoAddCss = false;
 import "./src/css/globals.css";
 import "./src/css/styles.css";
 import "./src/css/hosts.css";
+
+const geist = GeistFont({
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-geist",
+});
+
+const inter = InterFont({
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-inter",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_URL ?? "https://freehosts.eu"),
@@ -112,6 +126,10 @@ export const metadata: Metadata = {
     images: ["/Src/Images/banner.png"],
     site: "@freehosts_",
     creator: "@freehosts_",
+  },
+  icons: {
+    icon: "/Src/icons/icon.png",
+    apple: "/Src/icons/icon.png",
   },
 };
 
@@ -202,15 +220,13 @@ export default function RootLayout({
   const year = new Date().getFullYear();
 
   return (
-    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+      className={`${geist.variable} ${inter.variable}`}
+    >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700;800&family=Inter:wght@400;600;700;800&display=swap"
-          rel="stylesheet"
-        />
         <link
           rel="sitemap"
           type="application/xml"
@@ -232,7 +248,6 @@ export default function RootLayout({
         <SnowEffect />
         <PreviewCard />
         <RouteInitializer />
-        <GlobalStructuredData />
 
         <ConsentProvider>
           <ComparisonProvider>

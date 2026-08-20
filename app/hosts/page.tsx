@@ -1,5 +1,6 @@
 import { fetchHosts } from '../../lib/cache'
 import HostsClient from './HostsClient'
+import Breadcrumbs from '@/components/Breadcrumbs'
 import { slugify } from '../../lib/slugify'
 import { safeJsonLd } from "../../lib/safeJsonLd";
 
@@ -100,6 +101,7 @@ export default async function HostsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(itemListSchema) }}
       />
+      <Breadcrumbs siteUrl={process.env.APP_URL} items={[{ name: 'Free Hosting Directory', path: '/hosts' }]} />
       <HostsClient initialHosts={hosts} />
     </>
   )

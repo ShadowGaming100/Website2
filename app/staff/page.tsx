@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import StaffClient from "./StaffClient";
 import { staffData } from "./data";
 import { safeJsonLd } from "../../lib/safeJsonLd";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Meet the FreeHosts Team - Staff & Contributors",
@@ -103,6 +104,7 @@ export default function StaffPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(teamSchema) }}
       />
+      <Breadcrumbs siteUrl={process.env.APP_URL} items={[{ name: "Staff", path: "/staff" }]} />
       <StaffClient />
     </>
   );

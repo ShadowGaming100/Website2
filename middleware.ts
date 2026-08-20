@@ -22,6 +22,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const SECURITY_HEADERS: Record<string, string> = {
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "SAMEORIGIN",
   "Referrer-Policy": "strict-origin-when-cross-origin",
@@ -46,8 +47,11 @@ const CACHE_DEFAULT =
 const CACHE_HOSTS =
   "public, max-age=1800, s-maxage=43200, stale-while-revalidate=604800";
 
+// Since this route now servers a pre-gzipped body, no-transform tells
+// Cloudflare to pass it through exactly as-is instead of re-encoding it
+// to Brotli (which Google's sitemap fetcher cannot decode).
 const CACHE_SITEMAP =
-  "public, max-age=0, s-maxage=3600, stale-while-revalidate=43200";
+  "public, max-age=0, s-maxage=3600, stale-while-revalidate=43200, no-transform";
 
 const CACHE_NO_STORE = "private, no-store";
 

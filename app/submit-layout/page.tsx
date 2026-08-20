@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SubmitLayoutClient from "./SubmitLayoutClient";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Layout Builder - FreeHosts",
@@ -31,5 +32,10 @@ export const metadata: Metadata = {
 };
 
 export default function SubmitLayoutPage() {
-  return <SubmitLayoutClient />;
+  return (
+    <>
+      <Breadcrumbs siteUrl={process.env.APP_URL} items={[{ name: "Submit Layout", path: "/submit-layout" }]} />
+      <SubmitLayoutClient />
+    </>
+  );
 }

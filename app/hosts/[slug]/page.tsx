@@ -1,8 +1,8 @@
 import { redirect, notFound } from 'next/navigation'
-import { headers } from 'next/headers'
 import { fetchHostById, fetchHostBySlug, fetchHosts, type Host } from '../../../lib/cache'
 import { slugify } from '../../../lib/slugify'
 import HostDetailClient from '../../../components/HostDetailClient'
+import Breadcrumbs from '../../../components/Breadcrumbs'
 import { safeJsonLd } from "../../../lib/safeJsonLd";
 export const runtime = 'edge';
 
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props) {
   const totalReviews = (host.approvals || 0) + (host.disapprovals || 0)
   const rating = totalReviews > 0 ? Math.round(((host.approvals || 0) / totalReviews) * 100) : 0
   
-  const site = `${(await headers()).get('host')?.includes('localhost') ? 'http' : 'https'}://${(await headers()).get('host') || 'freehosts.eu'}`
+  const site = process.env.APP_URL ?? "https://freehosts.eu"
   const hostUrl = `${site}/hosts/${slugify(host.name)}`
   
   // Construct dynamic OG image URL
@@ -77,10 +77,14 @@ export default async function HostDetailPage({ params }: Props) {
   const typeText = host.type && host.type.toLowerCase().includes('trusted') ? 'Trusted & Free' : host.type || 'Free'
   let description = `Learn about ${host.name}, a ${typeText.toLowerCase()} hosting provider. ${specsText} Read user reviews and compare options on FreeHosts.`
   if (description.length > 160) description = description.substring(0, 157) + '...'
-  const site = `${(await headers()).get('host')?.includes('localhost') ? 'http' : 'https'}://${(await headers()).get('host') || 'freehosts.eu'}`
+  const site = process.env.APP_URL ?? "https://freehosts.eu"
   const hostUrl = `${site}/hosts/${slugify(host.name)}`
   const totalReviews = host.approvals + host.disapprovals
   const ratingValue = totalReviews > 0 ? ((host.approvals / totalReviews) * 5).toFixed(1) : null
+  // ponytail: gate on vote volume only — votes are Discord thumbs, not written
+  // reviews. No real review bodies exist yet, so keep the surface small; add a
+  // review body + author requirement if Google ever flags this.
+  const showRating = ratingValue !== null && totalReviews >= 5
   const title = `${host.name} - Free Hosting Provider Details | FreeHosts`
   const jsonLd = { "@context": "https://schema.org", "@type": "WebPage", "@id": `${hostUrl}#webpage`, "url": hostUrl, "name": title, "isPartOf": { "@id": `${site}/#website` }, "inLanguage": "en", "description": description }
   const serviceLd = {
@@ -88,7 +92,7 @@ export default async function HostDetailPage({ params }: Props) {
     "provider": { "@type": "Organization", "name": host.name, ...(host.links?.[0] ? { "url": host.links[0] } : {}) },
     ...(host.image ? { "image": host.image } : {}),
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": host.status?.toLowerCase() === "online" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock", "url": hostUrl, "description": `Free ${host.targets?.join(', ') || 'hosting'} — ${host.cpu || 'Unknown'} CPU, ${host.ram || 'Unknown'} RAM, ${host.disk || 'Unknown'} storage` },
-    ...(ratingValue ? { "aggregateRating": { "@type": "AggregateRating", "ratingValue": ratingValue, "bestRating": "5", "worstRating": "1", "ratingCount": totalReviews, "reviewCount": totalReviews } } : {}),
+    ...(showRating ? { "aggregateRating": { "@type": "AggregateRating", "ratingValue": ratingValue, "bestRating": "5", "worstRating": "1", "ratingCount": totalReviews, "reviewCount": totalReviews } } : {}),
   }
       const allHosts = await fetchHosts()
       const related = allHosts
@@ -106,6 +110,13 @@ export default async function HostDetailPage({ params }: Props) {
         <>
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(serviceLd) }} />
+          <Breadcrumbs
+            siteUrl={site}
+            items={[
+              { name: 'Free Hosting Directory', path: '/hosts' },
+              { name: host.name, path: `/hosts/${slugify(host.name)}` },
+            ]}
+          />
           <HostDetailClient host={host} related={related} />
         </>
       )
