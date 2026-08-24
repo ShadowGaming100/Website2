@@ -18,5 +18,11 @@
 // tiers, and app/hosts/og/[slug]/route.tsx for the OG route's own
 // self-contained Cache-Control (set directly on the ImageResponse, since
 // that route is the most edge-sensitive one in the app).
-const nextConfig = {};
+const nextConfig = {
+  // ponytail: on Cloudflare there's no sharp/Image Resizing behind
+  // /_next/image, so it just re-serves the ORIGINAL file (uncacheable,
+  // 240 KB for a w=64 request). Serving static URLs directly lets the
+  // CDN and browser actually cache. Revisit only if Image Resizing gets enabled.
+  images: { unoptimized: true },
+};
 module.exports = nextConfig;
