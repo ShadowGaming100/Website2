@@ -1,20 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { ComponentProps, useCallback } from "react";
+import Link from "next/link";
+import type { ComponentProps } from "react";
 
-type LinkProps = ComponentProps<"a"> & {
-  href: string;
-};
+type Props = Omit<ComponentProps<typeof Link>, "prefetch">;
 
-export default function NoPrefetchLink({ href, onClick, ...props }: LinkProps) {
-  const router = useRouter();
-
-  const handleClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    onClick?.(e);
-    router.push(href);
-  }, [href, onClick, router]);
-
-  return <a href={href} onClick={handleClick} {...props} />;
+export default function NoPrefetchLink({ children, ...props }: Props) {
+  return (
+    <Link {...props} prefetch={false}>
+      {children}
+    </Link>
+  );
 }

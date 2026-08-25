@@ -26,6 +26,15 @@ export const parseCPUValue = (cpuStr?: string): number => {
 }
 
 /**
+ * Formats a megabyte value for display: "1.5 GB" / "512 MB", or "Unknown".
+ */
+export const formatSize = (mb?: number): string => {
+  if (!mb) return 'Unknown'
+  if (mb >= 1024) return `${(mb / 1024).toFixed(1)} GB`
+  return `${Math.round(mb)} MB`
+}
+
+/**
  * Converts a memory spec string (or pre-parsed MB value) to megabytes.
  * - "Unlimited" or "Infinity" → Infinity (sorts to top)
  * - If `memoryMB` is provided it takes precedence.

@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense, useRef, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, Suspense, useRef, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { type Host } from '../../lib/cache';
 import Link from '@/components/NoPrefetchLink';
 import { slugify } from '../../lib/slugify';
 import { getLanguageName } from '../../lib/getLanguageName';
 import { parseCPUValue, parseMemoryToMB } from '../../lib/parseSpecs';
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, X, Shuffle, ArrowDownAZ, Cpu, MemoryStick, HardDrive, Clock, GitCompare, Star, ThumbsUp } from 'lucide-react';
+import { ChevronDown, Search, X, Shuffle, ArrowDownAZ, Cpu, MemoryStick, HardDrive, Clock, GitCompare, Star, ThumbsUp } from 'lucide-react';
 import { useComparison } from '../../contexts/ComparisonContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
 
@@ -189,7 +189,6 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   const SCROLL_KEY = 'hosts_scroll_y'
   const RANDOM_ORDER_KEY = 'hosts_random_order'
   const FILTERS_KEY = 'hosts_filters'
-  const PAGE_KEY = 'hosts_page'
 
   // sessionStorage overrides are applied in a useEffect after hydration.
   const [currentFilters, setCurrentFilters] = useState({
@@ -199,20 +198,10 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     sort: searchParams.get('sort') || 'random'
   })
 
-  const [currentPage, setCurrentPage] = useState(() => {
-    const page = parseInt(searchParams.get('page') || '1')
-    return !isNaN(page) && page > 0 ? page : 1
-  })
-
   const debouncedSearch = useDebounce(currentFilters.search, 300)
   const isSearching = currentFilters.search !== debouncedSearch
 
   const isMounted = useRef(false)
-  const [hasMounted, setHasMounted] = useState(false)
-
-  useEffect(() => {
-    setHasMounted(true)
-  }, [])
 
   // Helper to generate and persist a fresh random order
   const generateRandomOrder = (hostList: Host[]): Map<number, number> => {
@@ -232,9 +221,13 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     new Map<number, number>(initialHosts.map(h => [h.id, Math.random()]))
   )
 
-  // After hydration: restore filters, page, random order, and scroll from sessionStorage.
-  // This runs once and avoids any SSR/client mismatch.
-  useEffect(() => {
+  // After hydration: restore filters, random order, and scroll from sessionStorage.
+  // useLayoutEffect + instant scroll runs BEFORE paint, so coming back from a
+  // host detail lands directly on the saved position — no flash of the top of
+  // the page first. scrollRestoration=manual stops the browser/Next from
+  // fighting us with its own (later, competing) restoration.
+  useLayoutEffect(() => {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
     try {
       // Restore random order
       const savedOrder = sessionStorage.getItem(RANDOM_ORDER_KEY)
@@ -247,30 +240,20 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
         sessionStorage.setItem(RANDOM_ORDER_KEY, JSON.stringify([...map]))
       }
 
-      // Restore filters and page (back-navigation)
+      // Restore filters (back-navigation)
       const savedFilters = sessionStorage.getItem(FILTERS_KEY)
-      const savedPage = sessionStorage.getItem(PAGE_KEY)
       if (savedFilters) {
-         
+
         setCurrentFilters(JSON.parse(savedFilters))
-      }
-      if (savedPage) {
-        const page = parseInt(savedPage)
-        if (!isNaN(page) && page > 0) {
-           
-          setCurrentPage(page)
-        }
       }
 
       // Restore scroll position
       const savedScroll = sessionStorage.getItem(SCROLL_KEY)
       if (savedScroll) {
         const y = parseInt(savedScroll, 10)
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            window.scrollTo({ top: y, behavior: 'instant' })
-          })
-        })
+        if (!isNaN(y) && y > 0) {
+          window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior })
+        }
         sessionStorage.removeItem(SCROLL_KEY)
       }
     } catch {
@@ -279,15 +262,14 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Save filters and page to sessionStorage whenever they change
+  // Save filters to sessionStorage whenever they change
   useEffect(() => {
     try {
       sessionStorage.setItem(FILTERS_KEY, JSON.stringify(currentFilters))
-      sessionStorage.setItem(PAGE_KEY, String(currentPage))
     } catch {
       // ignore storage errors
     }
-  }, [currentFilters, currentPage])
+  }, [currentFilters])
 
   // Save scroll position when navigating away to a host detail
   useEffect(() => {
@@ -300,8 +282,6 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     document.addEventListener('click', handleClick)
     return () => document.removeEventListener('click', handleClick)
   }, [])
-
-  const pageSize = 24
 
   // Memoize Filter Options
   const locales = useMemo(() => {
@@ -395,8 +375,6 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     return sortHosts(filtered, currentFilters.sort)
   }, [hosts, debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, sortHosts])
 
-  const totalPages = useMemo(() => Math.ceil(filteredHosts.length / pageSize), [filteredHosts.length, pageSize])
-
   // Optimize URL updates
   const updateURL = useCallback(() => {
     const params = new URLSearchParams()
@@ -404,32 +382,28 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     if (currentFilters.locale) params.set('locale', currentFilters.locale)
     if (currentFilters.target) params.set('target', currentFilters.target)
     if (currentFilters.sort && currentFilters.sort !== 'random') params.set('sort', currentFilters.sort)
-    if (currentPage > 1) params.set('page', currentPage.toString())
 
     const newURL = params.toString() ? `/hosts?${params.toString()}` : '/hosts'
     window.history.replaceState({}, '', newURL)
-  }, [debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, currentPage])
+  }, [debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort])
 
   const handleFilterChange = (filter: keyof typeof currentFilters, value: string) => {
     setCurrentFilters((prev: typeof currentFilters) => ({
       ...prev,
       [filter]: value
     }))
-    setCurrentPage(1)
   }
 
   const handleSortChange = (sort: string) => {
     // Clicking "Random" while already on random reshuffles the order
     if (sort === 'random' && currentFilters.sort === 'random') {
       setRandomOrder(generateRandomOrder(hosts))
-      setCurrentPage(1)
       return
     }
     setCurrentFilters((prev: typeof currentFilters) => ({
       ...prev,
       sort
     }))
-    setCurrentPage(1)
   }
 
   // Only update URL when filters actually change (not during typing)
@@ -439,7 +413,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     } else {
       isMounted.current = true
     }
-  }, [debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, currentPage, updateURL])
+  }, [debouncedSearch, currentFilters.locale, currentFilters.target, currentFilters.sort, updateURL])
 
   const clearFilters = () => {
     setCurrentFilters({
@@ -448,17 +422,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
       target: '',
       sort: 'random'
     })
-    setCurrentPage(1)
   }
-
-  const goToPage = (page: number) => {
-    if (page < 1 || page > totalPages) return
-    setCurrentPage(page)
-    // Scroll to top of results
-    document.getElementById('hosts-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-
-
 
   const isHostNew = (host: Host): boolean => {
     if (!host.created_at) return false
@@ -475,21 +439,10 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     return Math.round(mb) + 'MB'
   }
 
-  const currentPageHosts = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize
-    const endIndex = Math.min(startIndex + pageSize, filteredHosts.length)
-    return filteredHosts.slice(startIndex, endIndex)
-  }, [filteredHosts, currentPage, pageSize])
-
   const hasActiveFilters = useMemo(() => 
     currentFilters.search || currentFilters.locale || currentFilters.target,
     [currentFilters.search, currentFilters.locale, currentFilters.target]
   )
-
-  // Final check for hydration loading
-  if (!hasMounted) {
-    return <HostsLoading />
-  }
 
   return (
     <main id="main-content">
@@ -608,7 +561,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                 </div>
               </div>
             ) : (
-              currentPageHosts.map(host => (
+              filteredHosts.map(host => (
                 <HostCard 
                   key={host.id} 
                   host={host} 
@@ -618,59 +571,6 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
               ))
             )}
           </div>
-
-          {/* Pagination */}
-          {filteredHosts.length > pageSize && (
-            <div className="pagination" id="pagination">
-              <button 
-                className="pagination-btn" 
-                onClick={() => goToPage(1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronsLeft size={14} aria-hidden="true" /> First
-              </button>
-              <button 
-                className="pagination-btn" 
-                onClick={() => goToPage(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft size={14} aria-hidden="true" /> Previous
-              </button>
-              
-              <div className="pagination-pages" id="page-numbers">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const startPage = Math.max(1, currentPage - 2)
-                  const pageNum = startPage + i
-                  if (pageNum > totalPages) return null
-                  
-                  return (
-                    <button
-                      key={pageNum}
-                      className={`page-btn ${pageNum === currentPage ? 'active' : ''}`}
-                      onClick={() => goToPage(pageNum)}
-                    >
-                      {pageNum}
-                    </button>
-                  )
-                })}
-              </div>
-              
-              <button 
-                className="pagination-btn" 
-                onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                Next <ChevronRight size={14} aria-hidden="true" />
-              </button>
-              <button 
-                className="pagination-btn" 
-                onClick={() => goToPage(totalPages)}
-                disabled={currentPage === totalPages}
-              >
-                Last <ChevronsRight size={14} aria-hidden="true" />
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </main>
@@ -738,32 +638,23 @@ function HostCard({ host, isNew, formatSize }: HostCardProps) {
 
          if (isDomainHost && extractedDomains.length > 0) {
            return (
-             <div className="host-specs" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px 12px', minHeight: '80px', justifyContent: 'center' }}>
-               <div style={{ fontSize: '11px', color: 'var(--accent-2)', fontWeight: '700', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+             <div className="host-domains">
+               <div className="host-domains-label">
                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                  Extensions:
                </div>
-               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '2px' }}>
+               <div className="host-domains-list">
                  {extractedDomains.map(domain => {
                    const cleanDomain = domain.replace(/^[-\s•*]+/, '');
                    return (
-                     <span key={domain} style={{ 
-                       fontSize: '11px', 
-                       opacity: 0.9,
-                       backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                       padding: '2px 8px',
-                       borderRadius: '6px',
-                       border: '1px solid rgba(99, 102, 241, 0.2)',
-                       color: '#818cf8',
-                       fontWeight: 600
-                     }}>
+                     <span key={domain} className="domain-badge">
                        {cleanDomain}
                      </span>
                    );
                  })}
                </div>
                {hasMoreDomains && (
-                 <div style={{ fontSize: '10px', opacity: 0.6, fontStyle: 'italic' }}>
+                 <div className="host-domains-more">
                    + {allExtractedDomains.length - 10} more available
                  </div>
                )}
@@ -862,12 +753,12 @@ function getSortIcon(sortType: string): React.ReactNode {
 function getSortLabel(sortType: string): string {
   switch (sortType) {
     case 'random': return 'Random'
-    case 'name': return 'Name (A-Z)'
-    case 'cpu': return 'Most CPU'
-    case 'ram': return 'Most Memory'
-    case 'storage': return 'Most Storage'
-    case 'reviews': return 'Most Positive Reviews'
-    case 'recent': return 'Recently Added'
+    case 'name': return 'Name'
+    case 'cpu': return 'CPU'
+    case 'ram': return 'Memory'
+    case 'storage': return 'Storage'
+    case 'reviews': return 'Reviews'
+    case 'recent': return 'Recent'
     default: return 'Random'
   }
 }

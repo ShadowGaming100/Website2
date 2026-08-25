@@ -7,10 +7,9 @@ import RouteInitializer from "../components/RouteInitializer";
 import MatomoTracker from "../components/MatomoTracker";
 import ThemeProvider from "../components/ThemeProvider";
 import SidebarController from "../components/SidebarController";
-import SnowEffect from "../components/SnowEffect";
+import BackToTop from "../components/BackToTop";
 import PreviewCard from "../components/PreviewCard";
 import ToastContainer from "../components/Toast";
-import BackToTop from "../components/BackToTop";
 import { ConsentProvider } from "../contexts/ConsentContext";
 import { ComparisonProvider } from "../contexts/ComparisonContext";
 import { FavoritesProvider } from "../contexts/FavoritesContext";
@@ -245,7 +244,6 @@ export default function RootLayout({
         />
         <ThemeProvider />
         <SidebarController />
-        <SnowEffect />
         <PreviewCard />
         <RouteInitializer />
 

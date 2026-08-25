@@ -88,12 +88,7 @@ type DiscordState = {
 };
 
 function fetchWithTimeout(url: string, timeout = 7000) {
-  const controller = new AbortController();
-  const timer = window.setTimeout(() => controller.abort(), timeout);
-
-  return fetch(url, { cache: "no-cache", signal: controller.signal }).finally(() => {
-    window.clearTimeout(timer);
-  });
+  return fetch(url, { cache: "no-cache", signal: AbortSignal.timeout(timeout) });
 }
 
 export default function HomeClient() {

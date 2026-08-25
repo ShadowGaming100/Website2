@@ -33,11 +33,34 @@ export default function HostDetailClient({ host, related = [] }: HostDetailClien
     }
   }, [])
 
+  // Turn plain-text URLs into real anchors. Only http(s) matches, so
+  // javascript:/data: can never slip through. Direct links (not the
+  // /redirect/ wrapper) because info URLs aren't necessarily in the
+  // host's allowlisted links.
+  function linkify(text: string, keyPrefix: string): React.ReactNode {
+    const parts = text.split(/(https?:\/\/[^\s`'"<>)\]]+)/g)
+    if (parts.length === 1) return text
+    return parts.map((p, i) =>
+      /^https?:\/\//.test(p)
+        ? <a key={`${keyPrefix}-${i}`} href={p} target="_blank" rel="noopener noreferrer" className="info-link">{p}</a>
+        : p
+    )
+  }
+
   function formatInfoLines(text?: string): React.ReactNode {
     if (!text) return null
-    const lines = text.split('\n').filter(l => l.trim())
-    const items: React.ReactNode[] = []
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l)
+    const nodes: React.ReactNode[] = []
+    let items: React.ReactNode[] = []
     let subItems: React.ReactNode[] = []
+    let tableRows: string[][] = []
+
+    const flushItems = () => {
+      if (items.length > 0) {
+        nodes.push(<ul key={`ul-${nodes.length}`}>{items}</ul>)
+        items = []
+      }
+    }
 
     const flushSub = () => {
       if (subItems.length > 0) {
@@ -46,18 +69,48 @@ export default function HostDetailClient({ host, related = [] }: HostDetailClien
       }
     }
 
+    const flushTable = () => {
+      if (tableRows.length > 0) {
+        flushItems()
+        nodes.push(
+          <table key={`table-${nodes.length}`} className="info-table">
+            <tbody>
+              {tableRows.map((cells, r) => (
+                <tr key={r}>
+                  {cells.map((cell, ci) => <td key={ci}>{linkify(cell, `t${r}-${ci}`)}</td>)}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )
+        tableRows = []
+      }
+    }
+
     lines.forEach((line, i) => {
-      const trimmed = line.trim()
-      if (trimmed.startsWith('-')) {
-        subItems.push(<li key={i}>{trimmed.substring(1).trim()}</li>)
+      // strip markdown code-fence backticks and bullet markers
+      const cleaned = line.replace(/^`+/, '').replace(/`+$/, '').replace(/^[-–•*]\s*/, '').trim()
+      const isBullet = /^[-–•*]/.test(line.trim())
+      // pipe-delimited line with >= 2 cells → part of a table
+      const cells = cleaned.split('|').map(c => c.trim()).filter(c => c)
+      if (cells.length >= 2 && cleaned.includes('|')) {
+        flushSub()
+        tableRows.push(cells)
+        return
+      }
+      flushTable()
+      if (isBullet) {
+        subItems.push(<li key={i}>{linkify(cleaned, `s${i}`)}</li>)
       } else {
         flushSub()
-        items.push(<li key={i}>{trimmed}</li>)
+        items.push(<li key={i}>{linkify(cleaned, `l${i}`)}</li>)
       }
     })
     flushSub()
+    flushTable()
+    flushItems()
 
-    return <ul>{items}</ul>
+    return <>{nodes}</>
   }
 
   function formatSize(mb?: number): string {

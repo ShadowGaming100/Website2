@@ -83,8 +83,7 @@
 
 .search-input:focus,
 .search-select:focus {
-    outline: 0;
-    border-color: var(--accent);
+        border-color: var(--accent-text);
     background: var(--card);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     transform: translateY(-1px)
@@ -131,6 +130,8 @@
 .clear-filters-btn,
 .sort-btn {
     padding: var(--space-sm) var(--space-md);
+    min-height: 44px;
+    white-space: nowrap;
     font-weight: 500;
     cursor: pointer;
     transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
@@ -154,15 +155,15 @@
 }
 
 .sort-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+    border-color: var(--accent-text);
+    color: var(--accent-text);
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15)
 }
 
 .sort-btn.active {
     background: var(--accent);
-    border-color: var(--accent);
+    border-color: var(--accent-text);
     color: #fff;
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35)
 }
@@ -206,7 +207,7 @@
     display: block;
     width: fit-content;
     text-align: center;
-    color: var(--accent);
+    color: var(--accent-text);
     font-size: var(--font-size-sm);
     font-weight: 600;
     margin: 0;
@@ -324,7 +325,7 @@
 .host-card:hover {
     transform: translateY(-6px);
     box-shadow: var(--shadow-xl), 0 0 30px rgba(99, 102, 241, 0.15);
-    border-color: var(--accent)
+    border-color: var(--accent-text)
 }
 
 .host-card:hover::before,
@@ -410,7 +411,7 @@
 
 .host-type-badge {
     background: rgba(66, 153, 225, .1);
-    color: var(--accent)
+    color: var(--accent-text)
 }
 
 .language-badge {
@@ -602,8 +603,8 @@
 
 .page-btn:hover,
 .pagination-btn:hover:not(:disabled) {
-    border-color: var(--accent);
-    color: var(--accent);
+    border-color: var(--accent-text);
+    color: var(--accent-text);
     transform: translateY(-2px)
 }
 
@@ -633,7 +634,7 @@
 
 .page-btn.active {
     background: var(--accent);
-    border-color: var(--accent);
+    border-color: var(--accent-text);
     color: #fff;
     box-shadow: 0 2px 8px rgba(66, 153, 225, .3)
 }
@@ -843,6 +844,31 @@
     padding-left: var(--space-xl)
 }
 
+/* Pipe-delimited info lines render as tables (plan specs etc.) */
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--space-sm) 0;
+    font-size: var(--font-size-sm)
+}
+
+.info-table td {
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--border)
+}
+
+.info-table tr:nth-child(odd) td {
+    background: var(--glass)
+}
+
+/* Auto-detected URLs inside info text */
+.info-link {
+    color: var(--accent-text);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    overflow-wrap: anywhere
+}
+
 .specs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -880,7 +906,7 @@
 }
 
 .target-card:hover {
-    border-color: var(--accent)
+    border-color: var(--accent-text)
 }
 
 .links-list {
@@ -894,7 +920,7 @@
     align-items: center;
     gap: var(--space-md);
     padding: var(--space-md);
-    color: var(--accent);
+    color: var(--accent-text);
     word-break: break-all;
     border: 1px solid var(--border)
 }
@@ -1156,7 +1182,7 @@
 
 .info-title i,
 .redirect-host {
-    color: var(--accent)
+    color: var(--accent-text)
 }
 
 .redirect-host {
@@ -1314,7 +1340,51 @@
         gap: var(--space-md)
     }
 
-    .host-specs {
+/* Domain-extension badges (host cards) */
+.host-domains {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 12px;
+    min-height: 80px;
+    justify-content: center
+}
+
+.host-domains-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+    color: var(--accent-text);
+    font-size: var(--font-size-xs);
+    font-weight: 700
+}
+
+.host-domains-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 2px
+}
+
+.domain-badge {
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--accent-text);
+    font-size: var(--font-size-xs);
+    font-weight: 600
+}
+
+.host-domains-more {
+    color: var(--muted);
+    font-size: var(--font-size-xs);
+    opacity: 0.7;
+    font-style: italic
+}
+
+.host-specs {
         grid-template-columns: 1fr
     }
 
@@ -1365,7 +1435,7 @@
     /* Touch targets for host card actions */
     .view-details-btn {
         min-height: 44px;
-        width: 100%;
+        width: auto;
         justify-content: center;
     }
 
@@ -1384,6 +1454,7 @@
 
 .host-detail-page {
     min-height: 100vh;
+    min-height: 100svh;
     padding: var(--space-xl) 0;
     animation: .5s ease-out fadeIn
 }
@@ -1443,7 +1514,7 @@
 
 .host-detail-back-btn:hover {
     background: var(--accent);
-    border-color: var(--accent);
+    border-color: var(--accent-text);
     color: #fff;
     transform: translateX(-4px);
     box-shadow: 0 4px 12px rgba(66, 153, 225, .3)
@@ -1546,7 +1617,7 @@
 .info-section:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
-    border-color: var(--accent)
+    border-color: var(--accent-text)
 }
 
 .link-item:hover,
@@ -1607,12 +1678,12 @@
 
 .spec-box:hover {
     transform: translateY(-4px);
-    border-color: var(--accent)
+    border-color: var(--accent-text)
 }
 
 .spec-box-icon {
     font-size: var(--font-size-xl);
-    color: var(--accent)
+    color: var(--accent-text)
 }
 
 .spec-box-label {
@@ -1667,7 +1738,7 @@
 .link-item {
     border-radius: var(--border-radius-sm);
     text-decoration: none;
-    color: var(--accent);
+    color: var(--accent-text);
     font-weight: 500;
     word-break: break-all;
     border: 2px solid var(--border);
@@ -1685,7 +1756,7 @@
     background: var(--accent);
     color: #fff;
     transform: translateX(8px);
-    border-color: var(--accent)
+    border-color: var(--accent-text)
 }
 
 .link-item:hover::before {
@@ -1783,6 +1854,7 @@
 
 .not-found-page {
     min-height: 100vh;
+    min-height: 100svh;
     justify-content: center;
     padding: var(--space-xl);
     background: var(--bg);
@@ -1930,8 +2002,8 @@
 }
 
 .not-found-btn.secondary:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+    border-color: var(--accent-text);
+    color: var(--accent-text);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(66, 153, 225, .2)
 }
@@ -2032,7 +2104,7 @@
     width: 1.1rem;
     height: 1.1rem;
     stroke-width: 2;
-    color: var(--accent);
+    color: var(--accent-text);
 }
 
 /* Sort button icons */
@@ -2076,7 +2148,7 @@
     width: var(--font-size-xl);
     height: var(--font-size-xl);
     stroke-width: 2;
-    color: var(--accent);
+    color: var(--accent-text);
 }
 
 /* Info title icons */
@@ -2084,7 +2156,7 @@
     width: 1rem;
     height: 1rem;
     stroke-width: 2;
-    color: var(--accent);
+    color: var(--accent-text);
 }
 
 /* Link item icons */
@@ -2191,7 +2263,7 @@
 .filter-dropdown-trigger:focus,
 .filter-dropdown.open .filter-dropdown-trigger {
     outline: none;
-    border-color: var(--accent);
+    border-color: var(--accent-text);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
@@ -2212,7 +2284,7 @@
 
 .filter-dropdown.open .filter-dropdown-chevron {
     transform: rotate(180deg);
-    color: var(--accent);
+    color: var(--accent-text);
 }
 
 .filter-dropdown-menu {
@@ -2298,7 +2370,7 @@
 
 .filter-dropdown-item.active {
     background: rgba(99, 102, 241, 0.12);
-    color: var(--accent);
+    color: var(--accent-text);
     font-weight: 600;
 }
 
@@ -2367,10 +2439,56 @@
   box-shadow: none;
 }
 
+/* Card footer: rating left, actions right, one row.
+   Explicitly counters globals.css mobile block (column/stretch/center)
+   and styles.css mobile .sort-btn flex:1 — hosts.css loads last. */
+.host-card-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: var(--space-md)
+}
+
+.host-card-footer .host-rating {
+  flex-direction: row;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  text-align: left
+}
+
+.host-card-footer .rating-bar {
+  width: 72px;
+  margin-top: 0;
+  flex-basis: 100%
+}
+
+.host-card-footer .host-card-actions {
+  margin-left: auto;
+  width: auto
+}
+
 .host-card-actions {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-sm)
+}
+
+.view-details-btn {
+  width: auto;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px
+}
+
+/* pills never stretch — kills styles.css mobile flex:1 */
+.sort-btn {
+  flex: 0 0 auto;
+  width: auto
 }
 
 /* ─── Comparison Panel (bottom tray) ───────────────────────────────────────── */
@@ -2386,6 +2504,8 @@
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   padding: var(--space-sm) var(--space-md);
+  /* keep panel content clear of the iPhone home indicator */
+  padding-bottom: max(var(--space-sm), env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
@@ -2419,7 +2539,7 @@
 }
 
 .comparison-panel-icon {
-  color: var(--accent);
+  color: var(--accent-text);
   flex-shrink: 0;
 }
 
@@ -2638,7 +2758,7 @@
 
 .compare-back-link:hover {
   color: var(--text);
-  border-color: var(--accent);
+  border-color: var(--accent-text);
   background: rgba(99, 102, 241, 0.06);
   transform: translateX(-2px);
 }
@@ -2652,7 +2772,7 @@
   border: 1px solid rgba(99, 102, 241, 0.4);
   border-radius: 999px;
   background: rgba(99, 102, 241, 0.08);
-  color: var(--accent);
+  color: var(--accent-text);
   font-size: var(--font-size-sm);
   font-weight: 600;
   text-decoration: none;
@@ -2661,7 +2781,7 @@
 }
 
 .compare-add-more-btn:hover {
-  border-color: var(--accent);
+  border-color: var(--accent-text);
   background: rgba(99, 102, 241, 0.14);
   color: var(--text);
   transform: translateY(-1px);
@@ -3044,7 +3164,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent);
+  color: var(--accent-text);
   margin-bottom: var(--space-sm);
   animation: 3s ease-in-out infinite iconFloat;
 }
@@ -3075,7 +3195,7 @@
 
 .compare-empty-hint {
   font-size: var(--font-size-sm);
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 600;
   padding: var(--space-xs) var(--space-md);
   background: rgba(99, 102, 241, 0.08);
@@ -3188,7 +3308,7 @@
 
 .related-host-card:hover {
   background: rgba(255, 255, 255, 0.06);
-  border-color: var(--accent);
+  border-color: var(--accent-text);
   transform: translateY(-2px);
 }
 
@@ -3243,7 +3363,7 @@
 }
 
 .related-host-spec svg {
-  color: var(--accent);
+  color: var(--accent-text);
   opacity: 0.8;
 }
 

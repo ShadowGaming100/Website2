@@ -5,15 +5,10 @@ import { GitCompare, Trash2, ArrowLeft, Star, CheckCircle2, XCircle } from 'luci
 import { useComparison } from '../../contexts/ComparisonContext';
 import { ROWS, findBestIndex, computeRating } from '../../lib/comparisonRows';
 import { slugify } from '../../lib/slugify';
+import { formatSize } from '../../lib/parseSpecs';
 import { useFavorites } from '../../contexts/FavoritesContext';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatSize(mb?: number): string {
-  if (!mb) return 'Unknown';
-  if (mb >= 1024) return (mb / 1024).toFixed(1) + ' GB';
-  return Math.round(mb) + ' MB';
-}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 

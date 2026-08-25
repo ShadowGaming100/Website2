@@ -4,18 +4,13 @@ import { useEffect, useState } from 'react';
 import { type Host } from '../../lib/cache';
 import Link from '@/components/NoPrefetchLink';
 import { slugify } from '../../lib/slugify';
+import { formatSize } from '../../lib/parseSpecs';
 import { getLanguageName } from '../../lib/getLanguageName';
 import { GitCompare, Star } from 'lucide-react';
 import { useComparison } from '../../contexts/ComparisonContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatSize(mb?: number): string {
-  if (!mb) return 'Unknown';
-  if (mb >= 1024) return (mb / 1024).toFixed(1) + 'GB';
-  return Math.round(mb) + 'MB';
-}
 
 // ─── HostCard ─────────────────────────────────────────────────────────────────
 
