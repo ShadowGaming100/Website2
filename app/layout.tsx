@@ -149,6 +149,7 @@ const resourceLinks = [
   { href: "/about", icon: <Info size={18} aria-hidden="true" />, label: "About" },
   { href: "/staff", icon: <Users size={18} aria-hidden="true" />, label: "Staff" },
   { href: "/faq", icon: <CircleHelp size={18} aria-hidden="true" />, label: "FAQ" },
+  { href: "/methodology", icon: <ListChecks size={18} aria-hidden="true" />, label: "How We Review" },
   { href: "/server-rules", icon: <Shield size={18} aria-hidden="true" />, label: "Server Rules" },
   { href: "/other-free-hosts", icon: <LinkIcon size={18} aria-hidden="true" />, label: "Other Free Hosts" },
 ];
@@ -242,6 +243,9 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem('fh_theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
           }}
         />
+        <a href="#fh-page-content" className="skip-link">
+          Skip to content
+        </a>
         <ThemeProvider />
         <SidebarController />
         <PreviewCard />
@@ -373,7 +377,7 @@ export default function RootLayout({
                       <MatomoTracker />
                     </Suspense>
                 </div>
-                <div className="skippable">
+                <div className="skippable" id="fh-page-content">
                     {children}
                 </div>
               </ConsentGate>

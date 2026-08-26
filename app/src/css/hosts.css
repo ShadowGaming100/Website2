@@ -3393,3 +3393,37 @@
 .category-faq-item h3 { font-size: var(--font-size-base); margin-bottom: 6px; }
 .category-faq-item p { font-size: var(--font-size-sm); line-height: 1.65; color: var(--text-muted, #94a3b8); margin: 0; }
 .category-cta { margin-top: 8px; }
+
+/* ============================================
+   Host profile — answer block + methodology link
+   ============================================ */
+.host-about-summary {
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 0 0 var(--space-sm);
+}
+.methodology-link {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--accent-2);
+  text-decoration: underline;
+  margin-bottom: var(--space-sm);
+}
+
+/* ============================================
+   Alternatives comparison table
+   ============================================ */
+.alt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.alt-table th,
+.alt-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--glass, rgba(255,255,255,0.08));
+  text-align: left;
+  white-space: nowrap;
+}
+.alt-table td:first-child { white-space: normal; }
+.alt-table a { color: var(--accent-2); font-weight: 700; }

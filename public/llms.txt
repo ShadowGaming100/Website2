@@ -1,6 +1,6 @@
 # FreeHosts
 
-> FreeHosts is a community-curated directory of genuinely free hosting providers for websites, Discord bots, mobile apps, and databases. Every listing is reviewed by volunteer curators and includes verified specifications (CPU, RAM, storage), supported languages, target use cases, website links, and community approval ratings. All services featured are free to use with no hidden charges or premium tiers.
+> FreeHosts is a community-curated directory of genuinely free hosting providers for websites, Discord bots, mobile apps, and databases. Every listing is reviewed by volunteer curators and includes verified specifications (CPU, RAM, storage), supported languages, target use cases, website links, and community review ratings. All services featured are free to use with no hidden charges or premium tiers.
 
 ## About FreeHosts
 
@@ -11,6 +11,18 @@ FreeHosts was created to help developers, students, and makers discover reliable
 - Free hosting typically includes trade-offs: reduced CPU/RAM, storage limits, server slot restrictions, idle shutdown policies, or ads. FreeHosts surfaces these limits so users can choose the right provider.
 
 ## Key Pages
+
+- [How We Review](https://freehosts.eu/methodology): Editorial methodology - submissions, curator checks, community voting, removal policy
+- [Free Website Hosting Guide](https://freehosts.eu/categories/free-website-hosting): How free web hosting works, real limits, how to choose
+- [Free App Hosting Guide](https://freehosts.eu/categories/free-app-hosting): Running Node.js, Python and PHP apps on free tiers
+- [Free Game Server Hosting Guide](https://freehosts.eu/categories/free-game-server-hosting): Free Minecraft and game server hosting, RAM and idle limits explained
+- [Free Discord Bot Hosting Guide](https://freehosts.eu/categories/free-discord-bot-hosting): Keeping bots online 24/7 for free
+- [Free Database Hosting Guide](https://freehosts.eu/categories/free-database-hosting): Free PostgreSQL, MySQL and MongoDB tiers compared
+- [Free VPS Hosting Guide](https://freehosts.eu/categories/free-vps-hosting): Root access and always-on servers on free tiers, honestly assessed
+- [Free Node.js Hosting Guide](https://freehosts.eu/categories/free-nodejs-hosting): Deploying Node.js apps to free hosting
+- [Free Python Hosting Guide](https://freehosts.eu/categories/free-python-hosting): Flask, Django and FastAPI on free tiers
+- [Free Static Site Hosting Guide](https://freehosts.eu/categories/free-static-site-hosting): CDN-backed static sites, free forever economics
+- [Free WordPress Hosting Guide](https://freehosts.eu/categories/free-wordpress-hosting): What free WordPress plans really deliver
 
 - [Home](https://freehosts.eu/): Landing page for the FreeHosts directory
 - [Free Hosting Directory](https://freehosts.eu/hosts): Browse 100+ free hosting providers
@@ -25,6 +37,19 @@ FreeHosts was created to help developers, students, and makers discover reliable
 - [Server Rules](https://freehosts.eu/server-rules): Rules for the FreeHosts community servers
 - [Terms of Service](https://freehosts.eu/tos): Terms governing use of FreeHosts
 - [Privacy Policy](https://freehosts.eu/privacy-policy): How FreeHosts handles your data
+
+## Host Profiles
+
+Every provider has a dedicated profile page at https://freehosts.eu/hosts/<slug> with its verified free-plan specifications (CPU, RAM, storage), supported languages, target use cases, status, links, community review scores, and similar providers. Examples:
+
+- [Aternos](https://freehosts.eu/hosts/aternos): free Minecraft server hosting
+- [FalixNodes](https://freehosts.eu/hosts/falixnodes): free Minecraft and game server hosting
+- [Minehut](https://freehosts.eu/hosts/minehut): free Minecraft server hosting
+- [Bot-Hosting.net](https://freehosts.eu/hosts/bot-hosting): free Discord bot hosting
+- [InfinityFree](https://freehosts.eu/hosts/infinityfree): free PHP/MySQL website hosting
+- [AwardSpace](https://freehosts.eu/hosts/awardspace): free website hosting
+- [Render](https://freehosts.eu/hosts/render): free app hosting with free tier
+- [Neon](https://freehosts.eu/hosts/neon): free serverless Postgres database
 
 ## How to Use the Directory
 

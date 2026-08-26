@@ -5,11 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDiscord } from "@fortawesome/free-brands-svg-icons";
 
 export const metadata: Metadata = {
-  title: "404 - Page Not Found | FreeHosts",
+  title: "404 - Page Not Found",
   description: "The page you were looking for could not be found. Browse our free hosting directory or return to the homepage.",
   robots: { index: false, follow: false },
   openGraph: {
-    title: "404 - Page Not Found | FreeHosts",
+    title: "404 - Page Not Found",
     description: "The page you were looking for could not be found.",
     images: [{ url: process.env.APP_URL + "/Src/Images/banner.png", width: 1280, height: 720, alt: "FreeHosts - Discover Free Hosting" }],
   },

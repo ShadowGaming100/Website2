@@ -5,15 +5,17 @@ import Link from '@/components/NoPrefetchLink'
 import { type Host } from '../lib/cache'
 import { slugify } from '../lib/slugify'
 import { getLanguageName } from '../lib/getLanguageName'
-import { ArrowLeft, Check, Copy, Cpu, Crosshair, ExternalLink, Gift, HardDrive, Info, Languages, Link as LinkIcon, MemoryStick, Settings, Star, ThumbsDown, ThumbsUp } from 'lucide-react'
+import { ArrowLeft, Check, Copy, Cpu, GitCompare, Crosshair, ExternalLink, Gift, HardDrive, Info, Languages, Link as LinkIcon, MemoryStick, Settings, Star, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord } from '@fortawesome/free-brands-svg-icons'
 import { showToast } from './Toast'
 import { useFavorites } from '../contexts/FavoritesContext'
+import { ramDisplay, diskDisplay } from '../lib/specs'
+import { providerKind, hasPublishedSpecs, splitTargets } from '../lib/taxonomy'
 
-interface HostDetailClientProps { host: Host; related?: Host[] }
+interface HostDetailClientProps { host: Host; related?: Host[]; alternativesCount?: number }
 
-export default function HostDetailClient({ host, related = [] }: HostDetailClientProps) {
+export default function HostDetailClient({ host, related = [], alternativesCount = 0 }: HostDetailClientProps) {
   const [showDiscordModal, setShowDiscordModal] = useState(false)
   const [copied, setCopied] = useState(false)
   const { isFavorite, toggleFavorite } = useFavorites()
@@ -49,7 +51,7 @@ export default function HostDetailClient({ host, related = [] }: HostDetailClien
 
   function formatInfoLines(text?: string): React.ReactNode {
     if (!text) return null
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l)
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l)
     const nodes: React.ReactNode[] = []
     let items: React.ReactNode[] = []
     let subItems: React.ReactNode[] = []
@@ -113,10 +115,36 @@ export default function HostDetailClient({ host, related = [] }: HostDetailClien
     return <>{nodes}</>
   }
 
-  function formatSize(mb?: number): string {
-    if (!mb) return 'Unknown'
-    if (mb >= 1024) return (mb / 1024).toFixed(1) + 'GB'
-    return Math.round(mb) + 'MB'
+  // Factual summary derived from the listing's own structured data —
+  // used as the answer block under the first heading. Adapts to what the
+  // provider actually publishes: full specs, partial, or none (common for
+  // static platforms like Cloudflare Pages and for subdomain/domain givers).
+  const kind = providerKind(host)
+  const languagesText = (host.locale || []).map(l => getLanguageName(l)).filter(Boolean)
+  const ramValue = ramDisplay(host)
+  const diskValue = diskDisplay(host)
+  const targetsText = splitTargets(host).map(t => t.toLowerCase()).join(' / ') || 'hosting'
+  let aboutSummary: string
+  if (kind === 'subdomains') {
+    aboutSummary =
+      `${host.name} gives out free subdomains under its own domain names — the quickest way to give an existing project a memorable web address. It does not provide server resources itself; pair it with any hosting provider in this directory` +
+      `${languagesText.length > 0 ? `. Its interface and documentation serve ${languagesText.join(', ')} speakers` : ''}.`
+  } else if (kind === 'domains') {
+    aboutSummary =
+      `${host.name} registers free domain names you can point at any host. Available extensions rotate as registries change, so confirm the current list on its site before committing a project to one.`
+  } else {
+    const specBits: string[] = []
+    if (hasPublishedSpecs(host)) {
+      if (host.cpu && host.cpu !== 'Unknown') specBits.push(`${host.cpu} CPU`)
+      if (ramValue !== 'Unknown') specBits.push(`${ramValue} of RAM`)
+      if (diskValue !== 'Unknown') specBits.push(`${diskValue} of storage`)
+    }
+    const specSentence = specBits.length > 0
+      ? `Its free plan publishes ${specBits.join(', ')}.`
+      : `It does not publish fixed CPU, RAM, or storage numbers for its free plan — capacity is typically flexible within fair-use limits, so check its site for specifics.`
+    const langSentence = languagesText.length > 0 ? `` : ''
+    aboutSummary =
+      `${host.name} is a free ${targetsText} provider. ${specSentence}${langSentence} This listing has ${totalReviews} community review${totalReviews === 1 ? '' : 's'}.`
   }
 
   const handleRedirect = useCallback((url: string) => {
@@ -162,6 +190,12 @@ export default function HostDetailClient({ host, related = [] }: HostDetailClien
               <ArrowLeft size={16} aria-hidden="true" />
               <span>Back to All Hosts</span>
             </Link>
+            {alternativesCount >= 2 && (
+              <Link href={`/alternatives/${slugify(host.name)}`} className="host-detail-back-btn">
+                <GitCompare size={16} aria-hidden="true" />
+                <span>View {host.name} alternatives</span>
+              </Link>
+            )}
           </div>
 
           <div className="host-detail-header">
@@ -199,43 +233,48 @@ export default function HostDetailClient({ host, related = [] }: HostDetailClien
 
           <div className="host-detail-grid">
             <div className="host-detail-main">
+              <section className="info-section">
+                <h2 className="info-title"><Info size={14} aria-hidden="true" /> About {host.name}</h2>
+                <p className="host-about-summary">{aboutSummary}</p>
+              </section>
+
               {host.info && host.info.trim() && (
                 <div className="info-section">
-                  <h3 className="info-title"><Info size={14} aria-hidden="true" /> Information</h3>
+                  <h2 className="info-title"><Info size={14} aria-hidden="true" /> Information</h2>
                   <div className="info-box">{formatInfoLines(host.info)}</div>
                 </div>
               )}
 
               {host.free_plan && host.free_plan.trim() && (
                 <div className="info-section">
-                  <h3 className="info-title"><Gift size={14} aria-hidden="true" /> Free Plan</h3>
+                  <h2 className="info-title"><Gift size={14} aria-hidden="true" /> Free Plan</h2>
                   <div className="info-box">{formatInfoLines(host.free_plan)}</div>
                 </div>
               )}
 
-               {!host.targets?.some(t => t.toLowerCase().includes('subdomain')) && (
+               {kind === 'hosting' && (
                  <div className="info-section">
-                   <h3 className="info-title"><Settings size={14} aria-hidden="true" /> Key Specifications</h3>
+                   <h2 className="info-title"><Settings size={14} aria-hidden="true" /> Key Specifications</h2>
                    <div className="specs-grid">
                      <div className="spec-box">
                        <div className="spec-box-icon"><Cpu size={20} aria-hidden="true" /></div>
                        <div className="spec-box-label">CPU</div>
-                       <div className="spec-box-value">{host.cpu}</div>
+                       <div className="spec-box-value">{host.cpu || 'Unknown'}</div>
                      </div>
                      <div className="spec-box">
                        <div className="spec-box-icon"><MemoryStick size={20} aria-hidden="true" /></div>
                        <div className="spec-box-label">RAM</div>
-                       <div className="spec-box-value">{host.ramMB ? formatSize(host.ramMB) : host.ram}</div>
+                       <div className="spec-box-value">{ramValue !== 'Unknown' ? ramValue : host.ram || 'Unknown'}</div>
                      </div>
                      <div className="spec-box">
                        <div className="spec-box-icon"><HardDrive size={20} aria-hidden="true" /></div>
                        <div className="spec-box-label">Storage</div>
-                       <div className="spec-box-value">{host.diskMB ? formatSize(host.diskMB) : host.disk}</div>
+                       <div className="spec-box-value">{diskValue !== 'Unknown' ? diskValue : host.disk || 'Unknown'}</div>
                      </div>
                      <div className="spec-box">
                        <div className="spec-box-icon"><Languages size={20} aria-hidden="true" /></div>
                        <div className="spec-box-label">Languages</div>
-                       <div className="spec-box-value">{(host.locale || []).map(l => getLanguageName(l)).join(', ') || 'Unknown'}</div>
+                       <div className="spec-box-value">{languagesText.length > 0 ? languagesText.join(', ') : 'Unknown'}</div>
                      </div>
                    </div>
                  </div>
@@ -243,7 +282,7 @@ export default function HostDetailClient({ host, related = [] }: HostDetailClien
 
               {host.targets && host.targets.length > 0 && (
                 <div className="info-section">
-                  <h3 className="info-title"><Crosshair size={14} aria-hidden="true" /> Targets</h3>
+                  <h2 className="info-title"><Crosshair size={14} aria-hidden="true" /> Targets</h2>
                   <div className="targets-container">
                     {(host.targets || []).flatMap(target =>
                       target.split(',').map(t => {
@@ -257,7 +296,7 @@ export default function HostDetailClient({ host, related = [] }: HostDetailClien
 
               {host.links && host.links.length > 0 && (
                 <div className="info-section">
-                  <h3 className="info-title"><LinkIcon size={14} aria-hidden="true" /> Links</h3>
+                  <h2 className="info-title"><LinkIcon size={14} aria-hidden="true" /> Links</h2>
                   <div className="links-list">
                     {(host.links || []).map((link, index) => (
                       <a key={index} href="#" className="link-item" onClick={(e) => { e.preventDefault(); handleRedirect(link) }}>
@@ -272,7 +311,10 @@ export default function HostDetailClient({ host, related = [] }: HostDetailClien
             <div className="host-detail-sidebar">
               <div className="rating-section-fullpage">
                 <div className="rating-big">{rating}%</div>
-                <div className="rating-votes">(Based on {totalReviews} reviews)</div>
+                <div className="rating-votes">(Based on {totalReviews} review{totalReviews === 1 ? '' : 's'})</div>
+                <Link href="/methodology#votes" className="methodology-link">
+                  How reviews work
+                </Link>
                 <div className="vote-stats">
                   <div className="vote-stat">
                     <div className="vote-count vote-up">{host.approvals || 0}</div>
@@ -298,9 +340,9 @@ export default function HostDetailClient({ host, related = [] }: HostDetailClien
           {/* Related Hosts Section */}
           {related.length > 0 && (
             <div className="related-hosts-section">
-              <h3 className="section-title">Similar Hosting Providers</h3>
+              <h2 className="section-title">Similar Hosting Providers</h2>
               <div className="related-hosts-grid">
-                {related.map((r, idx) => {
+                {related.map((r) => {
                   const rStatusClass = r.status && r.status.toLowerCase() === 'online' ? 'online' : 'closed'
                   const rRating = (r.approvals + r.disapprovals) > 0 
                     ? Math.round((r.approvals / (r.approvals + r.disapprovals)) * 100) 
@@ -308,7 +350,7 @@ export default function HostDetailClient({ host, related = [] }: HostDetailClien
                   
                   const isDomainHost = r.targets?.some(t => t.toLowerCase().includes('domain'))
                   const combinedText = `${r.info || ''}\n${r.description || ''}\n${r.free_plan || ''}`
-                  const allExtractedDomains = isDomainHost ? Array.from(new Set(combinedText.split('\n')
+                  const allExtractedDomains = isDomainHost ? Array.from(new Set(combinedText.split(/\r?\n/)
                     .map(l => l.trim())
                     .filter(l => l.includes('.') && !l.includes(':') && !l.toLowerCase().includes('available domains') && !l.toLowerCase().includes('available extensions'))
                   )) : []
@@ -358,14 +400,14 @@ export default function HostDetailClient({ host, related = [] }: HostDetailClien
                                <Cpu size={14} aria-hidden="true" />
                                <span>{r.cpu || 'Unknown'}</span>
                              </div>
-                             <div className="related-host-spec">
-                               <MemoryStick size={14} aria-hidden="true" />
-                               <span>{r.ramMB ? formatSize(r.ramMB) : r.ram || 'Free'}</span>
-                             </div>
-                             <div className="related-host-spec">
-                               <HardDrive size={14} aria-hidden="true" />
-                               <span>{r.diskMB ? formatSize(r.diskMB) : r.disk || 'Unknown'}</span>
-                             </div>
+                              <div className="related-host-spec">
+                                <MemoryStick size={14} aria-hidden="true" />
+                                <span>{ramDisplay(r) !== 'Unknown' ? ramDisplay(r) : 'Free'}</span>
+                              </div>
+                              <div className="related-host-spec">
+                                <HardDrive size={14} aria-hidden="true" />
+                                <span>{diskDisplay(r)}</span>
+                              </div>
                            </div>
                          )}
 

@@ -20,6 +20,7 @@ export default function RedirectClient({ targetUrl, hostnameOrPath, backUrl, inv
   // Track the external link click once (only for valid redirects)
   useEffect(() => {
     if (invalid || !hostnameOrPath || opened) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot "fired" guard keyed to mount-time props, not derived state
     setOpened(true);
     try {
       push(['trackLink', targetUrl, 'link']);

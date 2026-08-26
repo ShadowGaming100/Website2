@@ -18,6 +18,8 @@ export const metadata: Metadata = {
     "freehosts",
   ],
   alternates: {
+    // Next normalises the homepage canonical to the origin without a
+    // trailing slash regardless of this value; kept explicit for clarity.
     canonical: process.env.APP_URL,
   },
 };

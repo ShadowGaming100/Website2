@@ -7,6 +7,7 @@ import {
   Check,
   Compass,
   Database,
+  Gamepad2,
   DoorOpen,
   Filter,
   GitBranch,
@@ -65,10 +66,11 @@ const commands = [
 ];
 
 const hostingCategories = [
-  { icon: <Globe size={20} aria-hidden="true" />, title: "Website Hosting", text: "Deploy static sites, portfolios, blogs, and landing pages with providers optimized for frontend performance and easy publishing." },
-  { icon: <GitBranch size={20} aria-hidden="true" />, title: "Application Hosting", text: "Run Node.js, Python, PHP, Ruby, and other backend apps for APIs, dashboards, and full-stack projects that need server-side logic." },
-  { icon: <Bot size={20} aria-hidden="true" />, title: "Bot Hosting", text: "Keep Discord, Telegram, and automation bots online with enough uptime and resources for small to medium community projects." },
-  { icon: <Database size={20} aria-hidden="true" />, title: "Database Hosting", text: "Use free PostgreSQL, MongoDB, MySQL, or Redis services for apps that need storage, auth, content, and structured data." },
+  { icon: <Globe size={20} aria-hidden="true" />, title: "Website Hosting", text: "Deploy static sites, portfolios, blogs, and landing pages with providers optimized for frontend performance and easy publishing.", href: "/categories/free-website-hosting" },
+  { icon: <GitBranch size={20} aria-hidden="true" />, title: "Application Hosting", text: "Run Node.js, Python, PHP, Ruby, and other backend apps for APIs, dashboards, and full-stack projects that need server-side logic.", href: "/categories/free-app-hosting" },
+  { icon: <Bot size={20} aria-hidden="true" />, title: "Bot Hosting", text: "Keep Discord, Telegram, and automation bots online with enough uptime and resources for small to medium community projects.", href: "/categories/free-discord-bot-hosting" },
+  { icon: <Database size={20} aria-hidden="true" />, title: "Database Hosting", text: "Use free PostgreSQL, MongoDB, MySQL, or Redis services for apps that need storage, auth, content, and structured data.", href: "/categories/free-database-hosting" },
+  { icon: <Gamepad2 size={20} aria-hidden="true" />, title: "Game Server Hosting", text: "Run Minecraft and other game servers with friends — compare RAM, CPU, slots and idle policies across vetted providers.", href: "/categories/free-game-server-hosting" },
 ];
 
 const choiceChecklist = [
@@ -341,7 +343,11 @@ export default function HomeClient() {
 
       <section id="features" className="section features wrap">
         <h2 className="section-title">Why people use FreeHosts</h2>
-        <p className="section-sub">Quick highlights - no fluff.</p>
+        <p className="section-sub">
+          FreeHosts is a community-curated directory of free hosting providers for websites, Discord bots, game servers, apps,
+          and databases. Each listing includes verified CPU, RAM, and storage specs plus community votes, so you can compare
+          providers side by side and deploy your project on a free host in minutes.
+        </p>
         <div className="cards-grid" aria-hidden="true">
           <article className="feature-card">
             <div className="icon"><Rocket size={24} aria-hidden="true" /></div>
@@ -393,13 +399,17 @@ export default function HomeClient() {
 
           <div className="hosting-category-grid">
             {hostingCategories.map((category) => (
-              <article className="hosting-category-card" key={category.title}>
+              <Link
+                className="hosting-category-card"
+                key={category.title}
+                href={category.href}
+              >
                 <div className="hosting-category-icon">
                   {category.icon}
                 </div>
                 <h3>{category.title}</h3>
                 <p>{category.text}</p>
-              </article>
+              </Link>
             ))}
           </div>
 

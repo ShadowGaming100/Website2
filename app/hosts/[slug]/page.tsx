@@ -1,6 +1,8 @@
 import { redirect, notFound } from 'next/navigation'
 import { fetchHostById, fetchHostBySlug, fetchHosts, type Host } from '../../../lib/cache'
 import { slugify } from '../../../lib/slugify'
+import { specSummary } from '../../../lib/specs'
+import { findAlternatives, providerKind } from '../../../lib/taxonomy'
 import HostDetailClient from '../../../components/HostDetailClient'
 import Breadcrumbs from '../../../components/Breadcrumbs'
 import { safeJsonLd } from "../../../lib/safeJsonLd";
@@ -10,27 +12,27 @@ type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
-  if (/^\d+$/.test(slug)) return { title: 'Host Not Found | FreeHosts', description: 'The host you are looking for does not exist or has been removed.', robots: { index: false, follow: false } }
+  if (/^\d+$/.test(slug)) return { title: 'Host Not Found', description: 'The host you are looking for does not exist or has been removed.', robots: { index: false, follow: false } }
   const host = await fetchHostBySlug(slug)
-  if (!host) return { title: 'Host Not Found | FreeHosts', description: 'The host you are looking for does not exist or has been removed.', robots: { index: false, follow: false } }
-  const specs: string[] = []
-  if (host.cpu && host.cpu !== 'Unknown') specs.push(host.cpu)
-  if (host.ram && host.ram !== 'Unknown') specs.push(host.ram)
-  if (host.disk && host.disk !== 'Unknown') specs.push(host.disk)
-  const specsText = specs.length > 0 ? `Specs: CPU ${host.cpu || 'N/A'}, RAM ${host.ram || 'N/A'}, Storage ${host.disk || 'N/A'}.` : 'Find great features for your next project.'
+  if (!host) return { title: 'Host Not Found', description: 'The host you are looking for does not exist or has been removed.', robots: { index: false, follow: false } }
+  const summary = specSummary(host)
+  const kind = providerKind(host)
+  const specsText = summary
+    ? `Specs: ${summary}.`
+    : kind === 'hosting'
+      ? 'Plan limits are not published publicly.'
+      : `Provides free ${kind}.`
   const typeText = host.type && host.type.toLowerCase().includes('trusted') ? 'Trusted & Free' : host.type || 'Free'
   let description = `Learn about ${host.name}, a ${typeText.toLowerCase()} hosting provider. ${specsText} Read user reviews and compare options on FreeHosts.`
   if (description.length > 160) description = description.substring(0, 157) + '...'
-  const totalReviews = (host.approvals || 0) + (host.disapprovals || 0)
-  const rating = totalReviews > 0 ? Math.round(((host.approvals || 0) / totalReviews) * 100) : 0
-  
+
   const site = process.env.APP_URL
   const hostUrl = `${site}/hosts/${slugify(host.name)}`
   
   // Construct dynamic OG image URL
   const ogImageUrl = `${site}/hosts/og/${slug}`
 
-  const title = `${host.name} - Free Hosting Provider Details | FreeHosts`
+  const title = `${host.name} - Free Hosting Provider & Specs`
   const keywords = [host.name, 'free hosting', 'free hosts', ...(host.targets ?? [])].filter(Boolean)
   
   return {
@@ -69,11 +71,13 @@ export default async function HostDetailPage({ params }: Props) {
   }
   const host: Host | null = await fetchHostBySlug(slug)
   if (!host) notFound()
-  const specs: string[] = []
-  if (host.cpu && host.cpu !== 'Unknown') specs.push(host.cpu)
-  if (host.ram && host.ram !== 'Unknown') specs.push(host.ram)
-  if (host.disk && host.disk !== 'Unknown') specs.push(host.disk)
-  const specsText = specs.length > 0 ? `Specs: CPU ${host.cpu || 'N/A'}, RAM ${host.ram || 'N/A'}, Storage ${host.disk || 'N/A'}.` : 'Find great features for your next project.'
+  const summary = specSummary(host)
+  const kind = providerKind(host)
+  const specsText = summary
+    ? `Specs: ${summary}.`
+    : kind === 'hosting'
+      ? 'Plan limits are not published publicly.'
+      : `Provides free ${kind}.`
   const typeText = host.type && host.type.toLowerCase().includes('trusted') ? 'Trusted & Free' : host.type || 'Free'
   let description = `Learn about ${host.name}, a ${typeText.toLowerCase()} hosting provider. ${specsText} Read user reviews and compare options on FreeHosts.`
   if (description.length > 160) description = description.substring(0, 157) + '...'
@@ -81,17 +85,17 @@ export default async function HostDetailPage({ params }: Props) {
   const hostUrl = `${site}/hosts/${slugify(host.name)}`
   const totalReviews = host.approvals + host.disapprovals
   const ratingValue = totalReviews > 0 ? ((host.approvals / totalReviews) * 5).toFixed(1) : null
-  // ponytail: gate on vote volume only — votes are Discord thumbs, not written
-  // reviews. No real review bodies exist yet, so keep the surface small; add a
-  // review body + author requirement if Google ever flags this.
-  const showRating = ratingValue !== null && totalReviews >= 5
-  const title = `${host.name} - Free Hosting Provider Details | FreeHosts`
-  const jsonLd = { "@context": "https://schema.org", "@type": "WebPage", "@id": `${hostUrl}#webpage`, "url": hostUrl, "name": title, "isPartOf": { "@id": `${site}/#website` }, "inLanguage": "en", "description": description }
+  // Owner decision: show the community score as soon as ANY vote exists (>=1).
+  // Votes are Discord thumbs, not written reviews — if Google ever flags this,
+  // re-add a review-body requirement here before touching the schema.
+  const showRating = ratingValue !== null && totalReviews >= 1
+  const title = `${host.name} - Free Hosting Provider & Specs`
+  const jsonLd = { "@context": "https://schema.org", "@type": "WebPage", "@id": `${hostUrl}#webpage`, "url": hostUrl, "name": title, "isPartOf": { "@id": `${site}/#website` }, "inLanguage": "en", "description": description, ...(host.created_at ? { "dateModified": new Date(host.created_at).toISOString().split('T')[0] } : {}) }
   const serviceLd = {
     "@context": "https://schema.org", "@type": "Service", "name": host.name, "description": description, "url": hostUrl, "serviceType": "Web Hosting", "category": host.targets?.join(', ') || 'Web Hosting',
     "provider": { "@type": "Organization", "name": host.name, ...(host.links?.[0] ? { "url": host.links[0] } : {}) },
     ...(host.image ? { "image": host.image } : {}),
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": host.status?.toLowerCase() === "online" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock", "url": hostUrl, "description": `Free ${host.targets?.join(', ') || 'hosting'} — ${host.cpu || 'Unknown'} CPU, ${host.ram || 'Unknown'} RAM, ${host.disk || 'Unknown'} storage` },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": host.status?.toLowerCase() === "online" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock", "url": hostUrl, "description": `Free ${host.targets?.join(', ') || 'hosting'}${specSummary(host) ? ` — ${specSummary(host)}` : ''}` },
     ...(showRating ? { "aggregateRating": { "@type": "AggregateRating", "ratingValue": ratingValue, "bestRating": "5", "worstRating": "1", "ratingCount": totalReviews, "reviewCount": totalReviews } } : {}),
   }
       const allHosts = await fetchHosts()
@@ -117,7 +121,7 @@ export default async function HostDetailPage({ params }: Props) {
               { name: host.name, path: `/hosts/${slugify(host.name)}` },
             ]}
           />
-          <HostDetailClient host={host} related={related} />
+          <HostDetailClient host={host} related={related} alternativesCount={findAlternatives(host, allHosts).length} />
         </>
       )
 }

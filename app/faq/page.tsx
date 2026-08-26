@@ -5,7 +5,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { safeJsonLd } from "../../lib/safeJsonLd";
 
 export const metadata: Metadata = {
-  title: "FAQ - Frequently Asked Questions About FreeHosts & Free Hosting",
+  title: "Free Hosting FAQ - Questions Answered",
   description:
     "Get answers to the most common questions about FreeHosts and free hosting services. Learn how to find, compare, and submit hosting providers.",
   keywords: [
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     siteName: "FreeHosts",
     type: "website",
     url: process.env.APP_URL + "/faq",
-    title: "FAQ - Frequently Asked Questions About FreeHosts & Free Hosting",
+    title: "Free Hosting FAQ - FreeHosts",
     description:
       "Get answers to the most common questions about FreeHosts and free hosting services.",
     images: [
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "FAQ - Frequently Asked Questions About FreeHosts & Free Hosting",
+    title: "Free Hosting FAQ - FreeHosts",
     description:
       "Get answers to the most common questions about FreeHosts and free hosting services.",
     images: [

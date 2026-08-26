@@ -28,9 +28,6 @@ export async function GET(req: NextRequest, { params }: Props) {
     const cpu = host.cpu || 'Unknown';
     const ram = host.ram || 'Unknown';
     const disk = host.disk || 'Unknown';
-    const targets = host.targets && host.targets.length > 0
-      ? host.targets.join(', ')
-      : 'Websites, Bots, Apps';
 
     const totalReviews = (host.approvals || 0) + (host.disapprovals || 0);
     const rating = totalReviews > 0 ? Math.round(((host.approvals || 0) / totalReviews) * 100) : 0;

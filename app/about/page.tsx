@@ -196,7 +196,8 @@ export default function AboutPage() {
                 <h3>Transparency</h3>
                 <p>
                   Honest reviews, clear information, and open communication about our
-                  processes and decisions.
+                  processes and decisions. Read exactly <Link href="/methodology">how we review
+                  and curate every listing</Link>.
                 </p>
               </div>
               <div className="value-card">

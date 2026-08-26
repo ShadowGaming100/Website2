@@ -3,7 +3,7 @@ import { ArrowLeft, Home, Server, X } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Host Not Found | FreeHosts',
+  title: 'Host Not Found',
   description: 'The host you are looking for does not exist or has been removed.',
   robots: {
     index: false,

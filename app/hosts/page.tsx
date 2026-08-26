@@ -6,7 +6,7 @@ import { safeJsonLd } from "../../lib/safeJsonLd";
 
 export const runtime = 'edge';
 export const metadata = {
-  title: 'Free Hosting Directory - Browse 100+ Providers | FreeHosts',
+  title: 'Free Hosting Directory - Browse 100+ Providers',
   description: 'Browse 100+ free hosting providers for websites, Discord bots, and apps. Filter by CPU, RAM, storage, language, and target. Find the best free host for your project.',
   keywords: [
     'free hosting directory',

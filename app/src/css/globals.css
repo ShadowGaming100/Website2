@@ -3554,3 +3554,36 @@
   from { box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15); }
   to   { box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.3); }
 }
+
+/* ============================================
+   Skip link (WCAG 2.4.1) — hidden until focused
+   ============================================ */
+.skip-link {
+  position: absolute;
+  top: -48px;
+  left: 12px;
+  z-index: 2000;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--accent-2, #6366f1);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  transition: top 0.15s ease-in-out;
+}
+.skip-link:focus {
+  top: 12px;
+}
+
+/* ============================================
+   FAQ question heading wrapper — the disclosure
+   button sits inside a real heading so question
+   text is exposed to outline/parsing tools.
+   ============================================ */
+h3.faq-question-heading {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}

@@ -7,13 +7,18 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import {
   AlertTriangle,
   Bot,
+  Braces,
   CircleHelp,
   Database,
+  FileCode,
   Gamepad2,
   GitBranch,
   Globe,
+  LayoutTemplate,
   Rocket,
   Scale,
+  Server,
+  Terminal,
   Wrench,
   type LucideIcon,
 } from "lucide-react";
@@ -24,6 +29,11 @@ const categoryIcons: Record<string, LucideIcon> = {
   "free-game-server-hosting": Gamepad2,
   "free-discord-bot-hosting": Bot,
   "free-database-hosting": Database,
+  "free-vps-hosting": Server,
+  "free-nodejs-hosting": Braces,
+  "free-python-hosting": Terminal,
+  "free-static-site-hosting": FileCode,
+  "free-wordpress-hosting": LayoutTemplate,
 };
 
 type Props = { params: Promise<{ slug: string }> };

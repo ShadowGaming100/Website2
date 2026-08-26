@@ -7,6 +7,7 @@ import Link from '@/components/NoPrefetchLink';
 import { slugify } from '../../lib/slugify';
 import { getLanguageName } from '../../lib/getLanguageName';
 import { parseCPUValue, parseMemoryToMB } from '../../lib/parseSpecs';
+import { ramDisplay as ramDisplayValue, diskDisplay as diskDisplayValue } from '../../lib/specs';
 import { ChevronDown, Search, X, Shuffle, ArrowDownAZ, Cpu, MemoryStick, HardDrive, Clock, GitCompare, Star, ThumbsUp } from 'lucide-react';
 import { useComparison } from '../../contexts/ComparisonContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
@@ -153,12 +154,16 @@ export default function HostsClient({ initialHosts }: { initialHosts: Host[] }) 
 }
 
 // Loading component for Suspense fallback
+// NOTE: deliberately avoids the real page's ids (main-content, hosts-page,
+// home, hero-title) and its <h1> — when Next streams this fallback alongside
+// the resolved content, duplicated ids/headings used to land in the served
+// HTML. This copy is transient chrome, not document structure.
 function HostsLoading() {
   return (
-    <main id="main-content">
-      <div id="hosts-page">
+    <main id="main-content-loading">
+      <div id="hosts-page-loading">
         <div className="wrap">
-          <section className="hero centered-hero" id="home" aria-labelledby="hero-title">
+          <section className="hero centered-hero" id="home-loading" aria-hidden="true">
             <div className="blobs" aria-hidden="true">
               <div className="blob b1"></div>
               <div className="blob b2"></div>
@@ -166,7 +171,7 @@ function HostsLoading() {
             </div>
             <div className="hero-inner">
               <div className="hero-left">
-                <h1 id="hero-title">Free Hosting Directory</h1>
+                <p className="hero-title lead">Free Hosting Directory</p>
                 <p className="lead">Discover and compare the best free hosting providers for your projects.</p>
               </div>
             </div>
@@ -233,6 +238,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
       const savedOrder = sessionStorage.getItem(RANDOM_ORDER_KEY)
       if (savedOrder) {
         const parsed: [number, number][] = JSON.parse(savedOrder)
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration-safe restore of client-only state; cannot be read during SSR render
         setRandomOrder(new Map(parsed))
       } else {
         // Persist the initial random order
@@ -243,7 +249,6 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
       // Restore filters (back-navigation)
       const savedFilters = sessionStorage.getItem(FILTERS_KEY)
       if (savedFilters) {
-
         setCurrentFilters(JSON.parse(savedFilters))
       }
 
@@ -433,12 +438,6 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     return diffDays <= 15
   }
 
-  const formatSize = (mb?: number): string => {
-    if (!mb) return 'Unknown'
-    if (mb >= 1024) return (mb / 1024).toFixed(1) + 'GB'
-    return Math.round(mb) + 'MB'
-  }
-
   const hasActiveFilters = useMemo(() => 
     currentFilters.search || currentFilters.locale || currentFilters.target,
     [currentFilters.search, currentFilters.locale, currentFilters.target]
@@ -566,7 +565,6 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                   key={host.id} 
                   host={host} 
                   isNew={isHostNew(host)}
-                  formatSize={formatSize}
                 />
               ))
             )}
@@ -581,14 +579,13 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
 interface HostCardProps {
   host: Host
   isNew: boolean
-  formatSize: (mb?: number) => string
 }
 
-function HostCard({ host, isNew, formatSize }: HostCardProps) {
+function HostCard({ host, isNew }: HostCardProps) {
   const { isSelected, addHost, removeHost, isFull } = useComparison();
   const { isFavorite, toggleFavorite } = useFavorites();
-  const ramDisplay = host.ramMB ? formatSize(host.ramMB) : host.ram || 'Unknown'
-  const storageDisplay = host.diskMB ? formatSize(host.diskMB) : host.disk || 'Unknown'
+  const ramText = ramDisplayValue(host)
+  const storageDisplay = diskDisplayValue(host)
   const totalReviews = (host.approvals || 0) + (host.disapprovals || 0)
   const rating = totalReviews > 0 ? Math.round(((host.approvals || 0) / totalReviews) * 100) : 0
   const iconLetter = host.name ? host.name.charAt(0).toUpperCase() : '?'
@@ -680,7 +677,7 @@ function HostCard({ host, isNew, formatSize }: HostCardProps) {
                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 19v-3"/><path d="M10 19v-3"/><path d="M14 19v-3"/><path d="M18 19v-3"/><path d="M8 11V9"/><path d="M16 11V9"/><path d="M12 11V9"/><path d="M2 15h20"/><path d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1.1a2 2 0 0 0 0 3.837V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5.1a2 2 0 0 0 0-3.837Z"/></svg>
                </div>
                <div className="spec-copy">
-                 <div className="spec-box-value">{ramDisplay}</div>
+                 <div className="spec-box-value">{ramText}</div>
                  <div className="spec-box-label">Memory</div>
                </div>
              </div>

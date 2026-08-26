@@ -58,6 +58,7 @@ export default function FaqClient() {
           id="faqSearch"
           type="search"
           placeholder="Search questions..."
+          aria-label="Search frequently asked questions"
           value={search}
           onChange={(e) => { setSearch(e.target.value); setOpenQuestion(null); }}
         />
@@ -87,21 +88,30 @@ export default function FaqClient() {
                 <Icon size={16} aria-hidden="true" />
                 {title}
               </h2>
+              {id === "general" && (
+                <p className="faq-section-lead">
+                  New to free hosting? Start here — these answers explain how the FreeHosts directory works, what you can
+                  host for free, and how listings are reviewed and kept up to date. If your question is not covered, join
+                  our Discord community or email support and a team member will help you out.
+                </p>
+              )}
               {items.map((item) => {
                 const isOpen = openQuestion === item.question;
                 return (
                   <div className={`faq-item ${isOpen ? "open" : ""}`} data-category={item.category} key={item.question}>
-                    <button
-                      className="faq-question"
-                      type="button"
-                      aria-expanded={isOpen}
-                      onClick={() => setOpenQuestion(isOpen ? null : item.question)}
-                    >
-                      <span className="faq-question-text">{item.question}</span>
-                      <div className="faq-icon">
-                        <ChevronDown size={16} aria-hidden="true" />
-                      </div>
-                    </button>
+                    <h3 className="faq-question-heading">
+                      <button
+                        className="faq-question"
+                        type="button"
+                        aria-expanded={isOpen}
+                        onClick={() => setOpenQuestion(isOpen ? null : item.question)}
+                      >
+                        <span className="faq-question-text">{item.question}</span>
+                        <div className="faq-icon">
+                          <ChevronDown size={16} aria-hidden="true" />
+                        </div>
+                      </button>
+                    </h3>
                     <div className="faq-answer" style={{ maxHeight: isOpen ? "260px" : "0" }}>
                       <div className="faq-answer-content">{item.answer}</div>
                     </div>
