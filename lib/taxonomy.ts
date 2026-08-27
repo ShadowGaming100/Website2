@@ -17,19 +17,32 @@ export function splitTargets(host: Host): string[] {
 
 /**
  * Hosts that could reasonably be an alternative to `host`: share at least one
- * target tag. Deterministic order (votes desc, then name) so pages are stable.
+ * target bucket AND same provider kind (hosting vs subdomains/domains) to avoid
+ * comparing apples to oranges. Ranked by shared-bucket count, then votes.
  */
 export function findAlternatives(host: Host, all: Host[], limit = 12): Host[] {
   const buckets = targetBuckets(host)
   const hostSlug = slugify(host.name)
+  const hostKind = providerKind(host)
   return all
-    .filter(h => slugify(h.name) !== hostSlug && [...targetBuckets(h)].some(b => buckets.has(b)))
-    .sort((a, b) => {
-      const va = a.approvals - a.disapprovals
-      const vb = b.approvals - b.disapprovals
-      if (vb !== va) return vb - va
-      return a.name.localeCompare(b.name)
+    .filter(h => {
+      if (slugify(h.name) === hostSlug) return false
+      if (providerKind(h) !== hostKind) return false
+      return [...targetBuckets(h)].some(b => buckets.has(b))
     })
+    .map(h => ({
+      h,
+      shared: [...targetBuckets(h)].filter(b => buckets.has(b)).length,
+      score: (h.approvals - h.disapprovals),
+      hasSpecs: hasPublishedSpecs(h) ? 1 : 0,
+    }))
+    .sort((a, b) => {
+      if (b.shared !== a.shared) return b.shared - a.shared
+      if (b.hasSpecs !== a.hasSpecs) return b.hasSpecs - a.hasSpecs
+      if (b.score !== a.score) return b.score - a.score
+      return a.h.name.localeCompare(b.h.name)
+    })
+    .map(x => x.h)
     .slice(0, limit)
 }
 
@@ -71,17 +84,28 @@ export function hostRow(host: Host): {
 // returning groups automatically with hosts sharing the same normalised
 // form. No rules to update when targets change.
 
+const BUCKET_ALIASES: Record<string, string> = {
+  'web hosting': 'website',
+  'codespace': 'coding',
+  'developers': 'coding',
+  'wiki pages': 'website',
+  'docs': 'website',
+  'forum': 'website',
+}
+
 /**
  * "Website (Static)" -> "website"
  * "Coding(Python)"   -> "coding"
  * "Database (Postgres)" -> "database"
  * "Free Minecraft"   -> "free minecraft"  (new tags just work)
+ * "Web Hosting"      -> "website" (alias)
  */
 export function normalizeTarget(raw: string): string {
   let t = raw.toLowerCase().trim()
   t = t.replace(/\([^)]*\)/g, ' ')        // drop parenthetical qualifiers
   t = t.replace(/[^a-z0-9+.# ]+/g, ' ')   // unify separators
   t = t.replace(/\s+/g, ' ').trim()
+  t = BUCKET_ALIASES[t] ?? t
   return t || 'other'
 }
 
@@ -90,6 +114,12 @@ export function targetBuckets(host: Host): Set<string> {
   for (const raw of splitTargets(host)) out.add(normalizeTarget(raw))
   if (out.size === 0) out.add('other')
   return out
+}
+
+export function sharedTargets(a: Host, b: Host): string[] {
+  const aTags = new Set(splitTargets(a).map(normalizeTarget))
+  const bTags = new Set(splitTargets(b).map(normalizeTarget))
+  return [...aTags].filter(t => bTags.has(t))
 }
 
 // ─── Versus pages ────────────────────────────────────────────────────────────
@@ -109,19 +139,20 @@ function hasComparableData(host: Host): boolean {
 }
 
 /**
- * Every pair of hosts sharing at least one target bucket, in canonical
- * (alphabetical) slug order. Pairs where BOTH hosts lack any spec data and
- * votes are excluded — there would be nothing to compare.
+ * Every pair of hosts sharing at least one target bucket AND same provider kind,
+ * in canonical (alphabetical) slug order. Pairs where BOTH hosts lack any spec
+ * data and votes are excluded — there would be nothing to compare.
  */
 export function compatibleVsPairs(hosts: Host[]): { slug: string }[] {
   const entries = hosts
     .filter(h => h.name)
-    .map(h => ({ h, slug: slugify(h.name), buckets: targetBuckets(h), usable: hasComparableData(h) }))
+    .map(h => ({ h, slug: slugify(h.name), buckets: targetBuckets(h), usable: hasComparableData(h), kind: providerKind(h) }))
   const out: { slug: string }[] = []
   for (let i = 0; i < entries.length; i++) {
     for (let j = i + 1; j < entries.length; j++) {
       const a = entries[i]
       const b = entries[j]
+      if (a.kind !== b.kind) continue
       if (!a.usable && !b.usable) continue // two empty listings = empty page
       let shared = false
       for (const bucket of a.buckets) {

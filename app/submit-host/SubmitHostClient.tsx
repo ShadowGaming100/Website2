@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "@/components/NoPrefetchLink";
 import { ArrowRight, Check, CircleHelp } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -76,7 +74,7 @@ export default function SubmitHostClient() {
               </a>
               <p className="support-text">
                 Need help with a listing? Contact us at{" "}
-                <a href={"mailto:support@" + process.env.EMAIL_DOMAIN}>support@{process.env.EMAIL_DOMAIN}</a>
+                <a href={`mailto:support@${process.env.EMAIL_DOMAIN}`}>support@{process.env.EMAIL_DOMAIN}</a>
               </p>
             </div>
           </aside>

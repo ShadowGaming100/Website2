@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { type FaqCategory, faqItems } from "./data";
+import { type FaqCategory, getFaqItems } from "./data";
 import { ChevronDown, CircleHelp, Info, LayoutGrid, LifeBuoy, Mail, PlusCircle, Search, Settings } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDiscord } from "@fortawesome/free-brands-svg-icons";
@@ -22,7 +22,8 @@ const sections: { id: FaqCategory; icon: LucideIcon; title: string }[] = [
   { id: "support", icon: LifeBuoy, title: "Support & Contact" },
 ];
 
-export default function FaqClient() {
+export default function FaqClient({ emailDomain }: { emailDomain: string }) {
+  const faqItems = getFaqItems(emailDomain);
   const [activeCategory, setActiveCategory] = useState<FaqCategory | "all">("all");
   const [search, setSearch] = useState("");
   const [openQuestion, setOpenQuestion] = useState<string | null>(null);
@@ -34,7 +35,7 @@ export default function FaqClient() {
       const searchMatch = !q || item.question.toLowerCase().includes(q) || item.answer.toLowerCase().includes(q);
       return catMatch && searchMatch;
     });
-  }, [activeCategory, search]);
+  }, [activeCategory, search, faqItems]);
 
   const setCategory = (category: FaqCategory | "all") => {
     setActiveCategory(category);
@@ -50,6 +51,11 @@ export default function FaqClient() {
         </div>
         <h1>Frequently Asked Questions</h1>
         <p>Find answers to common questions about FreeHosts, free hosting, and how our community directory works.</p>
+        <p className="faq-hero-lead">
+          New to free hosting? Start here — these answers explain how the FreeHosts directory works, what you can host
+          for free, and how listings are reviewed and kept up to date. If your question is not covered, join our
+          Discord community or email support and a team member will help you out.
+        </p>
       </section>
 
       <div className="faq-search">
@@ -88,13 +94,6 @@ export default function FaqClient() {
                 <Icon size={16} aria-hidden="true" />
                 {title}
               </h2>
-              {id === "general" && (
-                <p className="faq-section-lead">
-                  New to free hosting? Start here — these answers explain how the FreeHosts directory works, what you can
-                  host for free, and how listings are reviewed and kept up to date. If your question is not covered, join
-                  our Discord community or email support and a team member will help you out.
-                </p>
-              )}
               {items.map((item) => {
                 const isOpen = openQuestion === item.question;
                 return (
@@ -139,7 +138,7 @@ export default function FaqClient() {
             <FontAwesomeIcon icon={faDiscord} aria-hidden="true" />
             Join Discord
           </a>
-          <a href={"mailto:support@" + process.env.EMAIL_DOMAIN} className="faq-cta-btn secondary">
+          <a href={`mailto:support@${emailDomain}`} className="faq-cta-btn secondary">
             <Mail size={14} aria-hidden="true" />
             Email Us
           </a>

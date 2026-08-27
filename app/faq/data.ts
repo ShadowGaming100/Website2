@@ -6,7 +6,7 @@ export type FaqItem = {
   answer: string;
 };
 
-export const faqItems: FaqItem[] = [
+export const getFaqItems = (emailDomain: string): FaqItem[] => [
   {
     category: "general",
     question: "Is FreeHosts free to use?",
@@ -89,13 +89,13 @@ export const faqItems: FaqItem[] = [
     category: "submissions",
     question: "Can I update or remove my listing?",
     answer:
-      `Yes! If your hosting service has changed, been discontinued, or you want to update information, contact us via Discord or email at support@${process.env.EMAIL_DOMAIN}. Provide the listing link and the changes you would like made, and our team will update or remove it accordingly.`,
+      `Yes! If your hosting service has changed, been discontinued, or you want to update information, contact us via Discord or email at support@${emailDomain}. Provide the listing link and the changes you would like made, and our team will update or remove it accordingly.`,
   },
   {
     category: "support",
     question: "How do I contact the team?",
     answer:
-      `You can reach us through our Discord server for quick responses, or email us at support@${process.env.EMAIL_DOMAIN} for formal inquiries.`,
+      `You can reach us through our Discord server for quick responses, or email us at support@${emailDomain} for formal inquiries.`,
   },
   {
     category: "support",
@@ -113,7 +113,7 @@ export const faqItems: FaqItem[] = [
     category: "support",
     question: "How can I report a host for fraud or misconduct?",
     answer:
-      `Please report any suspicious activity or fraudulent hosting services immediately via our Discord server or by emailing support@${process.env.EMAIL_DOMAIN} with evidence and details. We take these reports seriously and investigate thoroughly.`,
+      `Please report any suspicious activity or fraudulent hosting services immediately via our Discord server or by emailing support@${emailDomain} with evidence and details. We take these reports seriously and investigate thoroughly.`,
   },
   {
     category: "support",
@@ -128,3 +128,6 @@ export const faqItems: FaqItem[] = [
       "First, contact the hosting provider support directly. If you continue experiencing unresolved issues, share your experience in our Discord community where others may offer insights. If the provider appears to be misleading or fraudulent, report it to our team so we can investigate and take appropriate action.",
   },
 ];
+
+// Server-only convenience: uses EMAIL_DOMAIN directly (no NEXT_PUBLIC, no hardcoded fallback)
+export const faqItems = getFaqItems(process.env.EMAIL_DOMAIN as string);

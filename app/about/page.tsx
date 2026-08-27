@@ -7,8 +7,11 @@ import {
   Crosshair,
   HandHeart,
   Heart,
+  Lightbulb,
   Mail,
+  Rocket,
   ShieldCheck,
+  Sparkles,
   Star,
   Users,
   Zap,
@@ -265,29 +268,53 @@ export default function AboutPage() {
               FreeHosts started as a simple idea: make it easier for people to find
               reliable free hosting without endless searching and comparing.
             </p>
-            <div className="timeline">
-              <div className="timeline-item">
+            <div className="story-grid">
+              <div className="story-card">
+                <div className="story-card-top">
+                  <span className="story-num">01</span>
+                  <div className="story-icon">
+                    <Lightbulb size={18} aria-hidden="true" />
+                  </div>
+                </div>
                 <h4>The Beginning</h4>
                 <p>
                   Started as a small list shared among friends to help each other find
                   free hosting for hobby projects.
                 </p>
               </div>
-              <div className="timeline-item">
+              <div className="story-card">
+                <div className="story-card-top">
+                  <span className="story-num">02</span>
+                  <div className="story-icon">
+                    <Users size={18} aria-hidden="true" />
+                  </div>
+                </div>
                 <h4>Growing Community</h4>
                 <p>
                   Word spread, and more people joined to share their experiences and
                   suggestions, forming the foundation of our community.
                 </p>
               </div>
-              <div className="timeline-item">
+              <div className="story-card">
+                <div className="story-card-top">
+                  <span className="story-num">03</span>
+                  <div className="story-icon">
+                    <Rocket size={18} aria-hidden="true" />
+                  </div>
+                </div>
                 <h4>Launch of Directory</h4>
                 <p>
                   Built a proper directory website with reviews, ratings, and detailed
                   information to serve the growing community better.
                 </p>
               </div>
-              <div className="timeline-item">
+              <div className="story-card highlight">
+                <div className="story-card-top">
+                  <span className="story-num">04</span>
+                  <div className="story-icon">
+                    <Sparkles size={18} aria-hidden="true" />
+                  </div>
+                </div>
                 <h4>Today</h4>
                 <p>
                   A thriving community of 400+ members with 100+ curated hosting

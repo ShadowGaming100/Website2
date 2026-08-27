@@ -1453,6 +1453,125 @@
   margin: 0;
 }
 
+.story-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+.story-card {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid var(--border);
+  border-radius: var(--border-radius-sm);
+  padding: var(--space-lg);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.story-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.06), transparent 55%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.story-card:hover::before {
+  opacity: 1;
+}
+
+.story-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-text);
+  box-shadow: var(--shadow-md), 0 0 20px rgba(99, 102, 241, 0.12);
+}
+
+.story-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.story-num {
+  font-size: var(--font-size-3xl);
+  font-weight: 800;
+  color: var(--accent);
+  opacity: 0.18;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.story-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.story-card h4 {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.story-card p {
+  font-size: var(--font-size-sm);
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.story-card.highlight {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+  color: white;
+}
+
+.story-card.highlight .story-num {
+  color: white;
+  opacity: 0.35;
+}
+
+.story-card.highlight .story-icon {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.story-card.highlight h4 {
+  color: white;
+}
+
+.story-card.highlight p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+@supports not (backdrop-filter: blur(12px)) {
+  .story-card {
+    background: var(--card);
+  }
+}
+
+@media (max-width: 640px) {
+  .story-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .error-hero {
   text-align: center;
   padding: var(--space-2xl) 0;
@@ -1693,6 +1812,12 @@
   color: var(--muted);
   max-width: 60ch;
   margin: 0 auto;
+}
+
+.faq-hero-lead {
+  margin-top: var(--space-md) !important;
+  font-size: var(--font-size-base) !important;
+  opacity: 0.95;
 }
 
 .faq-search {

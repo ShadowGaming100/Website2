@@ -127,8 +127,7 @@ export default function HostDetailClient({ host, related = [], alternativesCount
   let aboutSummary: string
   if (kind === 'subdomains') {
     aboutSummary =
-      `${host.name} gives out free subdomains under its own domain names — the quickest way to give an existing project a memorable web address. It does not provide server resources itself; pair it with any hosting provider in this directory` +
-      `${languagesText.length > 0 ? `. Its interface and documentation serve ${languagesText.join(', ')} speakers` : ''}.`
+      `${host.name} gives out free subdomains under its own domain names — the quickest way to give an existing project a memorable web address. It does not provide server resources itself; pair it with any hosting provider in this directory.`
   } else if (kind === 'domains') {
     aboutSummary =
       `${host.name} registers free domain names you can point at any host. Available extensions rotate as registries change, so confirm the current list on its site before committing a project to one.`
@@ -287,7 +286,12 @@ export default function HostDetailClient({ host, related = [], alternativesCount
                     {(host.targets || []).flatMap(target =>
                       target.split(',').map(t => {
                         const d = t.trim()
-                        return d ? <div key={d} className="target-card"><p className="target-name">{d}</p></div> : null
+                        const targetName = d.replace(/\s*\([^)]*\)/g, '').trim()
+                        return targetName ? (
+                          <Link key={d} href={`/hosts?target=${encodeURIComponent(targetName)}`} className="target-card">
+                            <p className="target-name">{d}</p>
+                          </Link>
+                        ) : null
                       }).filter(Boolean)
                     )}
                   </div>

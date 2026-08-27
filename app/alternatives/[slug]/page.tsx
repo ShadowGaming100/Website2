@@ -5,7 +5,7 @@ import Breadcrumbs from '@/components/Breadcrumbs'
 import { safeJsonLd } from '../../../lib/safeJsonLd'
 import { fetchHostBySlug, fetchHosts } from '../../../lib/cache'
 import { slugify } from '../../../lib/slugify'
-import { splitTargets, findAlternatives, primaryBucket, hostRow } from '../../../lib/taxonomy'
+import { splitTargets, findAlternatives, primaryBucket, hostRow, sharedTargets, providerKind, hasPublishedSpecs } from '../../../lib/taxonomy'
 
 export const runtime = 'edge'
 
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description =
     alts.length === 0
       ? `${host.name} alternatives are being verified. Browse the FreeHosts directory for ${all.length - 1} other free hosting providers, compared spec by spec.`
-      : `Looking beyond ${host.name}? Compare ${alts.length} free hosting alternative${alts.length === 1 ? '' : 's'} side by side — RAM, CPU, storage, targets and community votes.`
+      : `Looking beyond ${host.name}? Compare ${alts.length} free hosting alternative${alts.length === 1 ? '' : 's'} side by side — RAM, CPU, storage, targets and community reviews.`
   return {
     title,
     ...(description.length > 160 ? { description: description.slice(0, 157) + '...' } : { description }),
@@ -70,9 +70,17 @@ export default async function AlternativesPage({ params }: Props) {
 
   const all = await fetchHosts()
   const alts = findAlternatives(host, all)
-  const rows = alts.map(hostRow)
+  const rows = alts.map(h => ({
+    ...hostRow(h),
+    shared: sharedTargets(host, h),
+    kind: providerKind(h),
+    status: h.status || 'Unknown',
+    hasSpecs: hasPublishedSpecs(h),
+  }))
   const pageUrl = `${process.env.APP_URL}/alternatives/${slugify(host.name)}`
   const tags = splitTargets(host)
+  const hostKind = providerKind(host)
+  const hostKindLabel = hostKind === 'hosting' ? 'free hosting providers' : hostKind === 'subdomains' ? 'free subdomain providers' : 'free domain providers'
   const advice = BUCKET_ADVICE[primaryBucket(host)] ?? [
             'Verify the provider still actively maintains its free tier — status badges here reflect community reports.',
             'Compare what "free" includes: custom domains, SSL, and email accounts are commonly gated behind paid plans.',
@@ -121,7 +129,7 @@ export default async function AlternativesPage({ params }: Props) {
           <p>
             {rows.length >= 2 ? (
               <>
-                The {rows.length} best free alternatives to {host.name}, compared on specs, limits and community votes.
+                The {rows.length} best free alternatives to {host.name}, compared on specs, limits and community reviews.
                 Every option below is a live listing in the FreeHosts directory.
               </>
             ) : rows.length === 1 ? (
@@ -139,33 +147,46 @@ export default async function AlternativesPage({ params }: Props) {
           <section className="content-section">
             <h2>{rows.length === 1 ? `Free alternative to ${host.name}` : `Free ${host.name} alternatives compared`}</h2>
             <p className="host-about-summary">
-              Specs below come from each provider&apos;s published free plan at the time of listing. Tap any name for the
-              full profile, links and vote history.
+              All {rows.length} options below are <strong>{hostKindLabel}</strong> sharing at least one use-case with {host.name} (
+              {tags.join(', ') || 'general hosting'}). Alternatives are ranked by shared focus, spec completeness and community reviews — not alphabetically.
+              Specs are the provider&apos;s published free plan at listing time. Tap any name for the full profile.
             </p>
-            <table className="info-table alt-table">
-              <thead>
-                <tr>
-                  <th>Provider</th>
-                  <th>Targets</th>
-                  <th>CPU</th>
-                  <th>RAM</th>
-                  <th>Storage</th>
-                  <th>Reviews</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map(r => (
-                  <tr key={r.slug}>
-                    <td><Link href={`/hosts/${r.slug}`}>{r.name}</Link></td>
-                    <td>{r.targets}</td>
-                    <td>{r.cpu}</td>
-                    <td>{r.ram}</td>
-                    <td>{r.disk}</td>
-                    <td>{r.ratingPct !== null ? `${r.ratingPct}% (${r.votes})` : 'No votes yet'}</td>
+            {hostKind !== 'hosting' && (
+              <p className="host-about-summary" style={{ marginTop: '0.5rem', fontStyle: 'italic' }}>
+                Note: {host.name} is classified as a {hostKind} provider (hands out addresses, not compute). These alternatives are the same kind — they are not comparable to VPS / app hosting on RAM or CPU.
+              </p>
+            )}
+            <div style={{ overflowX: 'auto' }}>
+              <table className="info-table alt-table">
+                <thead>
+                  <tr>
+                    <th>Provider</th>
+                    <th>Shared focus</th>
+                    <th>CPU</th>
+                    <th>RAM</th>
+                    <th>Storage</th>
+                    <th>Status</th>
+                    <th>Reviews</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {rows.map(r => (
+                    <tr key={r.slug}>
+                      <td><Link href={`/hosts/${r.slug}`}>{r.name}</Link>{!r.hasSpecs && <span style={{ marginLeft: 6, fontSize: '0.75em', color: 'var(--muted)' }} title="No concrete specs published">— specs TBA</span>}</td>
+                      <td title={r.shared.join(', ')}>{r.shared.length > 0 ? r.shared.join(', ') : '—'}</td>
+                      <td>{r.cpu}</td>
+                      <td>{r.ram}</td>
+                      <td>{r.disk}</td>
+                      <td><span className={`status-badge ${r.status.toLowerCase()}`}>{r.status}</span></td>
+                      <td>{r.ratingPct !== null ? `${r.ratingPct}% (${r.votes} review${r.votes === 1 ? '' : 's'})` : 'No reviews yet'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="host-about-summary" style={{ fontSize: '0.9em', opacity: 0.9 }}>
+              Methodology: filtered to same provider kind (<code>{hostKind}</code>) and at least one shared bucket; sorted by shared-bucket count → spec completeness → positive reviews. See <Link href="/methodology">how we review listings</Link>.
+            </p>
             {rows.length >= 1 && (
               <p className="host-about-summary">
                 Head-to-head:{' '}

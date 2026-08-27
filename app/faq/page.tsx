@@ -93,7 +93,7 @@ export default function FaqPage() {
         dangerouslySetInnerHTML={{ __html: safeJsonLd(faqSchema) }}
       />
       <Breadcrumbs siteUrl={process.env.APP_URL} items={[{ name: "FAQ", path: "/faq" }]} />
-      <FaqClient />
+      <FaqClient emailDomain={process.env.EMAIL_DOMAIN as string} />
     </>
   );
 }

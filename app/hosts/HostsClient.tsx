@@ -650,18 +650,44 @@ function HostCard({ host, isNew }: HostCardProps) {
                    );
                  })}
                </div>
-               {hasMoreDomains && (
-                 <div className="host-domains-more">
-                   + {allExtractedDomains.length - 10} more available
-                 </div>
-               )}
-             </div>
-           );
-         } else if (host.targets?.some(t => t.toLowerCase().includes('subdomain'))) {
-           return null;
-         }
+{hasMoreDomains && (
+                  <div className="host-domains-more">
+                    + {allExtractedDomains.length - 10} more available
+                  </div>
+                )}
+              </div>
+            );
+          }
 
-         return (
+          // Also extract domains for subdomain hosts from free_plan
+          if (host.targets?.some(t => t.toLowerCase().includes('subdomain'))) {
+            const subdomainDomains = Array.from(new Set((host.free_plan || '')
+              .split('\n')
+              .map(l => l.trim())
+              .filter(l => /^[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(l))
+              .map(l => l.split(/\s/)[0])
+            )).slice(0, 10);
+
+            if (subdomainDomains.length > 0) {
+              return (
+                <div className="host-domains">
+                  <div className="host-domains-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    Extensions:
+                  </div>
+                  <div className="host-domains-list">
+                    {subdomainDomains.map(domain => (
+                      <span key={domain} className="domain-badge">
+                        {domain}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+          }
+
+          return (
            <div className="host-specs">
              <div className="host-spec-card">
                <div className="host-spec-icon">
