@@ -85,12 +85,27 @@ export function hostRow(host: Host): {
 // form. No rules to update when targets change.
 
 const BUCKET_ALIASES: Record<string, string> = {
+  // Website variants
   'web hosting': 'website',
-  'codespace': 'coding',
-  'developers': 'coding',
+  'web': 'website',
+  'website builder': 'website',
   'wiki pages': 'website',
   'docs': 'website',
   'forum': 'website',
+  // Coding variants
+  'codespace': 'coding',
+  'developers': 'coding',
+  'discord bots': 'coding',
+  'discord bot': 'coding',
+  'vps': 'coding',
+  'coding website': 'coding',
+  // Gaming variants
+  'gaming beammp': 'gaming',
+  // Database variants
+  'databases': 'database',
+  // Other
+  'email hosting': 'other',
+  'media sharing': 'other',
 }
 
 /**
@@ -99,6 +114,8 @@ const BUCKET_ALIASES: Record<string, string> = {
  * "Database (Postgres)" -> "database"
  * "Free Minecraft"   -> "free minecraft"  (new tags just work)
  * "Web Hosting"      -> "website" (alias)
+ * "Discord Bots"     -> "coding" (alias)
+ * "VPS"              -> "coding" (alias)
  */
 export function normalizeTarget(raw: string): string {
   let t = raw.toLowerCase().trim()
@@ -182,7 +199,6 @@ export function providerKind(host: Host): ProviderKind {
   return raws.some(t => t.includes('subdomain')) ? 'subdomains' : 'domains'
 }
 
-/** Whether the listing publishes ANY concrete resource figure. */
 export function hasPublishedSpecs(host: Host): boolean {
   return Boolean(
     (host.cpu && host.cpu !== 'Unknown') ||
@@ -191,4 +207,35 @@ export function hasPublishedSpecs(host: Host): boolean {
     (host.ram && host.ram !== 'Unknown') ||
     (host.disk && host.disk !== 'Unknown'),
   )
+}
+
+/**
+ * Returns a concise, human-readable label for the host's primary use case.
+ * Used for accurate metadata titles and descriptions.
+ * Examples: "Minecraft hosting", "Discord bot hosting", "web hosting", "database hosting"
+ */
+export function primaryTargetLabel(host: Host): string {
+  const buckets = targetBuckets(host)
+  const raws = splitTargets(host).map(t => t.toLowerCase())
+
+  // Specific popular use-case detection based on raw targets (most precise first)
+  if (raws.some(t => t.includes('minecraft'))) return 'Minecraft server hosting'
+  if (raws.some(t => t.includes('discord bot') || t.includes('discord bots'))) return 'Discord bot hosting'
+  if (raws.some(t => t.includes('beammp'))) return 'BeamMP & gaming server hosting'
+  if (raws.some(t => t.includes('email'))) return 'email hosting'
+  if (raws.some(t => t.includes('media'))) return 'media sharing'
+  if (raws.some(t => t.includes('vps'))) return 'VPS hosting'
+  if (raws.some(t => t.includes('subdomain'))) return 'free subdomain provider'
+  if (raws.some(t => t.includes('domain') && !t.includes('subdomain'))) return 'free domain provider'
+  if (raws.some(t => t.includes('static'))) return 'static website hosting'
+  if (raws.some(t => t.includes('wordpress'))) return 'WordPress hosting'
+  if (raws.some(t => t.includes('website builder') || t.includes('builder'))) return 'website builder hosting'
+  if (raws.some(t => t.includes('serverless'))) return 'serverless function hosting'
+
+  // Bucket-level fallback
+  if (buckets.has('gaming')) return 'game server hosting'
+  if (buckets.has('website')) return 'web hosting'
+  if (buckets.has('coding')) return 'app & bot hosting'
+  if (buckets.has('database')) return 'database hosting'
+  return 'free hosting'
 }

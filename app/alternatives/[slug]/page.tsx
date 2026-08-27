@@ -5,7 +5,7 @@ import Breadcrumbs from '@/components/Breadcrumbs'
 import { safeJsonLd } from '../../../lib/safeJsonLd'
 import { fetchHostBySlug, fetchHosts } from '../../../lib/cache'
 import { slugify } from '../../../lib/slugify'
-import { splitTargets, findAlternatives, primaryBucket, hostRow, sharedTargets, providerKind, hasPublishedSpecs } from '../../../lib/taxonomy'
+import { splitTargets, findAlternatives, primaryBucket, hostRow, sharedTargets, providerKind, hasPublishedSpecs, primaryTargetLabel } from '../../../lib/taxonomy'
 
 export const runtime = 'edge'
 
@@ -32,11 +32,36 @@ const BUCKET_ADVICE: Record<string, string[]> = {
     'Some free databases pause after long idle periods and cold-start on the next query; fine for dev, risky for production.',
     'Schedule your own exports regardless of what the provider promises — free tiers back up less aggressively.',
   ],
+  // Discord bot / bot-specific advice (maps to "coding" bucket after normalisation)
+  'discord bots': [
+    'Confirm whether the host allows persistent processes — some coding hosts kill idle bots after inactivity.',
+    'Check that your bot framework and Node.js / Python version are supported before committing.',
+    'Look for hosts with easy restarts and logs access so you can debug gateway disconnects quickly.',
+  ],
+  // VPS / raw compute (also maps to "coding")
+  vps: [
+    'Free VPS tiers often have strict bandwidth and CPU burst limits — check what happens when you exceed them.',
+    'Confirm the OS image and kernel version match your software requirements before signing up.',
+    'Look for providers that allow SSH access from day one so you can set up your stack without a web UI.',
+  ],
+  // Email hosting
+  'email hosting': [
+    'Verify that the provider supports custom domains — most free email tiers restrict you to their own domain.',
+    'Check sending limits (messages per day) and storage quotas before choosing a free email host.',
+    'DKIM/DMARC/SPF support matters for deliverability — confirm these are configurable on the free plan.',
+  ],
+  // Media / file sharing
+  'media sharing': [
+    'Compare storage caps and file size limits — they vary widely across free tiers.',
+    'Check whether direct hotlinking to files is allowed; some providers restrict bandwidth on free plans.',
+    'Verify the retention policy: some free tiers delete files that have not been accessed recently.',
+  ],
   other: [
     'Verify the provider still actively maintains its free tier — status badges here reflect community reports.',
     'Compare what "free" includes: custom domains, SSL, and email accounts are commonly gated behind paid plans.',
   ],
 }
+
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
@@ -44,13 +69,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!host) return { title: 'Not Found', robots: { index: false, follow: false } }
   const all = await fetchHosts()
   const alts = findAlternatives(host, all)
+  const targetLabel = primaryTargetLabel(host)
   // Keep the full rendered title (base + " | FreeHosts") within ~60 chars.
-  const longTitle = `${host.name} Alternatives: Free Options Compared`
-  const title = longTitle.length + 12 <= 60 ? longTitle : `${host.name} Alternatives`
+  const longTitle = `${host.name} Alternatives: Free ${targetLabel.charAt(0).toUpperCase() + targetLabel.slice(1)} Compared`
+  const shortTitle = `${host.name} Alternatives`
+  const title = longTitle.length + 12 <= 60 ? longTitle : shortTitle
   const description =
     alts.length === 0
-      ? `${host.name} alternatives are being verified. Browse the FreeHosts directory for ${all.length - 1} other free hosting providers, compared spec by spec.`
-      : `Looking beyond ${host.name}? Compare ${alts.length} free hosting alternative${alts.length === 1 ? '' : 's'} side by side — RAM, CPU, storage, targets and community reviews.`
+      ? `${host.name} alternatives are being verified. Browse the FreeHosts directory for ${all.length - 1} other free ${targetLabel} providers, compared spec by spec.`
+      : `Looking beyond ${host.name}? Compare ${alts.length} free ${targetLabel} alternative${alts.length === 1 ? '' : 's'} side by side — RAM, CPU, storage and community reviews.`
   return {
     title,
     ...(description.length > 160 ? { description: description.slice(0, 157) + '...' } : { description }),
@@ -80,11 +107,16 @@ export default async function AlternativesPage({ params }: Props) {
   const pageUrl = `${process.env.APP_URL}/alternatives/${slugify(host.name)}`
   const tags = splitTargets(host)
   const hostKind = providerKind(host)
-  const hostKindLabel = hostKind === 'hosting' ? 'free hosting providers' : hostKind === 'subdomains' ? 'free subdomain providers' : 'free domain providers'
-  const advice = BUCKET_ADVICE[primaryBucket(host)] ?? [
-            'Verify the provider still actively maintains its free tier — status badges here reflect community reports.',
-            'Compare what "free" includes: custom domains, SSL, and email accounts are commonly gated behind paid plans.',
-          ]
+  const targetLabel = primaryTargetLabel(host)
+  const hostKindLabel = hostKind === 'hosting' ? `free ${targetLabel} providers` : hostKind === 'subdomains' ? 'free subdomain providers' : 'free domain providers'
+
+  // Try a raw-target-specific advice entry first (e.g. "discord bots"),
+  // then the normalised bucket (e.g. "coding"), then the generic fallback.
+  const rawTargetAdviceKey = tags.map(t => t.toLowerCase()).find(t => BUCKET_ADVICE[t])
+  const advice = (rawTargetAdviceKey ? BUCKET_ADVICE[rawTargetAdviceKey] : null)
+    ?? BUCKET_ADVICE[primaryBucket(host)]
+    ?? BUCKET_ADVICE['other']
+
 
   const webPageSchema = {
     '@context': 'https://schema.org',
@@ -94,14 +126,14 @@ export default async function AlternativesPage({ params }: Props) {
     name: `${host.name} Alternatives`,
     isPartOf: { '@id': `${process.env.APP_URL}/#website` },
     inLanguage: 'en',
-    description: `Free hosting alternatives to ${host.name}, compared side by side.`,
+    description: `Free ${targetLabel} alternatives to ${host.name}, compared side by side.`,
     ...(host.created_at ? { dateModified: new Date(host.created_at).toISOString().split('T')[0] } : {}),
   }
 
   const itemListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: `Free alternatives to ${host.name}`,
+    name: `Free ${targetLabel} alternatives to ${host.name}`,
     numberOfItems: rows.length,
     itemListElement: rows.map((r, i) => ({
       '@type': 'ListItem',
@@ -129,23 +161,23 @@ export default async function AlternativesPage({ params }: Props) {
           <p>
             {rows.length >= 2 ? (
               <>
-                The {rows.length} best free alternatives to {host.name}, compared on specs, limits and community reviews.
+                The {rows.length} best free {targetLabel} alternatives to {host.name}, compared on specs, limits and community reviews.
                 Every option below is a live listing in the FreeHosts directory.
               </>
             ) : rows.length === 1 ? (
               <>
-                {rows[0].name} is currently the closest verified free alternative to {host.name}, serving similar use
+                {rows[0].name} is currently the closest verified free {targetLabel} alternative to {host.name}, serving similar use
                 cases — see the comparison below and browse the directory for more options.
               </>
             ) : (
-              <>We have not yet verified enough similar providers to list alternatives to {host.name}. Meanwhile, the directory lists {all.length - 1} other providers.</>
+              <>We have not yet verified enough similar {targetLabel} providers to list alternatives to {host.name}. Meanwhile, the directory lists {all.length - 1} other providers.</>
             )}
           </p>
         </section>
 
         {rows.length >= 1 && (
           <section className="content-section">
-            <h2>{rows.length === 1 ? `Free alternative to ${host.name}` : `Free ${host.name} alternatives compared`}</h2>
+            <h2>{rows.length === 1 ? `Free ${targetLabel} alternative to ${host.name}` : `Free ${host.name} alternatives compared`}</h2>
             <p className="host-about-summary">
               All {rows.length} options below are <strong>{hostKindLabel}</strong> sharing at least one use-case with {host.name} (
               {tags.join(', ') || 'general hosting'}). Alternatives are ranked by shared focus, spec completeness and community reviews — not alphabetically.

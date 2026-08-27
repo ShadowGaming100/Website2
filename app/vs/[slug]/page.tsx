@@ -5,7 +5,7 @@ import Breadcrumbs from '@/components/Breadcrumbs'
 import { safeJsonLd } from '../../../lib/safeJsonLd'
 import { fetchHosts, type Host } from '../../../lib/cache'
 import { slugify } from '../../../lib/slugify'
-import { splitTargets, targetBuckets, parseVsSlug, sharedBucket, providerKind, sharedTargets } from '../../../lib/taxonomy'
+import { splitTargets, targetBuckets, parseVsSlug, sharedBucket, providerKind, sharedTargets, primaryTargetLabel } from '../../../lib/taxonomy'
 import { permanentRedirect } from 'next/navigation'
 import { ramDisplay, diskDisplay, specSummary } from '../../../lib/specs'
 
@@ -18,6 +18,10 @@ const BUCKET_PICK: Record<string, string> = {
   website: 'For websites, storage and bandwidth caps decide how far the free plan stretches; custom-domain support is the next tiebreaker.',
   coding: 'For apps and bots, the idle policy decides daily experience: a paused process answers seconds late after quiet periods.',
   database: 'For databases, compare storage caps and connection limits — they vary more between providers than engines do.',
+  'discord bots': 'For Discord bots, uptime and idle policies are critical — check if the host kills processes when inactive.',
+  vps: 'For raw VPS compute, check the OS images offered and whether root SSH access is provided out of the box.',
+  'email hosting': 'For email hosting, sending limits and custom domain support are the key differentiators.',
+  'media sharing': 'For media sharing, storage quotas and bandwidth limits will dictate how useful the free plan is.',
   other: 'Compare what "free" includes at each provider: custom domains, SSL and email are the features most often gated behind paid plans.',
 }
 
@@ -39,14 +43,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (`${first}-vs-${second}` !== slug) {
     return { alternates: { canonical: `${process.env.APP_URL}/vs/${first}-vs-${second}` } }
   }
+
+  const sharedOk = [...targetBuckets(a)].some(bucket => targetBuckets(b).has(bucket))
+  const targetLabel = sharedOk ? primaryTargetLabel(a) : 'hosting'
+
   // Keep the rendered title (base + " | FreeHosts") within ~60 chars.
-  const longTitle = `${a.name} vs ${b.name}: Free Hosting Compared`
+  const longTitle = `${a.name} vs ${b.name}: Free ${targetLabel.charAt(0).toUpperCase() + targetLabel.slice(1)} Compared`
   const shortTitle = `${a.name} vs ${b.name} compared`
   const title = longTitle.length + 12 <= 60 ? longTitle : (shortTitle.length + 12 <= 60 ? shortTitle : `${a.name} vs ${b.name}`)
   const description =
     `${a.name} and ${b.name} side by side: targets, CPU, RAM, storage, status and community reviews. ` +
-    `An honest, spec-level comparison of two free hosting providers.`
-  const sharedOk = [...targetBuckets(a)].some(bucket => targetBuckets(b).has(bucket))
+    `An honest, spec-level comparison of two free ${targetLabel} providers.`
+
   return {
     title,
     description,
@@ -196,7 +204,7 @@ export default async function VersusPage({ params }: Props) {
               <tr><td>CPU</td><td>{cpuA}</td><td>{cpuB}</td></tr>
               <tr><td>RAM</td><td style={ramWinner === 'a' ? winStyle : undefined}>{ramA}{ramWinner === 'a' && ' ✓'}</td><td style={ramWinner === 'b' ? winStyle : undefined}>{ramB}{ramWinner === 'b' && ' ✓'}</td></tr>
               <tr><td>Storage</td><td style={diskWinner === 'a' ? winStyle : undefined}>{diskA}{diskWinner === 'a' && ' ✓'}</td><td style={diskWinner === 'b' ? winStyle : undefined}>{diskB}{diskWinner === 'b' && ' ✓'}</td></tr>
-              {(a.free_plan || b.free_plan) && <tr><td>Free plan</td><td>{a.free_plan || '—'}</td><td>{b.free_plan || '—'}</td></tr>}
+              {(a.free_plan || b.free_plan) && <tr><td>Free plan</td><td style={{ whiteSpace: 'pre-wrap' }}>{a.free_plan || '—'}</td><td style={{ whiteSpace: 'pre-wrap' }}>{b.free_plan || '—'}</td></tr>}
               <tr><td>Status</td><td><span className={`status-badge ${a.status?.toLowerCase()}`}>{a.status}</span></td><td><span className={`status-badge ${b.status?.toLowerCase()}`}>{b.status}</span></td></tr>
               <tr>
                 <td>Community</td>
@@ -234,7 +242,18 @@ export default async function VersusPage({ params }: Props) {
 
         <section className="content-section">
           <h2>Which should you pick?</h2>
-          <p className="host-about-summary">{BUCKET_PICK[sharedBucket(a, b)] ?? 'Compare what each provider publishes for its free plan — the table above carries the facts; community reviews carry the experience.'}</p>
+          {(() => {
+            // Try matching a shared raw target first (e.g. "discord bots")
+            const aTags = splitTargets(a).map(t => t.toLowerCase())
+            const bTags = splitTargets(b).map(t => t.toLowerCase())
+            const sharedRaw = aTags.find(t => bTags.includes(t) && BUCKET_PICK[t])
+            
+            const advice = (sharedRaw ? BUCKET_PICK[sharedRaw] : null) 
+              ?? BUCKET_PICK[sharedBucket(a, b)] 
+              ?? 'Compare what each provider publishes for its free plan — the table above carries the facts; community reviews carry the experience.'
+            
+            return <p className="host-about-summary">{advice}</p>
+          })()}
           <ul className="host-check-list">
             <li>Read each provider&apos;s own plan page before committing — free tiers change without notice.</li>
             <li>Check community review scores on both profiles ({a.name}: {pctA ?? 'n/a'}%, {b.name}: {pctB ?? 'n/a'}%) and skim recent feedback in our Discord.</li>
