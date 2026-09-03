@@ -1,13 +1,4 @@
-// Single source of truth for formatting host specifications.
-// Used by metadata generation (meta descriptions, JSON-LD Offer strings)
-// AND by every UI surface (spec boxes, cards) so the same host can never
-// render conflicting values like "4 GB" vs "4.9GB" again.
-
-export function formatSpecSize(mb?: number): string {
-  if (!mb) return ''
-  if (mb >= 1024) return (mb / 1024).toFixed(1) + ' GB'
-  return Math.round(mb) + ' MB'
-}
+import { formatSize } from './parseSpecs'
 
 export interface SpecSource {
   cpu?: string
@@ -22,14 +13,14 @@ export interface SpecSource {
  * fall back to the raw string. Both UI and schema must call this.
  */
 export function ramDisplay(host: SpecSource): string {
-  return formatSpecSize(host.ramMB) || host.ram || 'Unknown'
+  return (host.ramMB ? formatSize(host.ramMB) : '') || host.ram || 'Unknown'
 }
 
 /**
  * The display value for storage: same precedence rule as RAM.
  */
 export function diskDisplay(host: SpecSource): string {
-  return formatSpecSize(host.diskMB) || host.disk || 'Unknown'
+  return (host.diskMB ? formatSize(host.diskMB) : '') || host.disk || 'Unknown'
 }
 
 /**

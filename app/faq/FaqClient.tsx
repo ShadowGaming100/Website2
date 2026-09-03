@@ -3,8 +3,7 @@
 import { useMemo, useState } from "react";
 import { type FaqCategory, getFaqItems } from "./data";
 import { ChevronDown, CircleHelp, Info, LayoutGrid, LifeBuoy, Mail, PlusCircle, Search, Settings } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDiscord } from "@fortawesome/free-brands-svg-icons";
+import { DiscordIcon } from "@/components/BrandIcons";
 import type { LucideIcon } from "lucide-react";
 
 const categories: { id: FaqCategory | "all"; icon: LucideIcon; label: string }[] = [
@@ -135,7 +134,7 @@ export default function FaqClient({ emailDomain }: { emailDomain: string }) {
         <p>Join our community and get help from our team and fellow users.</p>
         <div className="faq-cta-buttons">
           <a href="https://discord.gg/QbeZ3b5CQd" className="faq-cta-btn primary" target="_blank" rel="noopener noreferrer">
-            <FontAwesomeIcon icon={faDiscord} aria-hidden="true" />
+            <DiscordIcon aria-hidden="true" />
             Join Discord
           </a>
           <a href={`mailto:support@${emailDomain}`} className="faq-cta-btn secondary">

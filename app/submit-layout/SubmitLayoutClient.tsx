@@ -20,8 +20,7 @@ import {
   Wand,
   Zap,
 } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDiscord } from "@fortawesome/free-brands-svg-icons";
+import { DiscordIcon } from "@/components/BrandIcons";
 
 type SpecType = "same" | "different";
 type RenewalStatus = "" | "yes" | "no";
@@ -373,7 +372,7 @@ export default function SubmitLayoutClient() {
           <section className="builder-preview-card">
             <div className="preview-header">
               <h3 className="preview-title">
-                <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> Discord Message Preview
+                <DiscordIcon aria-hidden="true" /> Discord Message Preview
               </h3>
               <span className="preview-badge">
                 <Circle size={8} aria-hidden="true" /> Live

@@ -1,5 +1,5 @@
 import { type Host } from './cache';
-import { parseCPUValue, parseMemoryToMB } from './parseSpecs';
+import { parseCPUValue, parseMemoryToMB, formatSize } from './parseSpecs';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -46,26 +46,12 @@ export const ROWS: Row[] = [
   },
   {
     label: 'RAM',
-    getValue: (h) => {
-      if (h.ramMB && h.ramMB > 0) {
-        return h.ramMB >= 1024
-          ? `${(h.ramMB / 1024).toFixed(1)}GB`
-          : `${Math.round(h.ramMB)}MB`;
-      }
-      return h.ram || 'Unknown';
-    },
+    getValue: (h) => (h.ramMB && h.ramMB > 0 ? formatSize(h.ramMB) : h.ram || 'Unknown'),
     getNumeric: (h) => parseMemoryToMB(h.ram, h.ramMB),
   },
   {
     label: 'Storage',
-    getValue: (h) => {
-      if (h.diskMB && h.diskMB > 0) {
-        return h.diskMB >= 1024
-          ? `${(h.diskMB / 1024).toFixed(1)}GB`
-          : `${Math.round(h.diskMB)}MB`;
-      }
-      return h.disk || 'Unknown';
-    },
+    getValue: (h) => (h.diskMB && h.diskMB > 0 ? formatSize(h.diskMB) : h.disk || 'Unknown'),
     getNumeric: (h) => parseMemoryToMB(h.disk, h.diskMB),
   },
   {

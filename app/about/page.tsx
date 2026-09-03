@@ -16,8 +16,7 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDiscord } from "@fortawesome/free-brands-svg-icons";
+import { DiscordIcon } from "../../components/BrandIcons";
 
 export const metadata: Metadata = {
   title: "About FreeHosts - Our Mission, Team & Community",
@@ -336,7 +335,7 @@ export default function AboutPage() {
             <div className="contact-cards">
               <div className="contact-card">
                 <div className="contact-icon">
-                  <FontAwesomeIcon icon={faDiscord} aria-hidden="true" />
+                  <DiscordIcon aria-hidden="true" />
                 </div>
                 <h3>Join Discord</h3>
                 <p>
@@ -349,7 +348,7 @@ export default function AboutPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <FontAwesomeIcon icon={faDiscord} aria-hidden="true" />
+                  <DiscordIcon aria-hidden="true" />
                   Join Server
                 </a>
               </div>

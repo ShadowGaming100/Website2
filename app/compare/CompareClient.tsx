@@ -5,7 +5,7 @@ import { GitCompare, Trash2, ArrowLeft, Star, CheckCircle2, XCircle } from 'luci
 import { useComparison } from '../../contexts/ComparisonContext';
 import { ROWS, findBestIndex, computeRating } from '../../lib/comparisonRows';
 import { slugify } from '../../lib/slugify';
-import { formatSize } from '../../lib/parseSpecs';
+import { ramDisplay, diskDisplay } from '../../lib/specs';
 import { useFavorites } from '../../contexts/FavoritesContext';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -90,10 +90,10 @@ export default function CompareClient() {
     const ratingPct = totalReviews > 0
       ? Math.round(((host.approvals || 0) / totalReviews) * 100)
       : null;
-    const ramDisplay = host.ramMB ? formatSize(host.ramMB) : host.ram || 'Unknown';
-    const storageDisplay = host.diskMB ? formatSize(host.diskMB) : host.disk || 'Unknown';
+    const ramValue = ramDisplay(host);
+    const storageValue = diskDisplay(host);
     const statusOnline = host.status?.toLowerCase() === 'online';
-    return { host, totalReviews, ratingPct, ramDisplay, storageDisplay, statusOnline };
+    return { host, totalReviews, ratingPct, ramValue, storageValue, statusOnline };
   });
 
   // Best rating index

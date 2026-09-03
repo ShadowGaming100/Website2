@@ -6,8 +6,7 @@ import { type Host } from '../lib/cache'
 import { slugify } from '../lib/slugify'
 import { getLanguageName } from '../lib/getLanguageName'
 import { ArrowLeft, Check, Copy, Cpu, GitCompare, Crosshair, ExternalLink, Gift, HardDrive, Info, Languages, Link as LinkIcon, MemoryStick, Settings, Star, ThumbsDown, ThumbsUp } from 'lucide-react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDiscord } from '@fortawesome/free-brands-svg-icons'
+import { DiscordIcon } from './BrandIcons'
 import { showToast } from './Toast'
 import { useFavorites } from '../contexts/FavoritesContext'
 import { ramDisplay, diskDisplay } from '../lib/specs'
@@ -442,7 +441,7 @@ export default function HostDetailClient({ host, related = [], alternativesCount
           <div className="discord-overlay active" onClick={() => setShowDiscordModal(false)} />
           <div className="discord-modal active">
             <div className="discord-icon">
-              <FontAwesomeIcon icon={faDiscord} aria-hidden="true" />
+              <DiscordIcon aria-hidden="true" />
             </div>
             <h3 className="discord-title">Discord Required</h3>
             <p className="discord-text">You can only vote and review hosts in the Discord server!</p>

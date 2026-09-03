@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "@/components/NoPrefetchLink";
 import { Compass, Home, Mail, Server } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDiscord } from "@fortawesome/free-brands-svg-icons";
+import { DiscordIcon } from "@/components/BrandIcons";
 
 export const metadata: Metadata = {
   title: "404 - Page Not Found",
@@ -31,7 +30,7 @@ export default function NotFound() {
             <Link className="btn" href="/hosts"><Server size={14} aria-hidden="true" /> Browse Hosts</Link>
             <a className="btn ghost" href={"mailto:support@" + process.env.EMAIL_DOMAIN} ><Mail size={14} aria-hidden="true" /> Report Issue</a>
             <a className="btn" href="https://discord.gg/QbeZ3b5CQd" target="_blank" rel="noopener noreferrer">
-              <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> Join Discord
+              <DiscordIcon aria-hidden="true" /> Join Discord
             </a>
           </div>
         </div>

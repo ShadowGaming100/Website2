@@ -1,7 +1,6 @@
 import Link from "@/components/NoPrefetchLink";
 import { ArrowRight, Check, CircleHelp } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDiscord } from "@fortawesome/free-brands-svg-icons";
+import { DiscordIcon } from "@/components/BrandIcons";
 
 const inviteUrl = "https://discord.gg/QbeZ3b5CQd";
 
@@ -70,7 +69,7 @@ export default function SubmitHostClient() {
               <h3>Ready to Submit?</h3>
               <p>The quickest way to get listed is via our active Discord community.</p>
               <a href={inviteUrl} target="_blank" rel="noopener noreferrer" className="btn primary full">
-                <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> Join Discord to Submit
+                <DiscordIcon aria-hidden="true" /> Join Discord to Submit
               </a>
               <p className="support-text">
                 Need help with a listing? Contact us at{" "}

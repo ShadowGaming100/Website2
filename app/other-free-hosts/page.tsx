@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Image from "next/image";
 import { ExternalLink, Info, List } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDiscord } from "@fortawesome/free-brands-svg-icons";
-import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import { DiscordIcon, type BrandIconComponent } from "../../components/BrandIcons";
 import type { LucideIcon } from "lucide-react";
 import { safeJsonLd } from "../../lib/safeJsonLd";
 
@@ -18,7 +16,7 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: "Other Free Hosting Platforms & Directories - FreeHosts", description: "Discover other trusted platforms and directories that list free hosting services for websites, Minecraft servers, and applications.", images: [{ url: process.env.APP_URL + "/Src/Images/banner.png", alt: "FreeHosts - Other Free Hosting Platforms" }], site: "@freehosts_", creator: "@freehosts_" },
 };
 
-type HostLink = { href: string; lucideIcon?: LucideIcon; faIcon?: IconDefinition; label: string };
+type HostLink = { href: string; lucideIcon?: LucideIcon; brandIcon?: BrandIconComponent; label: string };
 
 const externalHosts: { initials?: string; image?: string; name: string; description: string; links: HostLink[] }[] = [
   {
@@ -27,7 +25,7 @@ const externalHosts: { initials?: string; image?: string; name: string; descript
     description: "The best collection of free minecraft server hosting providers. Includings a tons of free minecraft hostings. Allow you to write your own experiences while using free hostings. Founded by the best handsome human in the entire world.",
     links: [
       { href: "https://freeminecrafthostings.com/", lucideIcon: ExternalLink, label: "Website" },
-      { href: "https://discord.gg/sc2kauFE3D", faIcon: faDiscord, label: "Discord" },
+      { href: "https://discord.gg/sc2kauFE3D", brandIcon: DiscordIcon, label: "Discord" },
     ],
   },
   {
@@ -36,7 +34,7 @@ const externalHosts: { initials?: string; image?: string; name: string; descript
     description: "A comprehensive directory dedicated to free Minecraft server hosting providers, help you find the perfect host for your server.",
     links: [
       { href: "https://myuui.com/", lucideIcon: ExternalLink, label: "Website" },
-      { href: "https://discord.gg/JzvVMZ9Zrm", faIcon: faDiscord, label: "Discord" },
+      { href: "https://discord.gg/JzvVMZ9Zrm", brandIcon: DiscordIcon, label: "Discord" },
     ],
   },
   {
@@ -95,7 +93,7 @@ export default function OtherFreeHostsPage() {
                 <div className="external-host-links">
                   {host.links.map((link) => (
                     <a key={link.href} href={link.href} className="external-host-link" target="_blank" rel="noopener noreferrer" aria-label={`${host.name} ${link.label}`}>
-                      {link.lucideIcon ? <link.lucideIcon size={16} aria-hidden="true" /> : link.faIcon ? <FontAwesomeIcon icon={link.faIcon} aria-hidden="true" /> : null}
+                      {link.lucideIcon ? <link.lucideIcon size={16} aria-hidden="true" /> : link.brandIcon ? <link.brandIcon size={16} aria-hidden="true" /> : null}
                     </a>
                   ))}
                 </div>

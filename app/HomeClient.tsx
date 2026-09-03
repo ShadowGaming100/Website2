@@ -19,8 +19,7 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDiscord } from "@fortawesome/free-brands-svg-icons";
+import { DiscordIcon } from "@/components/BrandIcons";
 
 const inviteCode = "QbeZ3b5CQd";
 const inviteUrl = `https://discord.gg/${inviteCode}`;
@@ -263,7 +262,7 @@ export default function HomeClient() {
                 <Info size={16} aria-hidden="true" /> About FreeHosts
               </Link>
               <a className="btn ghost" id="joinCommunity" href={inviteUrl}>
-                <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> Join the community
+                <DiscordIcon aria-hidden="true" /> Join the community
               </a>
             </div>
 
@@ -286,7 +285,7 @@ export default function HomeClient() {
               <div className="dw-row">
                 <div className="dw-left">
                   <div className="dw-title" id="discordName">
-                    <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> {discord.name}
+                    <DiscordIcon aria-hidden="true" /> {discord.name}
                   </div>
                   <div className="dw-sub" id="discordStatus">{discord.status}</div>
                 </div>

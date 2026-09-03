@@ -3,9 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { ArrowUpRight, Award, Code, Crown, Globe, GraduationCap, HandHeart, HandMetal, Heart, LayoutGrid, Newspaper, Server, Shield, ShieldCheck, Terminal, Upload, UserCheck, Users, X } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { faDiscord, faGithub, faLinkedin, faTwitter } from "@fortawesome/free-brands-svg-icons";
+import { DiscordIcon, GithubIcon, TwitterIcon, type BrandIconComponent } from "../../components/BrandIcons";
 import { staffData, type StaffJsonMember } from "./data";
 
 type FilterKey =
@@ -71,12 +69,11 @@ const filters: { key: FilterKey; icon: LucideIcon; label: string }[] = [
   { key: "hosting-provider", icon: Server, label: "Hosting Provider" },
 ];
 
-const linkIcons: Record<string, { icon: LucideIcon | IconDefinition; label: string; isBrand?: boolean }> = {
-  github: { icon: faGithub, label: "GitHub Profile", isBrand: true },
+const linkIcons: Record<string, { icon: LucideIcon | BrandIconComponent; label: string; isBrand?: boolean }> = {
+  github: { icon: GithubIcon, label: "GitHub Profile", isBrand: true },
   website: { icon: Globe, label: "Website" },
-  discord: { icon: faDiscord, label: "Discord", isBrand: true },
-  twitter: { icon: faTwitter, label: "Twitter", isBrand: true },
-  linkedin: { icon: faLinkedin, label: "LinkedIn", isBrand: true },
+  discord: { icon: DiscordIcon, label: "Discord", isBrand: true },
+  twitter: { icon: TwitterIcon, label: "Twitter", isBrand: true },
 };
 
 function categorizeRole(role: string) {
@@ -192,7 +189,7 @@ export default function StaffClient() {
         </div>
 
         <a href="https://discord.gg/QbeZ3b5CQd" className="join-cta" target="_blank" rel="noopener noreferrer">
-          <FontAwesomeIcon icon={faDiscord} aria-hidden="true" />
+          <DiscordIcon aria-hidden="true" />
           Join Our Discord
         </a>
       </section>
@@ -300,9 +297,7 @@ function StaffModal({ member, onClose }: { member: StaffMember; onClose: () => v
                   return (
                     <a className="staff-modal-link" href={value} target="_blank" rel="noopener noreferrer" key={key}>
                       <div className="staff-modal-link-icon">
-                        {info.isBrand
-                          ? <FontAwesomeIcon icon={info.icon as IconDefinition} aria-hidden="true" />
-                          : React.createElement(info.icon as LucideIcon, { size: 20, "aria-hidden": "true" })
+                          {React.createElement(info.icon as React.ComponentType<{size?: number | string}>, { size: 20 })
                         }
                       </div>
                       <div className="staff-modal-link-text">

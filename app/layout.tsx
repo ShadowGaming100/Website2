@@ -40,13 +40,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDiscord, faGithub, faInstagram, faTwitter } from "@fortawesome/free-brands-svg-icons";
-import { config } from "@fortawesome/fontawesome-svg-core";
-import "@fortawesome/fontawesome-svg-core/styles.css";
-
-// Prevent FontAwesome from injecting its CSS at runtime (causes FOUC)
-config.autoAddCss = false;
+import { DiscordIcon, GithubIcon, InstagramIcon, TwitterIcon } from "../components/BrandIcons";
 
 import "./src/css/globals.css";
 import "./src/css/styles.css";
@@ -321,7 +315,7 @@ export default function RootLayout({
                       aria-label="Join our Discord community"
                       title="Join Discord"
                     >
-                      <FontAwesomeIcon icon={faDiscord} aria-hidden="true" style={{ color: '#5865F2' }} />
+                      <DiscordIcon aria-hidden="true" style={{ color: '#5865F2' }} />
                     </a>
                   </div>
                 </div>
@@ -360,7 +354,7 @@ export default function RootLayout({
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> Join Discord
+                    <DiscordIcon aria-hidden="true" /> Join Discord
                   </a>
                 </div>
               </aside>
@@ -397,7 +391,7 @@ export default function RootLayout({
                         rel="noopener noreferrer"
                         aria-label="Discord"
                       >
-                        <FontAwesomeIcon icon={faDiscord} aria-hidden="true" />
+                        <DiscordIcon aria-hidden="true" />
                       </a>
                       <a
                         href="https://x.com/freehosts_"
@@ -405,7 +399,7 @@ export default function RootLayout({
                         rel="noopener noreferrer"
                         aria-label="Twitter"
                       >
-                        <FontAwesomeIcon icon={faTwitter} aria-hidden="true" />
+                        <TwitterIcon aria-hidden="true" />
                       </a>
                       <a
                         href="https://www.instagram.com/freehosts/"
@@ -413,7 +407,7 @@ export default function RootLayout({
                         rel="noopener noreferrer"
                         aria-label="Instagram"
                       >
-                        <FontAwesomeIcon icon={faInstagram} aria-hidden="true" />
+                        <InstagramIcon aria-hidden="true" />
                       </a>
                       <a
                         href="https://github.com/freehostsofficial"
@@ -421,7 +415,7 @@ export default function RootLayout({
                         rel="noopener noreferrer"
                         aria-label="GitHub"
                       >
-                        <FontAwesomeIcon icon={faGithub} aria-hidden="true" />
+                        <GithubIcon aria-hidden="true" />
                       </a>
                     </div>
                   </div>
@@ -471,7 +465,7 @@ export default function RootLayout({
                           rel="noopener noreferrer"
                           aria-label="Join our Discord community"
                         >
-                          <FontAwesomeIcon icon={faDiscord} aria-hidden="true" /> Join Discord
+                          <DiscordIcon aria-hidden="true" /> Join Discord
                         </a>
                       </li>
                     </ul>
