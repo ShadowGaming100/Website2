@@ -1,77 +1,36 @@
-import type { Metadata } from "next";
+import ProsePage from "@/components/ProsePage";
 import SubmissionRulesContent from "./SubmissionRulesContent";
-import { safeJsonLd } from "../../lib/safeJsonLd";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import { pageMeta } from "../../lib/pageMeta";
 
-export const metadata: Metadata = {
-  title: "Host Submission Rules & Guidelines - FreeHosts",
+const TITLE = "Host Submission Rules & Guidelines - FreeHosts";
+const SOCIAL_DESCRIPTION =
+  "Read the official submission rules before listing your hosting service on FreeHosts.";
+
+export const metadata = pageMeta({
+  path: "/submission-rules",
+  title: TITLE,
   description:
     "Read the official submission rules before listing your hosting service on FreeHosts. Learn what's required, what's accepted, and how to format your submission.",
+  ogDescription: SOCIAL_DESCRIPTION,
   keywords: [
     "freehosts submission rules",
     "how to submit a host",
     "hosting directory submission guidelines",
     "free hosting listing requirements",
   ],
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
-  },
-  alternates: {
-    canonical: process.env.APP_URL + "/submission-rules",
-  },
-  openGraph: {
-    locale: "en_US",
-    siteName: "FreeHosts",
-    type: "website",
-    url: process.env.APP_URL + "/submission-rules",
-    title: "Host Submission Rules & Guidelines - FreeHosts",
-    description:
-      "Read the official submission rules before listing your hosting service on FreeHosts.",
-    images: [
-      {
-        url: process.env.APP_URL + "/Src/Images/banner.png",
-        width: 1280,
-        height: 720,
-        alt: "FreeHosts - Submission Rules",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Host Submission Rules & Guidelines - FreeHosts",
-    description:
-      "Read the official submission rules before listing your hosting service on FreeHosts.",
-    images: [process.env.APP_URL + "/Src/Images/banner.png"],
-    site: "@freehosts_",
-    creator: "@freehosts_",
-  },
-};
-
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "@id": process.env.APP_URL + "/submission-rules#webpage",
-  url: process.env.APP_URL + "/submission-rules",
-  name: "Host Submission Rules & Guidelines - FreeHosts",
-  isPartOf: { "@id": process.env.APP_URL + "/#website" },
-  inLanguage: "en",
-  description:
-    "Official rules and guidelines for submitting a hosting service to the FreeHosts directory.",
-};
+  imageAlt: "FreeHosts - Submission Rules",
+});
 
 export default function SubmissionRulesPage() {
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }}
-      />
-      <Breadcrumbs siteUrl={process.env.APP_URL} items={[{ name: "Submission Rules", path: "/submission-rules" }]} />
-      <main className="wrap">
-        <SubmissionRulesContent />
-      </main>
-    </>
+    <ProsePage
+      path="/submission-rules"
+      crumb="Submission Rules"
+      name={TITLE}
+      description="Official rules and guidelines for submitting a hosting service to the FreeHosts directory."
+      mainClassName="wrap"
+    >
+      <SubmissionRulesContent />
+    </ProsePage>
   );
 }

@@ -7,8 +7,7 @@ import { ROWS, findBestIndex, computeRating } from '../../lib/comparisonRows';
 import { slugify } from '../../lib/slugify';
 import { ramDisplay, diskDisplay } from '../../lib/specs';
 import { useFavorites } from '../../contexts/FavoritesContext';
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+import { PageHero, EmptyState } from '@/components/PageHero';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -22,60 +21,60 @@ export default function CompareClient() {
       <main id="main-content">
         <div id="compare-page">
           <div className="wrap">
-            <section
-              className="hero centered-hero compare-hero"
-              aria-labelledby="compare-hero-title"
+            <PageHero
+              title="Compare Hosts"
+              titleId="compare-hero-title"
+              heroClass="compare-hero"
+              lead="Select at least two hosts to compare them side by side."
+            />
+            <EmptyState
+              icon={<GitCompare size={48} />}
+              title="No hosts selected yet"
+              actions={
+                <>
+                  <Link href="/hosts" className="btn primary">
+                    Browse Hosts
+                  </Link>
+                  {selection.length === 1 && (
+                    <span className="compare-empty-hint">1 of 2 hosts selected</span>
+                  )}
+                </>
+              }
             >
-              <div className="blobs" aria-hidden="true">
-                <div className="blob b1" />
-                <div className="blob b2" />
-                <div className="blob b3" />
-              </div>
-              <div className="hero-inner">
-                <div className="hero-left">
-                  <h1 id="compare-hero-title">Compare Hosts</h1>
-                  <p className="lead">
-                    Select at least two hosts to compare them side by side.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            <div className="compare-empty-state">
-              <div className="compare-empty-icon" aria-hidden="true">
-                <GitCompare size={48} />
-              </div>
-              <h2 className="compare-empty-title">No hosts selected yet</h2>
-              <p className="compare-empty-desc">
-                Browse the host directory and click the{' '}
-                <GitCompare
-                  size={14}
-                  aria-hidden="true"
-                  style={{ display: 'inline', verticalAlign: 'middle' }}
-                />{' '}
-                compare button on any host card to add it here.
-                {selection.length === 1 && (
-                  <>
-                    {' '}You have <strong>1 host</strong> selected — add one more to start comparing.
-                  </>
-                )}
-              </p>
-              <div className="compare-empty-actions">
-                <Link href="/hosts" className="btn primary">
-                  Browse Hosts
-                </Link>
-                {selection.length === 1 && (
-                  <span className="compare-empty-hint">1 of 2 hosts selected</span>
-                )}
-              </div>
-            </div>
+              Browse the host directory and click the{' '}
+              <GitCompare
+                size={14}
+                aria-hidden="true"
+                style={{ display: 'inline', verticalAlign: 'middle' }}
+              />{' '}
+              compare button on any host card to add it here.
+              {selection.length === 1 && (
+                <>
+                  {' '}You have <strong>1 host</strong> selected — add one more to start comparing.
+                </>
+              )}
+            </EmptyState>
           </div>
         </div>
       </main>
     );
   }
 
-  // ── Pre-compute best-value indices ───────────────────────────────────────
+  // ── Per-host derived data (single pass) ──────────────────────────────────
+  const hostData = selection.map((host) => {
+    const ratingValue = computeRating(host);
+    return {
+      host,
+      totalReviews: (host.approvals || 0) + (host.disapprovals || 0),
+      ratingPct: ratingValue < 0 ? null : Math.round(ratingValue),
+      ratingValue,
+      ramValue: ramDisplay(host),
+      storageValue: diskDisplay(host),
+      statusOnline: host.status?.toLowerCase() === 'online',
+    };
+  });
+
+  // ── Best-value indices ───────────────────────────────────────────────────
   const bestIndices: Record<string, number> = {};
   for (const row of ROWS) {
     if (row.getNumeric) {
@@ -83,51 +82,27 @@ export default function CompareClient() {
       bestIndices[row.label] = findBestIndex(values);
     }
   }
-
-  // ── Per-host derived data ────────────────────────────────────────────────
-  const hostData = selection.map((host) => {
-    const totalReviews = (host.approvals || 0) + (host.disapprovals || 0);
-    const ratingPct = totalReviews > 0
-      ? Math.round(((host.approvals || 0) / totalReviews) * 100)
-      : null;
-    const ramValue = ramDisplay(host);
-    const storageValue = diskDisplay(host);
-    const statusOnline = host.status?.toLowerCase() === 'online';
-    return { host, totalReviews, ratingPct, ramValue, storageValue, statusOnline };
-  });
-
-  // Best rating index
-  const ratingValues = hostData.map(({ host }) => computeRating(host));
-  const bestRatingIdx = findBestIndex(ratingValues);
+  const bestRatingIdx = findBestIndex(hostData.map((h) => h.ratingValue));
 
   return (
     <main id="main-content">
       <div id="compare-page">
         <div className="wrap">
 
-          {/* ── Hero ──────────────────────────────────────────────────── */}
-          <section
-            className="hero centered-hero compare-hero"
-            aria-labelledby="compare-hero-title"
-          >
-            <div className="blobs" aria-hidden="true">
-              <div className="blob b1" />
-              <div className="blob b2" />
-              <div className="blob b3" />
-            </div>
-            <div className="hero-inner">
-              <div className="hero-left">
-                <h1 id="compare-hero-title">Compare Hosts</h1>
-                <p className="lead">
-                  Comparing{' '}
-                  <strong style={{ color: 'var(--text)' }}>
-                    {selection.length} hosts
-                  </strong>{' '}
-                  side by side.
-                </p>
-              </div>
-            </div>
-          </section>
+          <PageHero
+            title="Compare Hosts"
+            titleId="compare-hero-title"
+            heroClass="compare-hero"
+            lead={
+              <>
+                Comparing{' '}
+                <strong style={{ color: 'var(--text)' }}>
+                  {selection.length} hosts
+                </strong>{' '}
+                side by side.
+              </>
+            }
+          />
 
           {/* ── Toolbar ───────────────────────────────────────────────── */}
           <div className="compare-toolbar">

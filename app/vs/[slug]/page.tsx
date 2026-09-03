@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from '@/components/NoPrefetchLink'
-import Breadcrumbs from '@/components/Breadcrumbs'
-import { safeJsonLd } from '../../../lib/safeJsonLd'
 import { fetchHosts, type Host } from '../../../lib/cache'
 import { slugify } from '../../../lib/slugify'
 import { splitTargets, targetBuckets, parseVsSlug, sharedBucket, providerKind, sharedTargets, primaryTargetLabel } from '../../../lib/taxonomy'
 import { permanentRedirect } from 'next/navigation'
 import { ramDisplay, diskDisplay, specSummary } from '../../../lib/specs'
+import { computeRating } from '../../../lib/comparisonRows'
+import CompareShell from '@/components/CompareShell'
 
 export const runtime = 'edge'
 
@@ -26,8 +26,8 @@ const BUCKET_PICK: Record<string, string> = {
 }
 
 function pct(host: Host): number | null {
-  const total = (host.approvals || 0) + (host.disapprovals || 0)
-  return total > 0 ? Math.round(((host.approvals || 0) / total) * 100) : null
+  const rating = computeRating(host)
+  return rating < 0 ? null : Math.round(rating)
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -135,143 +135,117 @@ export default async function VersusPage({ params }: Props) {
     diffs.push(`Free plan note: ${a.name} "${a.free_plan}" vs ${b.name} "${b.free_plan}".`)
   }
 
-  const pageUrl = `${process.env.APP_URL}/vs/${slugify(a.name)}-vs-${slugify(b.name)}`
-  const webPageSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    '@id': `${pageUrl}#webpage`,
-    url: pageUrl,
-    name: `${a.name} vs ${b.name}`,
-    isPartOf: { '@id': `${process.env.APP_URL}/#website` },
-    inLanguage: 'en',
-    description: `Spec-level comparison of free hosting providers ${a.name} and ${b.name}.`,
-  }
+  // Table winners + pick advice, computed once (were single-use IIFEs).
+  const ramWinner = ramA !== 'Unknown' && ramB !== 'Unknown' && (a.ramMB ?? 0) !== (b.ramMB ?? 0) ? ((a.ramMB ?? 0) > (b.ramMB ?? 0) ? 'a' : 'b') : null
+  const diskWinner = diskA !== 'Unknown' && diskB !== 'Unknown' && (a.diskMB ?? 0) !== (b.diskMB ?? 0) ? ((a.diskMB ?? 0) > (b.diskMB ?? 0) ? 'a' : 'b') : null
+  const voteWinner = pctA !== null && pctB !== null && pctA !== pctB && Math.max(votesA, votesB) > 2 ? (pctA! > pctB! ? 'a' : 'b') : null
+  const winStyle = { background: 'rgba(99,102,241,0.08)', fontWeight: 700 as const }
+
+  const aTags = splitTargets(a).map(t => t.toLowerCase())
+  const bTags = splitTargets(b).map(t => t.toLowerCase())
+  const sharedRaw = aTags.find(t => bTags.includes(t) && BUCKET_PICK[t])
+  const advice = (sharedRaw ? BUCKET_PICK[sharedRaw] : null)
+    ?? BUCKET_PICK[sharedBucket(a, b)]
+    ?? 'Compare what each provider publishes for its free plan — the table above carries the facts; community reviews carry the experience.'
+
+  const pageSlug = `${slugify(a.name)}-vs-${slugify(b.name)}`
 
   return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(webPageSchema) }} />
-      <Breadcrumbs
-        siteUrl={process.env.APP_URL}
-        items={[
-          { name: 'Free Hosting Directory', path: '/hosts' },
-          { name: `${a.name} vs ${b.name}`, path: `/vs/${slugify(a.name)}-vs-${slugify(b.name)}` },
-        ]}
-      />
-      <main className="wrap about-content">
-        <section className="faq-hero">
-          <h1>{a.name} vs {b.name}</h1>
-          <p>
-            {kindMismatch
-              ? `Heads up: ${a.name} (${kindA}) and ${b.name} (${kindB}) are different kinds of providers — specs below are not directly comparable.`
-              : `Both are free ${kindA} providers${sharedOk ? ` sharing ${shared.join(', ') || 'a category'}` : ''}. Here is every published spec side by side — CPU, RAM, storage, status and community reviews.`}
+    <CompareShell
+      pageUrl={`${process.env.APP_URL}/vs/${pageSlug}`}
+      name={`${a.name} vs ${b.name}`}
+      description={`Spec-level comparison of free hosting providers ${a.name} and ${b.name}.`}
+      crumbs={[
+        { name: 'Free Hosting Directory', path: '/hosts' },
+        { name: `${a.name} vs ${b.name}`, path: `/vs/${pageSlug}` },
+      ]}
+      heroTitle={`${a.name} vs ${b.name}`}
+      heroLead={
+        kindMismatch
+          ? `Heads up: ${a.name} (${kindA}) and ${b.name} (${kindB}) are different kinds of providers — specs below are not directly comparable.`
+          : `Both are free ${kindA} providers${sharedOk ? ` sharing ${shared.join(', ') || 'a category'}` : ''}. Here is every published spec side by side — CPU, RAM, storage, status and community reviews.`
+      }
+      ctaTitle="Want more options?"
+      ctaText={<>Both providers sit inside the full directory, alongside {all.length - 2} others.</>}
+      ctaButtons={[
+        { href: '/hosts', label: 'Browse all free hosts', primary: true },
+        { href: `/alternatives/${slugify(a.name)}`, label: `More ${a.name} alternatives` },
+      ]}
+    >
+      {kindMismatch && (
+        <section className="content-section" style={{ borderColor: '#f59e0b', background: 'rgba(245,158,11,0.06)' }}>
+          <h2 style={{ color: '#92400e' }}>Different provider types</h2>
+          <p className="host-about-summary">
+            <strong>{a.name}</strong> is <code>{kindA}</code> and <strong>{b.name}</strong> is <code>{kindB}</code>.
+            One hands out addresses (subdomains/domains) with no compute; the other runs workloads (RAM/CPU/storage).
+            RAM, CPU and storage are not comparable across kinds — treat this page as a category check, not a spec shootout.
           </p>
         </section>
+      )}
 
-        {kindMismatch && (
-          <section className="content-section" style={{ borderColor: '#f59e0b', background: 'rgba(245,158,11,0.06)' }}>
-            <h2 style={{ color: '#92400e' }}>Different provider types</h2>
-            <p className="host-about-summary">
-              <strong>{a.name}</strong> is <code>{kindA}</code> and <strong>{b.name}</strong> is <code>{kindB}</code>.
-              One hands out addresses (subdomains/domains) with no compute; the other runs workloads (RAM/CPU/storage).
-              RAM, CPU and storage are not comparable across kinds — treat this page as a category check, not a spec shootout.
-            </p>
-          </section>
-        )}
-
-        <section className="content-section">
-          <h2>{a.name} vs {b.name}: spec comparison</h2>
-          <p className="host-about-summary" style={{ fontSize: '0.9em' }}>
-            Verified against each provider&apos;s published free plan · {a.name}: {specSummary(a) || 'no concrete specs'} · {b.name}: {specSummary(b) || 'no concrete specs'}
-          </p>
-          {(() => {
-            const ramWinner = ramA !== 'Unknown' && ramB !== 'Unknown' && (a.ramMB ?? 0) !== (b.ramMB ?? 0) ? ((a.ramMB ?? 0) > (b.ramMB ?? 0) ? 'a' : 'b') : null
-            const diskWinner = diskA !== 'Unknown' && diskB !== 'Unknown' && (a.diskMB ?? 0) !== (b.diskMB ?? 0) ? ((a.diskMB ?? 0) > (b.diskMB ?? 0) ? 'a' : 'b') : null
-            const voteWinner = pctA !== null && pctB !== null && pctA !== pctB && Math.max(votesA, votesB) > 2 ? (pctA! > pctB! ? 'a' : 'b') : null
-            const winStyle = { background: 'rgba(99,102,241,0.08)', fontWeight: 700 as const }
-            return (
-          <div style={{ overflowX: 'auto' }}>
-          <table className="info-table alt-table">
-            <thead>
-              <tr>
-                <th></th>
-                <th><Link href={`/hosts/${slugify(a.name)}`}>{a.name}</Link>{ramWinner === 'a' || diskWinner === 'a' ? ' ★' : ''}</th>
-                <th><Link href={`/hosts/${slugify(b.name)}`}>{b.name}</Link>{ramWinner === 'b' || diskWinner === 'b' ? ' ★' : ''}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>Provider type</td><td><code>{kindA}</code></td><td><code>{kindB}</code></td></tr>
-              <tr><td>Targets</td><td>{rowsA || '—'}{shared.length > 0 && <span style={{ display: 'block', fontSize: '0.8em', color: 'var(--muted)' }}>shares: {shared.join(', ')}</span>}</td><td>{rowsB || '—'}{shared.length > 0 && <span style={{ display: 'block', fontSize: '0.8em', color: 'var(--muted)' }}>shares: {shared.join(', ')}</span>}</td></tr>
-              <tr><td>CPU</td><td>{cpuA}</td><td>{cpuB}</td></tr>
-              <tr><td>RAM</td><td style={ramWinner === 'a' ? winStyle : undefined}>{ramA}{ramWinner === 'a' && ' ✓'}</td><td style={ramWinner === 'b' ? winStyle : undefined}>{ramB}{ramWinner === 'b' && ' ✓'}</td></tr>
-              <tr><td>Storage</td><td style={diskWinner === 'a' ? winStyle : undefined}>{diskA}{diskWinner === 'a' && ' ✓'}</td><td style={diskWinner === 'b' ? winStyle : undefined}>{diskB}{diskWinner === 'b' && ' ✓'}</td></tr>
-              {(a.free_plan || b.free_plan) && <tr><td>Free plan</td><td style={{ whiteSpace: 'pre-wrap' }}>{a.free_plan || '—'}</td><td style={{ whiteSpace: 'pre-wrap' }}>{b.free_plan || '—'}</td></tr>}
-              <tr><td>Status</td><td><span className={`status-badge ${a.status?.toLowerCase()}`}>{a.status}</span></td><td><span className={`status-badge ${b.status?.toLowerCase()}`}>{b.status}</span></td></tr>
-              <tr>
-                <td>Community</td>
-                <td style={voteWinner === 'a' ? winStyle : undefined}>{pctA !== null ? `${pctA}% of ${votesA} review${votesA === 1 ? '' : 's'}` : 'No reviews yet'}{voteWinner === 'a' && ' ★'}</td>
-                <td style={voteWinner === 'b' ? winStyle : undefined}>{pctB !== null ? `${pctB}% of ${votesB} review${votesB === 1 ? '' : 's'}` : 'No reviews yet'}{voteWinner === 'b' && ' ★'}</td>
-              </tr>
-              <tr>
-                <td>Listed since</td>
-                <td>{a.created_at ? new Date(a.created_at).getFullYear() : '—'}</td>
-                <td>{b.created_at ? new Date(b.created_at).getFullYear() : '—'}</td>
-              </tr>
-            </tbody>
-          </table>
-          </div>
-            )
-          })()}
-          <p className="host-about-summary" style={{ fontSize: '0.85em', opacity: 0.85 }}>
-            Sources: provider plan pages at listing time; <Link href="/methodology">how we verify</Link>. No invented specs — “Unknown” means the provider does not publish a concrete figure.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>Key differences</h2>
-          {diffs.length > 0 ? (
-            <ul className="host-check-list">
-              {diffs.map(d => <li key={d}>{d}</li>)}
-            </ul>
-          ) : (
-            <p className="host-about-summary">
-              Their published specs are closely matched — for these two, the practical differences will come down to
-              idle policies, supported languages and community feedback rather than headline numbers.
-            </p>
-          )}
-        </section>
-
-        <section className="content-section">
-          <h2>Which should you pick?</h2>
-          {(() => {
-            // Try matching a shared raw target first (e.g. "discord bots")
-            const aTags = splitTargets(a).map(t => t.toLowerCase())
-            const bTags = splitTargets(b).map(t => t.toLowerCase())
-            const sharedRaw = aTags.find(t => bTags.includes(t) && BUCKET_PICK[t])
-            
-            const advice = (sharedRaw ? BUCKET_PICK[sharedRaw] : null) 
-              ?? BUCKET_PICK[sharedBucket(a, b)] 
-              ?? 'Compare what each provider publishes for its free plan — the table above carries the facts; community reviews carry the experience.'
-            
-            return <p className="host-about-summary">{advice}</p>
-          })()}
-          <ul className="host-check-list">
-            <li>Read each provider&apos;s own plan page before committing — free tiers change without notice.</li>
-            <li>Check community review scores on both profiles ({a.name}: {pctA ?? 'n/a'}%, {b.name}: {pctB ?? 'n/a'}%) and skim recent feedback in our Discord.</li>
-            <li>Deploy something small to both if you can — real-world latency and panel comfort beat any spec sheet.</li>
-          </ul>
-        </section>
-
-        <div className="faq-cta">
-          <h2>Want more options?</h2>
-          <p>Both providers sit inside the full directory, alongside {all.length - 2} others.</p>
-          <div className="faq-cta-buttons">
-            <Link className="faq-cta-btn primary" href="/hosts">Browse all free hosts</Link>
-            <Link className="faq-cta-btn secondary" href={`/alternatives/${slugify(a.name)}`}>
-              More {a.name} alternatives
-            </Link>
-          </div>
+      <section className="content-section">
+        <h2>{a.name} vs {b.name}: spec comparison</h2>
+        <p className="host-about-summary" style={{ fontSize: '0.9em' }}>
+          Verified against each provider&apos;s published free plan · {a.name}: {specSummary(a) || 'no concrete specs'} · {b.name}: {specSummary(b) || 'no concrete specs'}
+        </p>
+        <div style={{ overflowX: 'auto' }}>
+        <table className="info-table alt-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th><Link href={`/hosts/${slugify(a.name)}`}>{a.name}</Link>{ramWinner === 'a' || diskWinner === 'a' ? ' ★' : ''}</th>
+              <th><Link href={`/hosts/${slugify(b.name)}`}>{b.name}</Link>{ramWinner === 'b' || diskWinner === 'b' ? ' ★' : ''}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Provider type</td><td><code>{kindA}</code></td><td><code>{kindB}</code></td></tr>
+            <tr><td>Targets</td><td>{rowsA || '—'}{shared.length > 0 && <span style={{ display: 'block', fontSize: '0.8em', color: 'var(--muted)' }}>shares: {shared.join(', ')}</span>}</td><td>{rowsB || '—'}{shared.length > 0 && <span style={{ display: 'block', fontSize: '0.8em', color: 'var(--muted)' }}>shares: {shared.join(', ')}</span>}</td></tr>
+            <tr><td>CPU</td><td>{cpuA}</td><td>{cpuB}</td></tr>
+            <tr><td>RAM</td><td style={ramWinner === 'a' ? winStyle : undefined}>{ramA}{ramWinner === 'a' && ' ✓'}</td><td style={ramWinner === 'b' ? winStyle : undefined}>{ramB}{ramWinner === 'b' && ' ✓'}</td></tr>
+            <tr><td>Storage</td><td style={diskWinner === 'a' ? winStyle : undefined}>{diskA}{diskWinner === 'a' && ' ✓'}</td><td style={diskWinner === 'b' ? winStyle : undefined}>{diskB}{diskWinner === 'b' && ' ✓'}</td></tr>
+            {(a.free_plan || b.free_plan) && <tr><td>Free plan</td><td style={{ whiteSpace: 'pre-wrap' }}>{a.free_plan || '—'}</td><td style={{ whiteSpace: 'pre-wrap' }}>{b.free_plan || '—'}</td></tr>}
+            <tr><td>Status</td><td><span className={`status-badge ${a.status?.toLowerCase()}`}>{a.status}</span></td><td><span className={`status-badge ${b.status?.toLowerCase()}`}>{b.status}</span></td></tr>
+            <tr>
+              <td>Community</td>
+              <td style={voteWinner === 'a' ? winStyle : undefined}>{pctA !== null ? `${pctA}% of ${votesA} review${votesA === 1 ? '' : 's'}` : 'No reviews yet'}{voteWinner === 'a' && ' ★'}</td>
+              <td style={voteWinner === 'b' ? winStyle : undefined}>{pctB !== null ? `${pctB}% of ${votesB} review${votesB === 1 ? '' : 's'}` : 'No reviews yet'}{voteWinner === 'b' && ' ★'}</td>
+            </tr>
+            <tr>
+              <td>Listed since</td>
+              <td>{a.created_at ? new Date(a.created_at).getFullYear() : '—'}</td>
+              <td>{b.created_at ? new Date(b.created_at).getFullYear() : '—'}</td>
+            </tr>
+          </tbody>
+        </table>
         </div>
-      </main>
-    </>
+        <p className="host-about-summary" style={{ fontSize: '0.85em', opacity: 0.85 }}>
+          Sources: provider plan pages at listing time; <Link href="/methodology">how we verify</Link>. No invented specs — “Unknown” means the provider does not publish a concrete figure.
+        </p>
+      </section>
+
+      <section className="content-section">
+        <h2>Key differences</h2>
+        {diffs.length > 0 ? (
+          <ul className="host-check-list">
+            {diffs.map(d => <li key={d}>{d}</li>)}
+          </ul>
+        ) : (
+          <p className="host-about-summary">
+            Their published specs are closely matched — for these two, the practical differences will come down to
+            idle policies, supported languages and community feedback rather than headline numbers.
+          </p>
+        )}
+      </section>
+
+      <section className="content-section">
+        <h2>Which should you pick?</h2>
+        <p className="host-about-summary">{advice}</p>
+        <ul className="host-check-list">
+          <li>Read each provider&apos;s own plan page before committing — free tiers change without notice.</li>
+          <li>Check community review scores on both profiles ({a.name}: {pctA ?? 'n/a'}%, {b.name}: {pctB ?? 'n/a'}%) and skim recent feedback in our Discord.</li>
+          <li>Deploy something small to both if you can — real-world latency and panel comfort beat any spec sheet.</li>
+        </ul>
+      </section>
+    </CompareShell>
   )
 }

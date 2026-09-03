@@ -1,149 +1,57 @@
 'use client';
 
-import { useState, useEffect, useLayoutEffect, useCallback, Suspense, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, Suspense, useRef, useMemo, useDeferredValue } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { type Host } from '../../lib/cache';
-import Link from '@/components/NoPrefetchLink';
-import { slugify } from '../../lib/slugify';
 import { getLanguageName } from '../../lib/getLanguageName';
 import { parseCPUValue, parseMemoryToMB } from '../../lib/parseSpecs';
-import { ramDisplay as ramDisplayValue, diskDisplay as diskDisplayValue } from '../../lib/specs';
-import { ChevronDown, Search, X, Shuffle, ArrowDownAZ, Cpu, MemoryStick, HardDrive, Clock, GitCompare, Star, ThumbsUp } from 'lucide-react';
-import { useComparison } from '../../contexts/ComparisonContext';
-import { useFavorites } from '../../contexts/FavoritesContext';
+import { computeRating } from '../../lib/comparisonRows';
+import { Search, X, Shuffle, ArrowDownAZ, Cpu, MemoryStick, HardDrive, Clock, ThumbsUp } from 'lucide-react';
+import HostCard from '@/components/HostCard';
+import { PageHero } from '@/components/PageHero';
 
-// ─── Custom Dropdown ──────────────────────────────────────────────────────────
+// ─── Filter select (native) ───────────────────────────────────────────────────
+// Was CustomDropdown (~100 lines: outside-click + search input + listbox
+// roles). A native <select> does the job; browsers provide type-ahead.
 
-interface DropdownOption {
+interface FilterOption {
   value: string
   label: string
 }
 
-interface CustomDropdownProps {
+function FilterSelect({ id, value, options, placeholder, onChange }: {
   id: string
   value: string
-  options: DropdownOption[]
+  options: FilterOption[]
   placeholder: string
   onChange: (value: string) => void
-}
-
-function CustomDropdown({ id, value, options, placeholder, onChange }: CustomDropdownProps) {
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState('')
-  const ref = useRef<HTMLDivElement>(null)
-  const searchRef = useRef<HTMLInputElement>(null)
-
-  const selected = options.find(o => o.value === value)
-
-  const filtered = useMemo(() => {
-    if (!search.trim()) return options
-    const q = search.toLowerCase()
-    return options.filter(o => o.label.toLowerCase().includes(q) || o.value.toLowerCase().includes(q))
-  }, [options, search])
-
-  // Close on outside click
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false)
-        setSearch('')
-      }
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [])
-
-  // Focus search input when opened
-  useEffect(() => {
-    if (open) searchRef.current?.focus()
-  }, [open])
-
-  function select(val: string) {
-    onChange(val)
-    setOpen(false)
-    setSearch('')
-  }
-
+}) {
   return (
-    <div className={`filter-dropdown${open ? ' open' : ''}`} ref={ref} id={id}>
-      <button
-        type="button"
-        className="filter-dropdown-trigger"
-        onClick={() => setOpen(o => !o)}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-label={selected ? `${placeholder}: ${selected.label}` : placeholder}
-      >
-        <span className={selected ? 'filter-dropdown-value' : 'filter-dropdown-placeholder'}>
-          {selected ? selected.label : placeholder}
-        </span>
-        <ChevronDown size={14} className="filter-dropdown-chevron" aria-hidden="true" />
-      </button>
-
-      {open && (
-        <div className="filter-dropdown-menu" role="listbox">
-          {options.length > 6 && (
-            <div className="filter-dropdown-search">
-              <Search size={13} aria-hidden="true" />
-              <input
-                ref={searchRef}
-                type="text"
-                placeholder="Search..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                onClick={e => e.stopPropagation()}
-              />
-            </div>
-          )}
-          <div className="filter-dropdown-list">
-            <button
-              type="button"
-              role="option"
-              aria-selected={value === ''}
-              className={`filter-dropdown-item${value === '' ? ' active' : ''}`}
-              onClick={() => select('')}
-            >
-              {placeholder}
-            </button>
-            {filtered.map(opt => (
-              <button
-                key={opt.value}
-                type="button"
-                role="option"
-                aria-selected={value === opt.value}
-                className={`filter-dropdown-item${value === opt.value ? ' active' : ''}`}
-                onClick={() => select(opt.value)}
-              >
-                {opt.label}
-              </button>
-            ))}
-            {filtered.length === 0 && (
-              <div className="filter-dropdown-empty">No results</div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+    <select
+      id={id}
+      className="filter-dropdown-trigger"
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      aria-label={placeholder}
+    >
+      <option value="">{placeholder}</option>
+      {options.map(opt => (
+        <option key={opt.value} value={opt.value}>{opt.label}</option>
+      ))}
+    </select>
   )
 }
 
-// Debounce hook
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value)
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value)
-    }, delay)
-
-    return () => {
-      clearTimeout(handler)
-    }
-  }, [value, delay])
-
-  return debouncedValue
+// Sort display metadata (was twin getSortIcon/getSortLabel switches).
+const SORT_META: Record<string, { label: string; icon: React.ReactNode }> = {
+  random: { label: 'Random', icon: <Shuffle size={13} aria-hidden="true" /> },
+  name: { label: 'Name', icon: <ArrowDownAZ size={13} aria-hidden="true" /> },
+  cpu: { label: 'CPU', icon: <Cpu size={13} aria-hidden="true" /> },
+  ram: { label: 'Memory', icon: <MemoryStick size={13} aria-hidden="true" /> },
+  storage: { label: 'Storage', icon: <HardDrive size={13} aria-hidden="true" /> },
+  reviews: { label: 'Reviews', icon: <ThumbsUp size={13} aria-hidden="true" /> },
+  recent: { label: 'Recent', icon: <Clock size={13} aria-hidden="true" /> },
 }
-
 
 export default function HostsClient({ initialHosts }: { initialHosts: Host[] }) {
   return (
@@ -191,11 +99,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   const searchParams = useSearchParams()
   const [hosts] = useState<Host[]>(initialHosts)
 
-  const SCROLL_KEY = 'hosts_scroll_y'
-  const RANDOM_ORDER_KEY = 'hosts_random_order'
-  const FILTERS_KEY = 'hosts_filters'
-
-  // sessionStorage overrides are applied in a useEffect after hydration.
+  // Filters live in the URL (shared/back-button-safe); no sessionStorage copy.
   const [currentFilters, setCurrentFilters] = useState({
     search: searchParams.get('search') || '',
     locale: searchParams.get('locale') || '',
@@ -203,90 +107,16 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
     sort: searchParams.get('sort') || 'random'
   })
 
-  const debouncedSearch = useDebounce(currentFilters.search, 300)
+  // Stdlib debounce: defer filtering until typing pauses (was useDebounce).
+  const debouncedSearch = useDeferredValue(currentFilters.search)
   const isSearching = currentFilters.search !== debouncedSearch
 
   const isMounted = useRef(false)
 
-  // Helper to generate and persist a fresh random order
-  const generateRandomOrder = (hostList: Host[]): Map<number, number> => {
-    const map = new Map<number, number>(
-      hostList.map(h => [h.id, Math.random()])
-    )
-    try {
-      sessionStorage.setItem(RANDOM_ORDER_KEY, JSON.stringify([...map]))
-    } catch {
-      // ignore storage errors
-    }
-    return map
-  }
-
-  // Initialize random order with a stable value — sessionStorage restore happens in useEffect
+  // Random order, stable for this visit (was persisted in sessionStorage).
   const [randomOrder, setRandomOrder] = useState<Map<number, number>>(() =>
     new Map<number, number>(initialHosts.map(h => [h.id, Math.random()]))
   )
-
-  // After hydration: restore filters, random order, and scroll from sessionStorage.
-  // useLayoutEffect + instant scroll runs BEFORE paint, so coming back from a
-  // host detail lands directly on the saved position — no flash of the top of
-  // the page first. scrollRestoration=manual stops the browser/Next from
-  // fighting us with its own (later, competing) restoration.
-  useLayoutEffect(() => {
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
-    try {
-      // Restore random order
-      const savedOrder = sessionStorage.getItem(RANDOM_ORDER_KEY)
-      if (savedOrder) {
-        const parsed: [number, number][] = JSON.parse(savedOrder)
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration-safe restore of client-only state; cannot be read during SSR render
-        setRandomOrder(new Map(parsed))
-      } else {
-        // Persist the initial random order
-        const map = randomOrder
-        sessionStorage.setItem(RANDOM_ORDER_KEY, JSON.stringify([...map]))
-      }
-
-      // Restore filters (back-navigation)
-      const savedFilters = sessionStorage.getItem(FILTERS_KEY)
-      if (savedFilters) {
-        setCurrentFilters(JSON.parse(savedFilters))
-      }
-
-      // Restore scroll position
-      const savedScroll = sessionStorage.getItem(SCROLL_KEY)
-      if (savedScroll) {
-        const y = parseInt(savedScroll, 10)
-        if (!isNaN(y) && y > 0) {
-          window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior })
-        }
-        sessionStorage.removeItem(SCROLL_KEY)
-      }
-    } catch {
-      // sessionStorage unavailable — ignore
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Save filters to sessionStorage whenever they change
-  useEffect(() => {
-    try {
-      sessionStorage.setItem(FILTERS_KEY, JSON.stringify(currentFilters))
-    } catch {
-      // ignore storage errors
-    }
-  }, [currentFilters])
-
-  // Save scroll position when navigating away to a host detail
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      const link = (e.target as Element).closest<HTMLAnchorElement>('a[href^="/hosts/"]')
-      if (link) {
-        sessionStorage.setItem(SCROLL_KEY, String(window.scrollY))
-      }
-    }
-    document.addEventListener('click', handleClick)
-    return () => document.removeEventListener('click', handleClick)
-  }, [])
 
   // Memoize Filter Options
   const locales = useMemo(() => {
@@ -333,12 +163,12 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
           return parseMemoryToMB(b.disk, b.diskMB) - parseMemoryToMB(a.disk, a.diskMB)
         case 'reviews': {
           // Sort by approval percentage (most positive reviews first)
-          const totalA = (a.approvals || 0) + (a.disapprovals || 0)
-          const totalB = (b.approvals || 0) + (b.disapprovals || 0)
-          const ratingA = totalA > 0 ? (a.approvals || 0) / totalA : 0
-          const ratingB = totalB > 0 ? (b.approvals || 0) / totalB : 0
+          const ratingA = computeRating(a)
+          const ratingB = computeRating(b)
           // If ratings are equal, sort by total review count
-          if (ratingB === ratingA) return totalB - totalA
+          if (ratingB === ratingA) {
+            return ((b.approvals || 0) + (b.disapprovals || 0)) - ((a.approvals || 0) + (a.disapprovals || 0))
+          }
           return ratingB - ratingA
         }
         default:
@@ -402,7 +232,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
   const handleSortChange = (sort: string) => {
     // Clicking "Random" while already on random reshuffles the order
     if (sort === 'random' && currentFilters.sort === 'random') {
-      setRandomOrder(generateRandomOrder(hosts))
+      setRandomOrder(new Map(hosts.map(h => [h.id, Math.random()])))
       return
     }
     setCurrentFilters((prev: typeof currentFilters) => ({
@@ -448,19 +278,12 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
       <div id="hosts-page">
         <div className="wrap">
           {/* Hero Section */}
-          <section className="hero centered-hero" id="home" aria-labelledby="hero-title">
-            <div className="blobs" aria-hidden="true">
-              <div className="blob b1"></div>
-              <div className="blob b2"></div>
-              <div className="blob b3"></div>
-            </div>
-            <div className="hero-inner">
-              <div className="hero-left">
-                <h1 id="hero-title">Free Hosting Directory</h1>
-                <p className="lead">Discover and compare the best free hosting providers for your projects.</p>
-              </div>
-            </div>
-          </section>
+          <PageHero
+            title="Free Hosting Directory"
+            titleId="hero-title"
+            sectionId="home"
+            lead="Discover and compare the best free hosting providers for your projects."
+          />
 
           {/* Search Section */}
           <div className="search-section">
@@ -477,7 +300,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                   aria-label="Search hosting providers"
                 />
               </div>
-              <CustomDropdown
+              <FilterSelect
                 id="locale"
                 value={currentFilters.locale}
                 placeholder="All Languages"
@@ -487,7 +310,7 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
                 }))}
                 onChange={(val) => handleFilterChange('locale', val)}
               />
-              <CustomDropdown
+              <FilterSelect
                 id="target-filter"
                 value={currentFilters.target}
                 placeholder="All Targets"
@@ -505,14 +328,14 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
             <div className="sort-left">
               <div className="sort-label">Sort by:</div>
               <div className="sort-buttons">
-                {['random', 'name', 'cpu', 'ram', 'storage', 'reviews', 'recent'].map(sortType => (
+                {Object.entries(SORT_META).map(([sortType, meta]) => (
                   <button
                     key={sortType}
                     className={`sort-btn ${currentFilters.sort === sortType ? 'active' : ''}`}
                     onClick={() => handleSortChange(sortType)}
                   >
-                    {getSortIcon(sortType)}
-                    {getSortLabel(sortType)}
+                    {meta.icon}
+                    {meta.label}
                   </button>
                 ))}
               </div>
@@ -561,10 +384,11 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
               </div>
             ) : (
               filteredHosts.map(host => (
-                <HostCard 
-                  key={host.id} 
-                  host={host} 
+                <HostCard
+                  key={host.id}
+                  host={host}
                   isNew={isHostNew(host)}
+                  showDomains
                 />
               ))
             )}
@@ -573,215 +397,4 @@ function HostsContent({ initialHosts }: { initialHosts: Host[] }) {
       </div>
     </main>
   )
-}
-
-// Host Card Component
-interface HostCardProps {
-  host: Host
-  isNew: boolean
-}
-
-function HostCard({ host, isNew }: HostCardProps) {
-  const { isSelected, addHost, removeHost, isFull } = useComparison();
-  const { isFavorite, toggleFavorite } = useFavorites();
-  const ramText = ramDisplayValue(host)
-  const storageDisplay = diskDisplayValue(host)
-  const totalReviews = (host.approvals || 0) + (host.disapprovals || 0)
-  const rating = totalReviews > 0 ? Math.round(((host.approvals || 0) / totalReviews) * 100) : 0
-  const iconLetter = host.name ? host.name.charAt(0).toUpperCase() : '?'
-  const statusClass = host.status && host.status.toLowerCase() === 'online' ? 'online' : 'closed'
-  const typeDisplay = host.type ? host.type.split(',').map(t => t.trim().replace(/\s*\([^)]*\)/g, '').trim()) : []
-
-  return (
-    <div className="host-card">
-      {isNew && <div className="host-badge">NEW</div>}
-
-      {/* Top: icon + name/badges */}
-      <div className="host-card-top">
-        <div className="host-icon">{iconLetter}</div>
-        <div className="host-name-group">
-          <div className="host-name">{host.name}</div>
-          <div className="badges-container">
-            <span className={`status-badge ${statusClass}`}>{host.status || 'Unknown'}</span>
-            {typeDisplay.map(type => (
-              <span key={type} className="host-type-badge">{type}</span>
-            ))}
-            {(host.locale || []).map(locale => (
-              <span key={locale} className="language-badge">{getLanguageName(locale)}</span>
-            ))}
-            {(host.targets || []).flatMap(target =>
-              target.split(',').map(t => {
-                const d = t.trim()
-                return d ? <span key={d} className="target-badge">{d}</span> : null
-              }).filter(Boolean)
-            )}
-          </div>
-          {host.description && (
-            <p className="host-description">{host.description}</p>
-          )}
-        </div>
-      </div>
-
-      {(() => {
-        const isDomainHost = host.targets?.some(t => t.toLowerCase().includes('domain'));
-        const combinedText = `${host.info || ''}\n${host.description || ''}\n${host.free_plan || ''}`;
-        const allExtractedDomains = isDomainHost ? Array.from(new Set(combinedText.split('\n')
-          .map(l => l.trim())
-          .filter(l => /^\s*[-–•*\s]*[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[\r\n]*$/.test(l))
-          .map(l => l.replace(/^[-–•*\s]+/, '').trim().split(/\s/)[0])
-        )) : [];
-        const extractedDomains = allExtractedDomains.slice(0, 10);
-        const hasMoreDomains = allExtractedDomains.length > 10;
-
-         if (isDomainHost && extractedDomains.length > 0) {
-           return (
-             <div className="host-domains">
-               <div className="host-domains-label">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                 Extensions:
-               </div>
-               <div className="host-domains-list">
-                 {extractedDomains.map(domain => {
-                   const cleanDomain = domain.replace(/^[-\s•*]+/, '');
-                   return (
-                     <span key={domain} className="domain-badge">
-                       {cleanDomain}
-                     </span>
-                   );
-                 })}
-               </div>
-{hasMoreDomains && (
-                  <div className="host-domains-more">
-                    + {allExtractedDomains.length - 10} more available
-                  </div>
-                )}
-              </div>
-            );
-          }
-
-          // Also extract domains for subdomain hosts from free_plan
-          if (host.targets?.some(t => t.toLowerCase().includes('subdomain'))) {
-            const subdomainDomains = Array.from(new Set((host.free_plan || '')
-              .split('\n')
-              .map(l => l.trim())
-              .filter(l => /^[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(l))
-              .map(l => l.split(/\s/)[0])
-            )).slice(0, 10);
-
-            if (subdomainDomains.length > 0) {
-              return (
-                <div className="host-domains">
-                  <div className="host-domains-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                    Extensions:
-                  </div>
-                  <div className="host-domains-list">
-                    {subdomainDomains.map(domain => (
-                      <span key={domain} className="domain-badge">
-                        {domain}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              );
-            }
-          }
-
-          return (
-           <div className="host-specs">
-             <div className="host-spec-card">
-               <div className="host-spec-icon">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M9 2v2M2 15h2M2 9h2M15 20v2M9 20v2M20 15h2M20 9h2"/></svg>
-               </div>
-               <div className="spec-copy">
-                 <div className="spec-box-value">{host.cpu || 'Unknown'}</div>
-                 <div className="spec-box-label">CPU</div>
-               </div>
-             </div>
-             <div className="host-spec-card">
-               <div className="host-spec-icon">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 19v-3"/><path d="M10 19v-3"/><path d="M14 19v-3"/><path d="M18 19v-3"/><path d="M8 11V9"/><path d="M16 11V9"/><path d="M12 11V9"/><path d="M2 15h20"/><path d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1.1a2 2 0 0 0 0 3.837V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5.1a2 2 0 0 0 0-3.837Z"/></svg>
-               </div>
-               <div className="spec-copy">
-                 <div className="spec-box-value">{ramText}</div>
-                 <div className="spec-box-label">Memory</div>
-               </div>
-             </div>
-             <div className="host-spec-card">
-               <div className="host-spec-icon">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="22" x2="2" y1="12" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" x2="6.01" y1="16" y2="16"/><line x1="10" x2="10.01" y1="16" y2="16"/></svg>
-               </div>
-               <div className="spec-copy">
-                 <div className="spec-box-value">{storageDisplay}</div>
-                 <div className="spec-box-label">Storage</div>
-               </div>
-             </div>
-           </div>
-         );
-      })()}
-
-      {/* Footer: rating + view details */}
-      <div className="host-card-footer">
-        <div className="host-rating">
-          <div className="rating-value">{rating}%</div>
-          <div className="rating-label">{totalReviews} reviews</div>
-          <div className="rating-bar">
-            <div className="rating-fill" style={{ width: `${rating}%` }} />
-          </div>
-        </div>
-        <div className="host-card-actions">
-          <button
-            className={`compare-btn icon-btn${isSelected(host.id) ? ' active' : ''}`}
-            onClick={() => isSelected(host.id) ? removeHost(host.id) : addHost(host)}
-            disabled={isFull && !isSelected(host.id)}
-            aria-pressed={isSelected(host.id)}
-            aria-label={isSelected(host.id) ? `Remove ${host.name} from comparison` : `Add ${host.name} to comparison`}
-            type="button"
-          >
-            <GitCompare size={14} aria-hidden="true" />
-          </button>
-          <button
-            className={`favorite-btn icon-btn${isFavorite(host.id) ? ' active' : ''}`}
-            onClick={() => toggleFavorite(host.id)}
-            aria-pressed={isFavorite(host.id)}
-            aria-label={isFavorite(host.id) ? `Remove ${host.name} from favorites` : `Add ${host.name} to favorites`}
-            type="button"
-          >
-            <Star size={14} aria-hidden="true" fill={isFavorite(host.id) ? 'currentColor' : 'none'} />
-          </button>
-          <Link href={`/hosts/${slugify(host.name)}`} className="view-details-btn">
-            View Details
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </Link>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Helper functions for sort icons and labels
-function getSortIcon(sortType: string): React.ReactNode {
-  switch (sortType) {
-    case 'random': return <Shuffle size={13} aria-hidden="true" />
-    case 'name': return <ArrowDownAZ size={13} aria-hidden="true" />
-    case 'cpu': return <Cpu size={13} aria-hidden="true" />
-    case 'ram': return <MemoryStick size={13} aria-hidden="true" />
-    case 'storage': return <HardDrive size={13} aria-hidden="true" />
-    case 'reviews': return <ThumbsUp size={13} aria-hidden="true" />
-    case 'recent': return <Clock size={13} aria-hidden="true" />
-    default: return <Shuffle size={13} aria-hidden="true" />
-  }
-}
-
-function getSortLabel(sortType: string): string {
-  switch (sortType) {
-    case 'random': return 'Random'
-    case 'name': return 'Name'
-    case 'cpu': return 'CPU'
-    case 'ram': return 'Memory'
-    case 'storage': return 'Storage'
-    case 'reviews': return 'Reviews'
-    case 'recent': return 'Recent'
-    default: return 'Random'
-  }
 }

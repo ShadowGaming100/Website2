@@ -1,6 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
+import { readCookie, writeCookie } from '../lib/cookies';
+import { usePersistentState } from '../hooks/usePersistentState';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -10,37 +12,18 @@ interface ConsentContextValue {
   consentState: ConsentState;
   acceptConsent: () => void;
   declineConsent: () => void;
-  /** Called by FavoritesContext to surface the banner mid-session. */
-  requestConsent: () => void;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function readConsentCookie(): ConsentState {
-  if (typeof document === 'undefined') return 'unknown';
-  const match = document.cookie
-    .split('; ')
-    .find((row) => row.startsWith('fh_consent='));
-  if (!match) return 'unknown';
-  const value = match.split('=')[1];
+const COOKIE = 'fh_consent';
+const MAX_AGE = 90 * 24 * 60 * 60; // 90 days
+
+function load(): ConsentState {
+  const value = readCookie(COOKIE);
   if (value === 'accepted') return 'accepted';
   if (value === 'declined') return 'declined';
   return 'unknown';
-}
-
-function writeConsentCookie(value: 'accepted' | 'declined'): void {
-  try {
-    const secure = location.protocol === 'https:' ? '; Secure' : '';
-    if (value === 'accepted') {
-      const maxAge = 90 * 24 * 60 * 60; // 90 days
-      document.cookie = `fh_consent=accepted; Max-Age=${maxAge}; Path=/; SameSite=Lax${secure}`;
-    } else {
-      // Session cookie — no Max-Age
-      document.cookie = `fh_consent=declined; Path=/; SameSite=Lax${secure}`;
-    }
-  } catch {
-    // Cookie write failed; state works in-memory.
-  }
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -52,34 +35,23 @@ export const ConsentContext = createContext<ConsentContextValue | null>(null);
 export function ConsentProvider({ children }: { children: React.ReactNode }) {
   // We initialize to 'accepted' during SSR so the banner is HIDDEN by default.
   // This prevents the banner from flashing on the server render.
-  // Then, in the useEffect, we read the real cookie value and update the state.
-  const [consentState, setConsentState] = useState<ConsentState>('accepted');
-
-  useEffect(() => {
-    // Read the actual cookie value on the client
-    const stored = readConsentCookie();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setConsentState(stored);
-  }, []);
+  // Then, on mount, we read the real cookie value and update the state.
+  const [consentState, setConsentState] = usePersistentState<ConsentState>('accepted', load);
 
   const acceptConsent = () => {
-    writeConsentCookie('accepted');
+    writeCookie(COOKIE, 'accepted', MAX_AGE);
     setConsentState('accepted');
   };
 
   const declineConsent = () => {
-    writeConsentCookie('declined');
+    // Session cookie — no Max-Age
+    writeCookie(COOKIE, 'declined');
     setConsentState('declined');
-  };
-
-  const requestConsent = () => {
-    // If they request consent, we force it back to unknown so the banner shows
-    setConsentState('unknown');
   };
 
   return (
     <ConsentContext.Provider
-      value={{ consentState, acceptConsent, declineConsent, requestConsent }}
+      value={{ consentState, acceptConsent, declineConsent }}
     >
       {children}
     </ConsentContext.Provider>

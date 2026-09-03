@@ -2,13 +2,18 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { AlertTriangle, ArrowLeft, ArrowRight, X } from 'lucide-react';
-import { push } from '@socialgouv/matomo-next';
 
 interface RedirectClientProps {
   targetUrl: string;
   hostnameOrPath: string;
   backUrl: string;
   invalid?: boolean;
+}
+
+declare global {
+  interface Window {
+    _paq?: unknown[][];
+  }
 }
 
 export default function RedirectClient({ targetUrl, hostnameOrPath, backUrl, invalid }: RedirectClientProps) {
@@ -23,7 +28,7 @@ export default function RedirectClient({ targetUrl, hostnameOrPath, backUrl, inv
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot "fired" guard keyed to mount-time props, not derived state
     setOpened(true);
     try {
-      push(['trackLink', targetUrl, 'link']);
+      window._paq?.push(['trackLink', targetUrl, 'link']);
     } catch {
       // Matomo not loaded yet — ignore
     }

@@ -7,8 +7,10 @@ import { slugify } from '../lib/slugify'
 import { getLanguageName } from '../lib/getLanguageName'
 import { ArrowLeft, Check, Copy, Cpu, GitCompare, Crosshair, ExternalLink, Gift, HardDrive, Info, Languages, Link as LinkIcon, MemoryStick, Settings, Star, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { DiscordIcon } from './BrandIcons'
-import { showToast } from './Toast'
+import { showToast } from '../lib/toast'
+import { isHttpUrl } from '../lib/url'
 import { useFavorites } from '../contexts/FavoritesContext'
+import { computeRating } from '../lib/comparisonRows'
 import { ramDisplay, diskDisplay } from '../lib/specs'
 import { providerKind, hasPublishedSpecs, splitTargets } from '../lib/taxonomy'
 
@@ -19,7 +21,7 @@ export default function HostDetailClient({ host, related = [], alternativesCount
   const [copied, setCopied] = useState(false)
   const { isFavorite, toggleFavorite } = useFavorites()
   const totalReviews = (host.approvals || 0) + (host.disapprovals || 0)
-  const rating = totalReviews > 0 ? Math.round(((host.approvals || 0) / totalReviews) * 100) : 0
+  const rating = Math.max(0, Math.round(computeRating(host)))
   const statusClass = host.status && host.status.toLowerCase() === 'online' ? 'online' : 'closed'
   const typeDisplay = host.type ? host.type.split(',').map(t => t.trim().replace(/\s*\([^)]*\)/g, '').trim()).join(', ') : 'Unknown'
 
@@ -42,7 +44,7 @@ export default function HostDetailClient({ host, related = [], alternativesCount
     const parts = text.split(/(https?:\/\/[^\s`'"<>)\]]+)/g)
     if (parts.length === 1) return text
     return parts.map((p, i) =>
-      /^https?:\/\//.test(p)
+      isHttpUrl(p)
         ? <a key={`${keyPrefix}-${i}`} href={p} target="_blank" rel="noopener noreferrer" className="info-link">{p}</a>
         : p
     )
@@ -347,9 +349,8 @@ export default function HostDetailClient({ host, related = [], alternativesCount
               <div className="related-hosts-grid">
                 {related.map((r) => {
                   const rStatusClass = r.status && r.status.toLowerCase() === 'online' ? 'online' : 'closed'
-                  const rRating = (r.approvals + r.disapprovals) > 0 
-                    ? Math.round((r.approvals / (r.approvals + r.disapprovals)) * 100) 
-                    : null
+                  const rValue = computeRating(r)
+                  const rRating = rValue < 0 ? null : Math.round(rValue)
                   
                   const isDomainHost = r.targets?.some(t => t.toLowerCase().includes('domain'))
                   const combinedText = `${r.info || ''}\n${r.description || ''}\n${r.free_plan || ''}`

@@ -3,10 +3,9 @@ import { Geist as GeistFont, Inter as InterFont } from "next/font/google";
 import React, { Suspense } from "react";
 import Image from "next/image";
 import Link from "@/components/NoPrefetchLink";
-import RouteInitializer from "../components/RouteInitializer";
+import ClientChrome from "../components/ClientChrome";
 import MatomoTracker from "../components/MatomoTracker";
 import ThemeProvider from "../components/ThemeProvider";
-import SidebarController from "../components/SidebarController";
 import BackToTop from "../components/BackToTop";
 import PreviewCard from "../components/PreviewCard";
 import ToastContainer from "../components/Toast";
@@ -41,6 +40,7 @@ import {
   X,
 } from "lucide-react";
 import { DiscordIcon, GithubIcon, InstagramIcon, TwitterIcon } from "../components/BrandIcons";
+import { THEME_INIT_SNIPPET } from "../lib/theme";
 
 import "./src/css/globals.css";
 import "./src/css/styles.css";
@@ -153,6 +153,22 @@ const legalLinks = [
   { href: "/privacy-policy", icon: <Lock size={18} aria-hidden="true" />, label: "Privacy Policy" },
 ];
 
+function DropdownLinks({
+  links,
+}: {
+  links: { href: string; icon: React.ReactNode; label: string }[];
+}) {
+  return (
+    <>
+      {links.map((link) => (
+        <Link href={link.href} key={link.href}>
+          {link.icon} {link.label}
+        </Link>
+      ))}
+    </>
+  );
+}
+
 function Dropdown({
   icon,
   label,
@@ -169,11 +185,7 @@ function Dropdown({
         <ChevronDown size={14} className="dropdown-arrow" aria-hidden="true" />
       </span>
       <div className="dropdown-menu">
-        {links.map((link) => (
-          <Link href={link.href} key={link.href}>
-            {link.icon} {link.label}
-          </Link>
-        ))}
+        <DropdownLinks links={links} />
       </div>
     </div>
   );
@@ -196,11 +208,7 @@ function SidebarDropdown({
         <ChevronDown size={14} aria-hidden="true" />
       </button>
       <div className="sidebar-dropdown-menu">
-        {links.map((link) => (
-          <Link href={link.href} key={link.href}>
-            {link.icon} {link.label}
-          </Link>
-        ))}
+        <DropdownLinks links={links} />
       </div>
     </div>
   );
@@ -234,16 +242,15 @@ export default function RootLayout({
         {/* Inline script: apply theme before first paint to avoid flash */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('fh_theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
+            __html: THEME_INIT_SNIPPET,
           }}
         />
         <a href="#fh-page-content" className="skip-link">
           Skip to content
         </a>
         <ThemeProvider />
-        <SidebarController />
+        <ClientChrome />
         <PreviewCard />
-        <RouteInitializer />
 
         <ConsentProvider>
           <ComparisonProvider>
@@ -485,8 +492,6 @@ export default function RootLayout({
                   </div>
                 </div>
               </footer>
-
-              <div id="previewCard" className="preview-card" aria-hidden="true" />
 
             </FavoritesProvider>
           </ComparisonProvider>

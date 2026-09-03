@@ -6,19 +6,18 @@ import { ChevronDown, CircleHelp, Info, LayoutGrid, LifeBuoy, Mail, PlusCircle, 
 import { DiscordIcon } from "@/components/BrandIcons";
 import type { LucideIcon } from "lucide-react";
 
-const categories: { id: FaqCategory | "all"; icon: LucideIcon; label: string }[] = [
-  { id: "all", icon: LayoutGrid, label: "All Questions" },
-  { id: "general", icon: Info, label: "General" },
-  { id: "technical", icon: Settings, label: "Technical" },
-  { id: "submissions", icon: PlusCircle, label: "Submissions" },
-  { id: "support", icon: LifeBuoy, label: "Support" },
+// One config drives both the filter buttons and the sections
+// (were two parallel lists: categories + sections).
+const sections: { id: FaqCategory; icon: LucideIcon; filterLabel: string; sectionTitle: string }[] = [
+  { id: "general", icon: Info, filterLabel: "General", sectionTitle: "General Information" },
+  { id: "technical", icon: Settings, filterLabel: "Technical", sectionTitle: "Technical Questions" },
+  { id: "submissions", icon: PlusCircle, filterLabel: "Submissions", sectionTitle: "Submitting Hosts" },
+  { id: "support", icon: LifeBuoy, filterLabel: "Support", sectionTitle: "Support & Contact" },
 ];
 
-const sections: { id: FaqCategory; icon: LucideIcon; title: string }[] = [
-  { id: "general", icon: Info, title: "General Information" },
-  { id: "technical", icon: Settings, title: "Technical Questions" },
-  { id: "submissions", icon: PlusCircle, title: "Submitting Hosts" },
-  { id: "support", icon: LifeBuoy, title: "Support & Contact" },
+const filters: { id: FaqCategory | "all"; icon: LucideIcon; filterLabel: string }[] = [
+  { id: "all", icon: LayoutGrid, filterLabel: "All Questions" },
+  ...sections,
 ];
 
 export default function FaqClient({ emailDomain }: { emailDomain: string }) {
@@ -70,7 +69,7 @@ export default function FaqClient({ emailDomain }: { emailDomain: string }) {
       </div>
 
       <div className="faq-categories">
-        {categories.map(({ id, icon: Icon, label }) => (
+        {filters.map(({ id, icon: Icon, filterLabel }) => (
           <button
             key={id}
             className={`faq-category-btn ${activeCategory === id ? "active" : ""}`}
@@ -78,20 +77,20 @@ export default function FaqClient({ emailDomain }: { emailDomain: string }) {
             onClick={() => setCategory(id)}
           >
             <Icon size={14} aria-hidden="true" />
-            {label}
+            {filterLabel}
           </button>
         ))}
       </div>
 
       <div className="faq-list">
-        {sections.map(({ id, icon: Icon, title }) => {
+        {sections.map(({ id, icon: Icon, sectionTitle }) => {
           const items = visibleItems.filter((item) => item.category === id);
           if (items.length === 0) return null;
           return (
             <div className="faq-section" key={id}>
               <h2 className="faq-section-title">
                 <Icon size={16} aria-hidden="true" />
-                {title}
+                {sectionTitle}
               </h2>
               {items.map((item) => {
                 const isOpen = openQuestion === item.question;

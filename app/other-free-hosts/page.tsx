@@ -1,31 +1,39 @@
-import type { Metadata } from "next";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Image from "next/image";
 import { ExternalLink, Info, List } from "lucide-react";
 import { DiscordIcon, type BrandIconComponent } from "../../components/BrandIcons";
 import type { LucideIcon } from "lucide-react";
 import { safeJsonLd } from "../../lib/safeJsonLd";
+import { pageMeta, webPageJsonLd } from "../../lib/pageMeta";
 
-export const metadata: Metadata = {
+const DESCRIPTION = "Discover other trusted platforms and directories that list free hosting services for websites, Minecraft servers, and applications. Curated by the FreeHosts community.";
+const SOCIAL_DESCRIPTION = "Discover other trusted platforms and directories that list free hosting services for websites, Minecraft servers, and applications.";
+
+export const metadata = pageMeta({
+  path: "/other-free-hosts",
   title: "Other Free Hosting Platforms & Directories - FreeHosts",
-  description: "Discover other trusted platforms and directories that list free hosting services for websites, Minecraft servers, and applications. Curated by the FreeHosts community.",
+  description: DESCRIPTION,
+  ogDescription: SOCIAL_DESCRIPTION,
   keywords: ["other free hosting platforms", "free hosting directories", "free minecraft hosting list", "hosting resource list"],
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
-  alternates: { canonical: process.env.APP_URL + "/other-free-hosts" },
-  openGraph: { locale: "en_US", siteName: "FreeHosts", type: "website", url: process.env.APP_URL + "/other-free-hosts", title: "Other Free Hosting Platforms & Directories - FreeHosts", description: "Discover other trusted platforms and directories that list free hosting services for websites, Minecraft servers, and applications.", images: [{ url: process.env.APP_URL + "/Src/Images/banner.png", width: 1280, height: 720, alt: "FreeHosts - Other Free Hosting Platforms" }] },
-  twitter: { card: "summary_large_image", title: "Other Free Hosting Platforms & Directories - FreeHosts", description: "Discover other trusted platforms and directories that list free hosting services for websites, Minecraft servers, and applications.", images: [{ url: process.env.APP_URL + "/Src/Images/banner.png", alt: "FreeHosts - Other Free Hosting Platforms" }], site: "@freehosts_", creator: "@freehosts_" },
+  imageAlt: "FreeHosts - Other Free Hosting Platforms",
+  twitterImageAlt: "FreeHosts - Other Free Hosting Platforms",
+});
+
+type ExternalHost = {
+  image?: string;
+  name: string;
+  description: string;
+  links: { href: string; icon: LucideIcon | BrandIconComponent; label: string }[];
 };
 
-type HostLink = { href: string; lucideIcon?: LucideIcon; brandIcon?: BrandIconComponent; label: string };
-
-const externalHosts: { initials?: string; image?: string; name: string; description: string; links: HostLink[] }[] = [
+const externalHosts: ExternalHost[] = [
   {
     image: "/Src/Images/free-minecraft-hostings.png",
     name: "Free Minecraft Hostings",
     description: "The best collection of free minecraft server hosting providers. Includings a tons of free minecraft hostings. Allow you to write your own experiences while using free hostings. Founded by the best handsome human in the entire world.",
     links: [
-      { href: "https://freeminecrafthostings.com/", lucideIcon: ExternalLink, label: "Website" },
-      { href: "https://discord.gg/sc2kauFE3D", brandIcon: DiscordIcon, label: "Discord" },
+      { href: "https://freeminecrafthostings.com/", icon: ExternalLink, label: "Website" },
+      { href: "https://discord.gg/sc2kauFE3D", icon: DiscordIcon, label: "Discord" },
     ],
   },
   {
@@ -33,8 +41,8 @@ const externalHosts: { initials?: string; image?: string; name: string; descript
     name: "Free Minecraft Hosts List",
     description: "A comprehensive directory dedicated to free Minecraft server hosting providers, help you find the perfect host for your server.",
     links: [
-      { href: "https://myuui.com/", lucideIcon: ExternalLink, label: "Website" },
-      { href: "https://discord.gg/JzvVMZ9Zrm", brandIcon: DiscordIcon, label: "Discord" },
+      { href: "https://myuui.com/", icon: ExternalLink, label: "Website" },
+      { href: "https://discord.gg/JzvVMZ9Zrm", icon: DiscordIcon, label: "Discord" },
     ],
   },
   {
@@ -42,19 +50,18 @@ const externalHosts: { initials?: string; image?: string; name: string; descript
     name: "Free Low Minecraft Hostings",
     description: "A specialized free hostings catalog which is intended for new and non-recommended hosting providers, with a brief description of reputation to warn against fraud.",
     links: [
-      { href: "https://flhl.whiteik.xyz/", lucideIcon: ExternalLink, label: "Website" },
+      { href: "https://flhl.whiteik.xyz/", icon: ExternalLink, label: "Website" },
     ],
   },
 ];
 
-export default function OtherFreeHostsPage() {
-  const structuredData = {
-    "@context": "https://schema.org", "@type": "WebPage", "@id": process.env.APP_URL + "/other-free-hosts#webpage",
-    url: process.env.APP_URL + "/other-free-hosts", name: "Other Free Hosting Platforms & Directories - FreeHosts",
-    isPartOf: { "@id": process.env.APP_URL + "/#website" }, inLanguage: "en",
-    description: "Discover other trusted platforms and directories that list free hosting services for websites, Minecraft servers, and applications.",
-  };
+const structuredData = webPageJsonLd(
+  "/other-free-hosts",
+  "Other Free Hosting Platforms & Directories - FreeHosts",
+  SOCIAL_DESCRIPTION,
+);
 
+export default function OtherFreeHostsPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
@@ -85,7 +92,7 @@ export default function OtherFreeHostsPage() {
               <article className="external-host-card" key={host.name}>
                 <div className="external-host-header">
                   <div className="external-host-icon-wrapper">
-                    {host.image ? <Image src={host.image} alt={host.name} width={40} height={40} /> : host.initials}
+                    {host.image ? <Image src={host.image} alt={host.name} width={40} height={40} /> : null}
                   </div>
                   <h3 className="external-host-name">{host.name}</h3>
                 </div>
@@ -93,7 +100,7 @@ export default function OtherFreeHostsPage() {
                 <div className="external-host-links">
                   {host.links.map((link) => (
                     <a key={link.href} href={link.href} className="external-host-link" target="_blank" rel="noopener noreferrer" aria-label={`${host.name} ${link.label}`}>
-                      {link.lucideIcon ? <link.lucideIcon size={16} aria-hidden="true" /> : link.brandIcon ? <link.brandIcon size={16} aria-hidden="true" /> : null}
+                      <link.icon size={16} aria-hidden="true" />
                     </a>
                   ))}
                 </div>

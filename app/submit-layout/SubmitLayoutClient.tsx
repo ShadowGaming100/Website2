@@ -1,12 +1,10 @@
 "use client";
 
-import { FormEvent, useMemo, useState, useEffect } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import Image from "next/image";
 import {
   Boxes,
   Circle,
-  CircleAlert,
-  CircleCheck,
   Code,
   Copy,
   FileText,
@@ -21,6 +19,7 @@ import {
   Zap,
 } from "lucide-react";
 import { DiscordIcon } from "@/components/BrandIcons";
+import { showToast } from "@/lib/toast";
 
 type SpecType = "same" | "different";
 type RenewalStatus = "" | "yes" | "no";
@@ -108,13 +107,10 @@ export default function SubmitLayoutClient() {
   const [selectedPlan, setSelectedPlan] = useState("");
   const [planSpecs, setPlanSpecs] = useState<PlanSpec[]>([]);
   const [otherSpec, setOtherSpec] = useState<PlanSpec | null>(null);
-  const [showRenewalDetails, setShowRenewalDetails] = useState(false);
-  const [notification, setNotification] = useState<{ message: string; error: boolean } | null>(null);
 
   const allPlans = useMemo(() => splitPlans(form.plans), [form.plans]);
   const addedPlanNames = useMemo(() => new Set(planSpecs.map((s) => s.originalName)), [planSpecs]);
   const availablePlans = allPlans.filter((p) => !addedPlanNames.has(p));
-  const otherPlans = allPlans.filter((p) => !addedPlanNames.has(p));
 
   const missingFields = useMemo(() => {
     const m: string[] = [];
@@ -163,20 +159,15 @@ export default function SubmitLayoutClient() {
   const removePlan = (name: string) =>
     setPlanSpecs((s) => s.filter((spec) => spec.originalName !== name));
 
-  const showMsg = (message: string, error = false) => {
-    setNotification({ message, error });
-    window.setTimeout(() => setNotification(null), 2500);
-  };
-
   const copyMessage = async () => {
-    if (!canCopy) { showMsg("Please fill in all required fields first!", true); return; }
-    try { await navigator.clipboard.writeText(rawMessage); showMsg("Message copied to clipboard!"); }
-    catch { showMsg("Failed to copy message", true); }
+    if (!canCopy) { showToast("Please fill in all required fields first!", "error"); return; }
+    try { await navigator.clipboard.writeText(rawMessage); showToast("Message copied to clipboard!"); }
+    catch { showToast("Failed to copy message", "error"); }
   };
 
   const resetForm = (e: FormEvent) => {
     e.preventDefault();
-    setForm(initialForm); setSelectedPlan(""); setPlanSpecs([]); setOtherSpec(null); setShowRenewalDetails(false);
+    setForm(initialForm); setSelectedPlan(""); setPlanSpecs([]); setOtherSpec(null);
   };
 
   const renderSpecInputs = (spec: PlanSpec, onChange: (p: Partial<PlanSpec>) => void) => (
@@ -282,7 +273,7 @@ export default function SubmitLayoutClient() {
                           <div className="spec-plan-header">
                             <div>
                               <div className="spec-plan-name">All Other Plans</div>
-                              <div className="help-text">{otherPlans.length > 0 ? otherPlans.join(", ") : "No unlisted plans yet"}</div>
+                              <div className="help-text">{availablePlans.length > 0 ? availablePlans.join(", ") : "No unlisted plans yet"}</div>
                             </div>
                           </div>
                           {renderSpecInputs(otherSpec, (p) => setOtherSpec((c) => c ? { ...c, ...p } : c))}
@@ -378,17 +369,10 @@ export default function SubmitLayoutClient() {
                 <Circle size={8} aria-hidden="true" /> Live
               </span>
             </div>
-            <DiscordPreview form={form} planSpecs={planSpecs} otherSpec={otherSpec} otherPlans={otherPlans} missingFields={missingFields} showRenewalDetails={showRenewalDetails} setShowRenewalDetails={setShowRenewalDetails} />
+            <DiscordPreview form={form} planSpecs={planSpecs} otherSpec={otherSpec} otherPlans={availablePlans} missingFields={missingFields} />
           </section>
         </div>
       </div>
-
-      {notification && (
-        <div className={`copy-notification ${notification.error ? "error" : "success"}`}>
-          {notification.error ? <CircleAlert size={14} aria-hidden="true" /> : <CircleCheck size={14} aria-hidden="true" />}
-          <span>{notification.message}</span>
-        </div>
-      )}
     </main>
   );
 }
@@ -402,18 +386,9 @@ function TInput({ id, label, value, onChange, placeholder, required = false }: {
   );
 }
 
-function DiscordPreview({ form, planSpecs, otherSpec, otherPlans, missingFields, showRenewalDetails, setShowRenewalDetails }: { form: FormState; planSpecs: PlanSpec[]; otherSpec: PlanSpec | null; otherPlans: string[]; missingFields: string[]; showRenewalDetails: boolean; setShowRenewalDetails: (v: boolean) => void }) {
-  const [time, setTime] = useState("");
-
-  useEffect(() => {
-    function fmt() {
-      return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-    }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setTime(fmt());
-    const id = setInterval(() => setTime(fmt()), 1000);
-    return () => clearInterval(id);
-  }, []);
+function DiscordPreview({ form, planSpecs, otherSpec, otherPlans, missingFields }: { form: FormState; planSpecs: PlanSpec[]; otherSpec: PlanSpec | null; otherPlans: string[]; missingFields: string[] }) {
+  // Static mock timestamp (was a 1s interval re-rendering the whole preview).
+  const time = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
   return (
     <div className="discord-preview">
@@ -451,18 +426,11 @@ function DiscordPreview({ form, planSpecs, otherSpec, otherPlans, missingFields,
             <span className="discord-bold">Information</span><br />
             - Renewal Required: {renewalDisplay(form.renewalStatus)}<br />
             {form.renewalStatus === "yes" && (
-              <>
-                <button className="discord-renewal-toggle" type="button" onClick={() => setShowRenewalDetails(!showRenewalDetails)}>
-                  {showRenewalDetails ? "[Click to hide renewal details]" : "[Click to show renewal details]"}
-                </button>
-                {showRenewalDetails && (
-                  <div className="discord-renewal-content">
-                    This host requires renewal<br />
-                    {form.renewalDuration && <>- Renewal Duration: {form.renewalDuration}<br /></>}
-                    {form.coinsNeeded && <>- Coins Needed: {form.coinsNeeded}<br /></>}
-                  </div>
-                )}
-              </>
+              <div className="discord-renewal-content">
+                This host requires renewal<br />
+                {form.renewalDuration && <>- Renewal Duration: {form.renewalDuration}<br /></>}
+                {form.coinsNeeded && <>- Coins Needed: {form.coinsNeeded}<br /></>}
+              </div>
             )}
             {form.notes && <>- Notes: {form.notes}<br /></>}
             <div className="discord-divider" />

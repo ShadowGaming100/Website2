@@ -128,6 +128,3 @@ export const getFaqItems = (emailDomain: string): FaqItem[] => [
       "First, contact the hosting provider support directly. If you continue experiencing unresolved issues, share your experience in our Discord community where others may offer insights. If the provider appears to be misleading or fraudulent, report it to our team so we can investigate and take appropriate action.",
   },
 ];
-
-// Server-only convenience: uses EMAIL_DOMAIN directly (no NEXT_PUBLIC, no hardcoded fallback)
-export const faqItems = getFaqItems(process.env.EMAIL_DOMAIN as string);

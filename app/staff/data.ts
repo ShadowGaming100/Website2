@@ -1,6 +1,6 @@
 export type StaffJsonMember = {
   name?: string;
-  roles: string[] | string;
+  roles: string[];
   about?: string;
   links?: Record<string, string>;
 };

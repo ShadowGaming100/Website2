@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from '@/components/NoPrefetchLink'
-import Breadcrumbs from '@/components/Breadcrumbs'
 import { safeJsonLd } from '../../../lib/safeJsonLd'
 import { fetchHostBySlug, fetchHosts } from '../../../lib/cache'
 import { slugify } from '../../../lib/slugify'
 import { splitTargets, findAlternatives, primaryBucket, hostRow, sharedTargets, providerKind, hasPublishedSpecs, primaryTargetLabel } from '../../../lib/taxonomy'
+import CompareShell from '@/components/CompareShell'
 
 export const runtime = 'edge'
 
@@ -104,7 +104,8 @@ export default async function AlternativesPage({ params }: Props) {
     status: h.status || 'Unknown',
     hasSpecs: hasPublishedSpecs(h),
   }))
-  const pageUrl = `${process.env.APP_URL}/alternatives/${slugify(host.name)}`
+  const hostSlug = slugify(host.name)
+  const pageUrl = `${process.env.APP_URL}/alternatives/${hostSlug}`
   const tags = splitTargets(host)
   const hostKind = providerKind(host)
   const targetLabel = primaryTargetLabel(host)
@@ -117,18 +118,6 @@ export default async function AlternativesPage({ params }: Props) {
     ?? BUCKET_ADVICE[primaryBucket(host)]
     ?? BUCKET_ADVICE['other']
 
-
-  const webPageSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    '@id': `${pageUrl}#webpage`,
-    url: pageUrl,
-    name: `${host.name} Alternatives`,
-    isPartOf: { '@id': `${process.env.APP_URL}/#website` },
-    inLanguage: 'en',
-    description: `Free ${targetLabel} alternatives to ${host.name}, compared side by side.`,
-    ...(host.created_at ? { dateModified: new Date(host.created_at).toISOString().split('T')[0] } : {}),
-  }
 
   const itemListSchema = {
     '@context': 'https://schema.org',
@@ -145,36 +134,40 @@ export default async function AlternativesPage({ params }: Props) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(webPageSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(itemListSchema) }} />
-      <Breadcrumbs
-        siteUrl={process.env.APP_URL}
-        items={[
+      <CompareShell
+        pageUrl={pageUrl}
+        name={`${host.name} Alternatives`}
+        description={`Free ${targetLabel} alternatives to ${host.name}, compared side by side.`}
+        dateModified={host.created_at ? new Date(host.created_at).toISOString().split('T')[0] : undefined}
+        crumbs={[
           { name: 'Free Hosting Directory', path: '/hosts' },
-          { name: host.name, path: `/hosts/${slugify(host.name)}` },
-          { name: 'Alternatives', path: `/alternatives/${slugify(host.name)}` },
+          { name: host.name, path: `/hosts/${hostSlug}` },
+          { name: 'Alternatives', path: `/alternatives/${hostSlug}` },
         ]}
-      />
-      <main className="wrap about-content">
-        <section className="faq-hero">
-          <h1>{host.name} Alternatives</h1>
-          <p>
-            {rows.length >= 2 ? (
-              <>
-                The {rows.length} best free {targetLabel} alternatives to {host.name}, compared on specs, limits and community reviews.
-                Every option below is a live listing in the FreeHosts directory.
-              </>
-            ) : rows.length === 1 ? (
-              <>
-                {rows[0].name} is currently the closest verified free {targetLabel} alternative to {host.name}, serving similar use
-                cases — see the comparison below and browse the directory for more options.
-              </>
-            ) : (
-              <>We have not yet verified enough similar {targetLabel} providers to list alternatives to {host.name}. Meanwhile, the directory lists {all.length - 1} other providers.</>
-            )}
-          </p>
-        </section>
-
+        heroTitle={`${host.name} Alternatives`}
+        heroLead={
+          rows.length >= 2 ? (
+            <>
+              The {rows.length} best free {targetLabel} alternatives to {host.name}, compared on specs, limits and community reviews.
+              Every option below is a live listing in the FreeHosts directory.
+            </>
+          ) : rows.length === 1 ? (
+            <>
+              {rows[0].name} is currently the closest verified free {targetLabel} alternative to {host.name}, serving similar use
+              cases — see the comparison below and browse the directory for more options.
+            </>
+          ) : (
+            <>We have not yet verified enough similar {targetLabel} providers to list alternatives to {host.name}. Meanwhile, the directory lists {all.length - 1} other providers.</>
+          )
+        }
+        ctaTitle="Still deciding?"
+        ctaText="Browse the full directory or compare shortlisted hosts side by side."
+        ctaButtons={[
+          { href: '/hosts', label: 'Browse all free hosts', primary: true },
+          { href: `/hosts/${hostSlug}`, label: `Back to ${host.name}` },
+        ]}
+      >
         {rows.length >= 1 && (
           <section className="content-section">
             <h2>{rows.length === 1 ? `Free ${targetLabel} alternative to ${host.name}` : `Free ${host.name} alternatives compared`}</h2>
@@ -225,7 +218,7 @@ export default async function AlternativesPage({ params }: Props) {
                 {rows.slice(0, 3).map((r, i) => (
                   <span key={r.slug}>
                     {i > 0 && ' · '}
-                    <Link href={`/vs/${slugify(host.name)}-vs-${r.slug}`}>{host.name} vs {r.name}</Link>
+                    <Link href={`/vs/${hostSlug}-vs-${r.slug}`}>{host.name} vs {r.name}</Link>
                   </span>
                 ))}
               </p>
@@ -253,18 +246,7 @@ export default async function AlternativesPage({ params }: Props) {
             ))}
           </ul>
         </section>
-
-        <div className="faq-cta">
-          <h2>Still deciding?</h2>
-          <p>Browse the full directory or compare shortlisted hosts side by side.</p>
-          <div className="faq-cta-buttons">
-            <Link className="faq-cta-btn primary" href="/hosts">Browse all free hosts</Link>
-            <Link className="faq-cta-btn secondary" href={`/hosts/${slugify(host.name)}`}>
-              Back to {host.name}
-            </Link>
-          </div>
-        </div>
-      </main>
+      </CompareShell>
     </>
   )
 }

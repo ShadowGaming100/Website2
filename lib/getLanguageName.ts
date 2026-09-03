@@ -19,7 +19,6 @@ export function getLanguageName(locale: string): string {
   // primary language subtag if the full tag fails.
   const candidates = [
     locale.toLowerCase(),
-    locale.toUpperCase(),
     locale.split(/[-_]/)[0].toLowerCase(),
   ]
 

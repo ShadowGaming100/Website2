@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import HomeClient from "./HomeClient";
 import { safeJsonLd } from "../lib/safeJsonLd";
+import { organizationJsonLd } from "../lib/pageMeta";
 
 export const metadata: Metadata = {
   title: "FreeHosts - Free Hosting for Anything You Build",
@@ -43,32 +44,7 @@ const structuredData = {
         "query-input": "required name=search_term_string",
       },
     },
-    {
-      "@type": "Organization",
-      "@id": process.env.APP_URL + "/#organization",
-      name: "FreeHosts",
-      url: process.env.APP_URL,
-      logo: {
-        "@type": "ImageObject",
-        url: process.env.APP_URL + "/Src/icons/icon.png",
-        width: 512,
-        height: 512,
-      },
-      sameAs: [
-        "https://x.com/freehosts_",
-        "https://www.instagram.com/freehosts/",
-        "https://github.com/freehostsofficial",
-        "https://discord.gg/QbeZ3b5CQd",
-      ],
-      description:
-        "FreeHosts is a community-curated directory of free hosting providers and services.",
-      contactPoint: {
-        "@type": "ContactPoint",
-        email: "support@" + process.env.EMAIL_DOMAIN,
-        contactType: "customer support",
-        availableLanguage: "English",
-      },
-    },
+    organizationJsonLd(),
     {
       "@type": "WebPage",
       "@id": process.env.APP_URL + "/#homepage",

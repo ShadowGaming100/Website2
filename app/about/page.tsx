@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
 import Link from "@/components/NoPrefetchLink";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { safeJsonLd } from "../../lib/safeJsonLd";
+import { pageMeta, organizationJsonLd } from "../../lib/pageMeta";
 import {
   BookOpen,
   Crosshair,
@@ -18,94 +18,30 @@ import {
 } from "lucide-react";
 import { DiscordIcon } from "../../components/BrandIcons";
 
-export const metadata: Metadata = {
+const DESCRIPTION =
+  "Learn about FreeHosts — a community-driven directory helping developers, students, and makers discover reliable free hosting. Meet the team and find out how to contribute.";
+const SOCIAL_DESCRIPTION =
+  "A community-driven directory to discover, compare and review free hosting services for websites, bots, and apps.";
+
+export const metadata = pageMeta({
+  path: "/about",
   title: "About FreeHosts - Our Mission, Team & Community",
-  description:
-    "Learn about FreeHosts — a community-driven directory helping developers, students, and makers discover reliable free hosting. Meet the team and find out how to contribute.",
+  description: DESCRIPTION,
+  ogDescription: SOCIAL_DESCRIPTION,
   keywords: [
     "about freehosts",
     "free hosting community",
     "hosting directory mission",
     "freehosts team",
   ],
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
-  },
-  alternates: {
-    canonical: process.env.APP_URL + "/about",
-  },
-  openGraph: {
-    locale: "en_US",
-    siteName: "FreeHosts",
-    type: "website",
-    url: process.env.APP_URL + "/about",
-    title: "About FreeHosts - Our Mission, Team & Community",
-    description:
-      "A community-driven directory to discover, compare and review free hosting services for websites, bots, and apps.",
-    images: [
-      {
-        url: process.env.APP_URL + "/Src/Images/banner.png",
-        width: 1280,
-        height: 720,
-        alt: "FreeHosts - Discover Free Hosting",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "About FreeHosts - Our Mission, Team & Community",
-    description:
-      "A community-driven directory to discover, compare and review free hosting services for websites, bots, and apps.",
-    images: [
-      {
-        url: process.env.APP_URL + "/Src/Images/banner.png",
-        alt: "FreeHosts - Discover Free Hosting",
-      },
-    ],
-    site: "@freehosts_",
-    creator: "@freehosts_",
-  },
-};
+  imageAlt: "FreeHosts - Discover Free Hosting",
+  twitterImageAlt: "FreeHosts - Discover Free Hosting",
+});
 
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
-    {
-      "@type": "Organization",
-      "@id": process.env.APP_URL + "/#organization",
-      name: "FreeHosts",
-      url: process.env.APP_URL,
-      logo: {
-        "@type": "ImageObject",
-        url: process.env.APP_URL + "/Src/icons/icon.png",
-        width: 512,
-        height: 512,
-      },
-      sameAs: [
-        "https://x.com/freehosts_",
-        "https://www.instagram.com/freehosts/",
-        "https://github.com/freehostsofficial",
-        "https://discord.gg/QbeZ3b5CQd",
-      ],
-      description:
-        "FreeHosts is a community-curated directory of free hosting providers and services.",
-      contactPoint: [
-        {
-          "@type": "ContactPoint",
-          email: "support@" + process.env.EMAIL_DOMAIN,
-          contactType: "customer support",
-          availableLanguage: "English",
-        },
-        {
-          "@type": "ContactPoint",
-          url: "https://discord.gg/QbeZ3b5CQd",
-          contactType: "community support",
-          availableLanguage: "English",
-        },
-      ],
-    },
+    organizationJsonLd(),
     {
       "@type": "WebPage",
       "@id": process.env.APP_URL + "/about#webpage",

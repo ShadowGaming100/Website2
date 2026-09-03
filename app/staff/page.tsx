@@ -1,72 +1,33 @@
-import type { Metadata } from "next";
 import StaffClient from "./StaffClient";
 import { staffData } from "./data";
 import { safeJsonLd } from "../../lib/safeJsonLd";
+import { pageMeta, webPageJsonLd } from "../../lib/pageMeta";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-export const metadata: Metadata = {
-  title: "Meet the FreeHosts Team - Staff & Contributors",
-  description:
-    "Meet the volunteers behind FreeHosts — owners, developers, moderators, and host publishers who keep this free hosting directory running.",
+const TITLE = "Meet the FreeHosts Team - Staff & Contributors";
+const DESCRIPTION =
+  "Meet the volunteers behind FreeHosts — owners, developers, moderators, and host publishers who keep this free hosting directory running.";
+
+export const metadata = pageMeta({
+  path: "/staff",
+  title: TITLE,
+  description: DESCRIPTION,
   keywords: [
     "freehosts staff",
     "freehosts team",
     "freehosts contributors",
     "hosting directory team",
   ],
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
-  },
-  alternates: {
-    canonical: process.env.APP_URL + "/staff",
-  },
-  openGraph: {
-    locale: "en_US",
-    siteName: "FreeHosts",
-    type: "website",
-    url: process.env.APP_URL + "/staff",
-    title: "Meet the FreeHosts Team - Staff & Contributors",
-    description:
-      "Meet the volunteers behind FreeHosts — owners, developers, moderators, and host publishers who keep this free hosting directory running.",
-    images: [
-      {
-        url: process.env.APP_URL + "/Src/Images/banner.png",
-        width: 1280,
-        height: 720,
-        alt: "FreeHosts - Meet the Team",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Meet the FreeHosts Team - Staff & Contributors",
-    description:
-      "Meet the volunteers behind FreeHosts — owners, developers, moderators, and host publishers who keep this free hosting directory running.",
-    images: [
-      {
-        url: process.env.APP_URL + "/Src/Images/banner.png",
-        alt: "FreeHosts - Meet the Team",
-      },
-    ],
-    site: "@freehosts_",
-    creator: "@freehosts_",
-  },
-};
+  imageAlt: "FreeHosts - Meet the Team",
+  twitterImageAlt: "FreeHosts - Meet the Team",
+});
 
 export default function StaffPage() {
-  const webPageSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "@id": process.env.APP_URL + "/staff#webpage",
-    url: process.env.APP_URL + "/staff",
-    name: "Meet the FreeHosts Team - Staff & Contributors",
-    isPartOf: { "@id": process.env.APP_URL + "/#website" },
-    inLanguage: "en",
-    description:
-      "Meet the volunteers behind FreeHosts — owners, developers, moderators, and host publishers.",
-  };
+  const webPageSchema = webPageJsonLd(
+    "/staff",
+    TITLE,
+    "Meet the volunteers behind FreeHosts — owners, developers, moderators, and host publishers.",
+  );
 
   const teamSchema = {
     "@context": "https://schema.org",
@@ -81,9 +42,7 @@ export default function StaffPage() {
       item: {
         "@type": "Person",
         name: member.name ?? "FreeHosts Team Member",
-        jobTitle: Array.isArray(member.roles)
-          ? member.roles[0]
-          : member.roles,
+        jobTitle: member.roles[0],
         worksFor: {
           "@id": process.env.APP_URL + "/#organization",
         },

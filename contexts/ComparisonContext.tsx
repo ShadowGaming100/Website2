@@ -1,8 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext } from 'react';
 import { type Host } from '../lib/cache';
-import { showToast } from '../components/Toast';
+import { showToast } from '../lib/toast';
+import { usePersistentState } from '../hooks/usePersistentState';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -22,7 +23,7 @@ const MAX_COMPARISON = 4;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function readFromStorage(): Host[] {
+function load(): Host[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
@@ -37,7 +38,7 @@ function readFromStorage(): Host[] {
   }
 }
 
-function writeToStorage(selection: Host[]): void {
+function save(selection: Host[]): void {
   try {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(selection));
   } catch {
@@ -53,21 +54,7 @@ const ComparisonContext = createContext<ComparisonContextValue | null>(null);
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function ComparisonProvider({ children }: { children: React.ReactNode }) {
-  const [selection, setSelection] = useState<Host[]>([]);
-
-  // Restore state from sessionStorage on mount (client-side only).
-  useEffect(() => {
-    const stored = readFromStorage();
-    if (stored.length > 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelection(stored);
-    }
-  }, []);
-
-  // Persist state to sessionStorage on every change.
-  useEffect(() => {
-    writeToStorage(selection);
-  }, [selection]);
+  const [selection, setSelection] = usePersistentState<Host[]>([], load, save);
 
   const addHost = (host: Host): void => {
     setSelection((prev) => {

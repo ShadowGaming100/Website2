@@ -88,9 +88,43 @@ type DiscordState = {
   showInvite: boolean;
 };
 
-function fetchWithTimeout(url: string, timeout = 7000) {
-  return fetch(url, { cache: "no-cache", signal: AbortSignal.timeout(timeout) });
-}
+type InviteApi = {
+  guild?: { name?: string };
+  approximate_member_count?: number | null;
+  approximate_presence_count?: number | null;
+  members?: unknown[];
+};
+
+type WidgetApi = {
+  name?: string;
+  presence_count?: number | null;
+  members?: unknown[];
+};
+
+const discordSources: {
+  url: string;
+  parse: (data: InviteApi & WidgetApi) => { name: string; count: number | null };
+}[] = [
+  {
+    url: `https://discord.com/api/v9/invites/${encodeURIComponent(inviteCode)}?with_counts=true&with_expiration=true`,
+    parse: (data) => ({
+      name: data.guild?.name || "Discord",
+      count:
+        data.approximate_member_count ??
+        data.approximate_presence_count ??
+        (Array.isArray(data.members) ? data.members.length : null),
+    }),
+  },
+  {
+    url: "https://discord.com/api/guilds/1221389187719102514/widget.json",
+    parse: (data) => ({
+      name: data.name || "Discord",
+      count:
+        data.presence_count ??
+        (Array.isArray(data.members) ? data.members.length : null),
+    }),
+  },
+];
 
 export default function HomeClient() {
   const [terminalCommand, setTerminalCommand] = useState("");
@@ -179,59 +213,38 @@ export default function HomeClient() {
   }, []);
 
   useEffect(() => {
-    const setFallback = () => {
+    let cancelled = false;
+
+    const setLive = (name: string, count: number | null) => {
+      if (cancelled) return;
       setDiscord({
-        name: "Discord",
-        status: "Server info unavailable",
-        count: "-",
-        showInvite: false,
+        name,
+        status: count !== null ? "Live - join the server" : "Live server info",
+        count: count !== null ? String(count) : "-",
+        showInvite: true,
       });
     };
 
+    // Try each Discord source in order; fall back to the static widget.
     const loadDiscord = async () => {
-      try {
-        const response = await fetchWithTimeout(
-          `https://discord.com/api/v9/invites/${encodeURIComponent(inviteCode)}?with_counts=true&with_expiration=true`,
-          8000,
-        );
-        if (!response.ok) throw new Error("Non-OK response");
-        const data = await response.json();
-        const count =
-          data.approximate_member_count ??
-          data.approximate_presence_count ??
-          (Array.isArray(data.members) ? data.members.length : null);
-
-        setDiscord({
-          name: data.guild?.name || "Discord",
-          status: count !== null ? "Live - join the server" : "Live server info",
-          count: count !== null ? String(count) : "-",
-          showInvite: true,
-        });
-      } catch {
+      for (const source of discordSources) {
         try {
-          const response = await fetchWithTimeout(
-            "https://discord.com/api/guilds/1221389187719102514/widget.json",
-            6000,
-          );
-          if (!response.ok) throw new Error("Widget fetch failed");
-          const data = await response.json();
-          const count =
-            data.presence_count ??
-            (Array.isArray(data.members) ? data.members.length : null);
-
-          setDiscord({
-            name: data.name || "Discord",
-            status: count !== null ? "Live - join the server" : "Live server info",
-            count: count !== null ? String(count) : "-",
-            showInvite: true,
-          });
+          const response = await fetch(source.url, { cache: "no-cache", signal: AbortSignal.timeout(7000) });
+          if (!response.ok) continue;
+          const { name, count } = source.parse(await response.json());
+          setLive(name, count);
+          return;
         } catch {
-          setFallback();
+          // try the next source
         }
+      }
+      if (!cancelled) {
+        setDiscord({ name: "Discord", status: "Server info unavailable", count: "-", showInvite: false });
       }
     };
 
     loadDiscord();
+    return () => { cancelled = true; };
   }, []);
 
   return (

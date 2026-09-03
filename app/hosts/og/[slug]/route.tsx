@@ -1,6 +1,9 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 import { fetchHostBySlug, fetchHostById } from '../../../../lib/cache';
+import { ramDisplay, diskDisplay } from '../../../../lib/specs';
+import { computeRating } from '../../../../lib/comparisonRows';
+import { extractDomainNames } from '../../../../lib/domains';
 
 export const runtime = 'edge';
 
@@ -26,11 +29,11 @@ export async function GET(req: NextRequest, { params }: Props) {
     // Parse data from host object
     const name = host.name || 'Hosting Provider';
     const cpu = host.cpu || 'Unknown';
-    const ram = host.ram || 'Unknown';
-    const disk = host.disk || 'Unknown';
+    const ram = ramDisplay(host);
+    const disk = diskDisplay(host);
 
     const totalReviews = (host.approvals || 0) + (host.disapprovals || 0);
-    const rating = totalReviews > 0 ? Math.round(((host.approvals || 0) / totalReviews) * 100) : 0;
+    const rating = Math.max(0, Math.round(computeRating(host)));
 
     // Base URL for assets
     const host_header = req.headers.get('host') || 'freehosts.eu';
@@ -85,11 +88,7 @@ export async function GET(req: NextRequest, { params }: Props) {
           {/* Specs / Content Section */}
           <div style={{ display: 'flex', flex: 1, alignItems: 'flex-end', justifyContent: 'space-between', width: '100%' }}>
             {(() => {
-              const combinedText = `${host.info || ''}\n${host.description || ''}\n${host.free_plan || ''}`;
-              const allExtractedDomains = combinedText.split('\n')
-                .map(l => l.trim())
-              .filter(l => /^\s*[-–•*\s]*[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[\r\n]*$/.test(l))
-                .map(l => l.replace(/^[-–•*\s]+/, '').trim().split(/\s/)[0])
+              const allExtractedDomains = extractDomainNames(`${host.info || ''}\n${host.description || ''}\n${host.free_plan || ''}`);
               const extractedDomains = allExtractedDomains.slice(0, 8)
               const hasMoreDomains = allExtractedDomains.length > 8
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { ArrowUpRight, Award, Code, Crown, Globe, GraduationCap, HandHeart, HandMetal, Heart, LayoutGrid, Newspaper, Server, Shield, ShieldCheck, Terminal, Upload, UserCheck, Users, X } from "lucide-react";
 import { DiscordIcon, GithubIcon, TwitterIcon, type BrandIconComponent } from "../../components/BrandIcons";
@@ -16,58 +16,31 @@ type FilterKey =
   | "host-publisher"
   | "hosting-provider";
 
-type RoleInfo = {
+type RoleKey = Exclude<FilterKey, "all">;
+
+type RoleEntry = {
   icon: LucideIcon;
   className: string;
   priority: number;
   displayName: string;
-  filterKey: Exclude<FilterKey, "all">;
+  filterKey: RoleKey;
+  aliases: string[];
+  sectionTitle: string;
+  sectionDesc: string;
+  sectionIconClass: string;
+  sectionIcon: LucideIcon;
 };
 
-type StaffMember = {
-  username: string;
-  name: string;
-  roles: RoleInfo[];
-  primaryRole: RoleInfo;
-  about?: string;
-  links?: Record<string, string>;
+// One role config (was three parallel maps: roleConfig + sections + filters).
+const ROLES: Record<RoleKey, RoleEntry> = {
+  owner: { icon: Crown, className: "owner", priority: 1, displayName: "Owner", filterKey: "owner", aliases: ["co-owner"], sectionTitle: "Owners", sectionDesc: "Founders and leaders of FreeHosts", sectionIconClass: "leadership", sectionIcon: Crown },
+  administrator: { icon: ShieldCheck, className: "admin", priority: 2, displayName: "Administrator", filterKey: "administrator", aliases: ["admin"], sectionTitle: "Administrators", sectionDesc: "Team administrators managing operations", sectionIconClass: "leadership", sectionIcon: UserCheck },
+  developer: { icon: Terminal, className: "developer", priority: 3, displayName: "Developer", filterKey: "developer", aliases: ["dev"], sectionTitle: "Developers", sectionDesc: "Building and maintaining our platform", sectionIconClass: "development", sectionIcon: Code },
+  moderator: { icon: Shield, className: "moderator", priority: 4, displayName: "Moderator", filterKey: "moderator", aliases: [], sectionTitle: "Moderators", sectionDesc: "Community moderators keeping things safe", sectionIconClass: "community", sectionIcon: Shield },
+  helper: { icon: HandHeart, className: "helper", priority: 5, displayName: "Helper", filterKey: "helper", aliases: [], sectionTitle: "Helpers", sectionDesc: "Support team helping our community", sectionIconClass: "community", sectionIcon: HandHeart },
+  "host-publisher": { icon: Newspaper, className: "publisher", priority: 6, displayName: "Host Publisher", filterKey: "host-publisher", aliases: ["publisher"], sectionTitle: "Host Publishers", sectionDesc: "Contributors managing host listings", sectionIconClass: "hosting", sectionIcon: Upload },
+  "hosting-provider": { icon: Server, className: "hosting-provider", priority: 7, displayName: "Hosting Provider", filterKey: "hosting-provider", aliases: ["provider"], sectionTitle: "Hosting Providers", sectionDesc: "Partners providing hosting services", sectionIconClass: "hosting", sectionIcon: Server },
 };
-
-const roleConfig: Record<string, RoleInfo> = {
-  owner: { icon: Crown, className: "owner", priority: 1, displayName: "Owner", filterKey: "owner" },
-  "co-owner": { icon: Crown, className: "owner", priority: 1, displayName: "Owner", filterKey: "owner" },
-  administrator: { icon: ShieldCheck, className: "admin", priority: 2, displayName: "Administrator", filterKey: "administrator" },
-  admin: { icon: ShieldCheck, className: "admin", priority: 2, displayName: "Administrator", filterKey: "administrator" },
-  developer: { icon: Terminal, className: "developer", priority: 3, displayName: "Developer", filterKey: "developer" },
-  dev: { icon: Terminal, className: "developer", priority: 3, displayName: "Developer", filterKey: "developer" },
-  moderator: { icon: Shield, className: "moderator", priority: 4, displayName: "Moderator", filterKey: "moderator" },
-  helper: { icon: HandHeart, className: "helper", priority: 5, displayName: "Helper", filterKey: "helper" },
-  "host publisher": { icon: Newspaper, className: "publisher", priority: 6, displayName: "Host Publisher", filterKey: "host-publisher" },
-  publisher: { icon: Newspaper, className: "publisher", priority: 6, displayName: "Host Publisher", filterKey: "host-publisher" },
-  "hosting provider": { icon: Server, className: "hosting-provider", priority: 7, displayName: "Hosting Provider", filterKey: "hosting-provider" },
-  provider: { icon: Server, className: "hosting-provider", priority: 7, displayName: "Hosting Provider", filterKey: "hosting-provider" },
-};
-
-const sections: Record<Exclude<FilterKey, "all">, { title: string; desc: string; iconClass: string; icon: LucideIcon }> = {
-  owner: { title: "Owners", desc: "Founders and leaders of FreeHosts", iconClass: "leadership", icon: Crown },
-  administrator: { title: "Administrators", desc: "Team administrators managing operations", iconClass: "leadership", icon: UserCheck },
-  developer: { title: "Developers", desc: "Building and maintaining our platform", iconClass: "development", icon: Code },
-  moderator: { title: "Moderators", desc: "Community moderators keeping things safe", iconClass: "community", icon: Shield },
-  helper: { title: "Helpers", desc: "Support team helping our community", iconClass: "community", icon: HandHeart },
-  "host-publisher": { title: "Host Publishers", desc: "Contributors managing host listings", iconClass: "hosting", icon: Upload },
-  "hosting-provider": { title: "Hosting Providers", desc: "Partners providing hosting services", iconClass: "hosting", icon: Server },
-};
-
-const filters: { key: FilterKey; icon: LucideIcon; label: string }[] = [
-  { key: "all", icon: LayoutGrid, label: "All Team" },
-  { key: "owner", icon: Crown, label: "Owner" },
-  { key: "administrator", icon: UserCheck, label: "Administrator" },
-  { key: "developer", icon: Code, label: "Developer" },
-  { key: "moderator", icon: Shield, label: "Moderator" },
-  { key: "helper", icon: HandHeart, label: "Helper" },
-  { key: "host-publisher", icon: Upload, label: "Host Publisher" },
-  { key: "hosting-provider", icon: Server, label: "Hosting Provider" },
-];
 
 const linkIcons: Record<string, { icon: LucideIcon | BrandIconComponent; label: string; isBrand?: boolean }> = {
   github: { icon: GithubIcon, label: "GitHub Profile", isBrand: true },
@@ -76,20 +49,39 @@ const linkIcons: Record<string, { icon: LucideIcon | BrandIconComponent; label: 
   twitter: { icon: TwitterIcon, label: "Twitter", isBrand: true },
 };
 
-function categorizeRole(role: string) {
+const benefits: { icon: LucideIcon; title: string; text: string }[] = [
+  { icon: Heart, title: "Make an Impact", text: "Help thousands find the right hosting" },
+  { icon: Users, title: "Join Community", text: "Work with passionate volunteers" },
+  { icon: GraduationCap, title: "Learn & Grow", text: "Gain experience and skills" },
+  { icon: Award, title: "Recognition", text: "Get credited for your work" },
+];
+
+type StaffMember = {
+  username: string;
+  name: string;
+  roles: RoleEntry[];
+  primaryRole: RoleEntry;
+  about?: string;
+  links?: Record<string, string>;
+};
+
+function categorizeRole(role: string): RoleEntry | null {
   const lower = role.trim().toLowerCase();
-  const hit = Object.entries(roleConfig).find(([key]) => lower.includes(key));
-  return hit?.[1] ?? null;
+  for (const entry of Object.values(ROLES)) {
+    if (lower.includes(entry.filterKey) || entry.aliases.some((a) => lower.includes(a))) {
+      return entry;
+    }
+  }
+  return null;
 }
 
 function processStaff(data: Record<string, StaffJsonMember>) {
   return Object.entries(data)
     .map<StaffMember | null>(([username, member]) => {
-      const rawRoles = Array.isArray(member.roles) ? member.roles : [member.roles];
-      const roles = rawRoles
-        .map((role: string) => categorizeRole(String(role)))
-        .filter((role): role is RoleInfo => Boolean(role))
-        .sort((a: RoleInfo, b: RoleInfo) => a.priority - b.priority);
+      const roles = member.roles
+        .map((role) => categorizeRole(role))
+        .filter((role): role is RoleEntry => Boolean(role))
+        .sort((a, b) => a.priority - b.priority);
 
       if (roles.length === 0) return null;
 
@@ -128,9 +120,9 @@ export default function StaffClient() {
   }, [selectedMember]);
 
   const grouped = useMemo(() => {
-    const result = Object.keys(sections).reduce(
+    const result = (Object.keys(ROLES) as RoleKey[]).reduce(
       (acc, key) => ({ ...acc, [key]: [] }),
-      {} as Record<Exclude<FilterKey, "all">, StaffMember[]>,
+      {} as Record<RoleKey, StaffMember[]>,
     );
 
     members.forEach((member) => {
@@ -155,17 +147,28 @@ export default function StaffClient() {
       </section>
 
       <div className="staff-filters">
-        {filters.map((filter) => (
-          <button
-            className={`filter-btn ${activeFilter === filter.key ? "active" : ""}`}
-            type="button"
-            onClick={() => setActiveFilter(filter.key)}
-            key={filter.key}
-          >
-            {React.createElement(filter.icon, { size: 14, "aria-hidden": "true" })}
-            {filter.label}
-          </button>
-        ))}
+        <button
+          className={`filter-btn ${activeFilter === "all" ? "active" : ""}`}
+          type="button"
+          onClick={() => setActiveFilter("all")}
+        >
+          <LayoutGrid size={14} aria-hidden="true" />
+          All Team
+        </button>
+        {(Object.keys(ROLES) as RoleKey[]).map((key) => {
+          const Icon = ROLES[key].icon;
+          return (
+            <button
+              className={`filter-btn ${activeFilter === key ? "active" : ""}`}
+              type="button"
+              onClick={() => setActiveFilter(key)}
+              key={key}
+            >
+              <Icon size={14} aria-hidden="true" />
+              {ROLES[key].displayName}
+            </button>
+          );
+        })}
       </div>
 
       <StaffSections grouped={grouped} onSelect={setSelectedMember} />
@@ -182,10 +185,17 @@ export default function StaffClient() {
         </p>
 
         <div className="join-benefits">
-          <Benefit icon={Heart} title="Make an Impact" text="Help thousands find the right hosting" />
-          <Benefit icon={Users} title="Join Community" text="Work with passionate volunteers" />
-          <Benefit icon={GraduationCap} title="Learn & Grow" text="Gain experience and skills" />
-          <Benefit icon={Award} title="Recognition" text="Get credited for your work" />
+          {benefits.map(({ icon: Icon, title, text }) => (
+            <div className="benefit-item" key={title}>
+              <div className="benefit-icon">
+                <Icon size={20} aria-hidden="true" />
+              </div>
+              <div className="benefit-text">
+                <strong>{title}</strong>
+                <span>{text}</span>
+              </div>
+            </div>
+          ))}
         </div>
 
         <a href="https://discord.gg/QbeZ3b5CQd" className="join-cta" target="_blank" rel="noopener noreferrer">
@@ -205,10 +215,10 @@ function StaffSections({
   grouped,
   onSelect,
 }: {
-  grouped: Record<Exclude<FilterKey, "all">, StaffMember[]>;
+  grouped: Record<RoleKey, StaffMember[]>;
   onSelect: (member: StaffMember) => void;
 }) {
-  const visible = Object.entries(sections).filter(([key]) => grouped[key as Exclude<FilterKey, "all">].length > 0);
+  const visible = (Object.keys(ROLES) as RoleKey[]).filter((key) => grouped[key].length > 0);
 
   if (visible.length === 0) {
     return <div className="error-state"><p className="muted">No staff members found in this category.</p></div>;
@@ -216,54 +226,61 @@ function StaffSections({
 
   return (
     <>
-      {visible.map(([key, section]) => {
-        const members = grouped[key as Exclude<FilterKey, "all">];
+      {visible.map((key) => {
+        const Icon = ROLES[key].sectionIcon;
         return (
-          <section className="staff-section" key={key}>
-            <div className="staff-section-header">
-              <div className={`staff-section-icon ${section.iconClass}`}>
-                {React.createElement(section.icon, { size: 20, "aria-hidden": "true" })}
-              </div>
-              <div className="staff-section-title">
-                <h2>{section.title}</h2>
-                <p>{section.desc}</p>
-              </div>
+        <section className="staff-section" key={key}>
+          <div className="staff-section-header">
+            <div className={`staff-section-icon ${ROLES[key].sectionIconClass}`}>
+              <Icon size={20} aria-hidden="true" />
             </div>
-            <div className="staff-grid">
-              {members.map((member) => (
+            <div className="staff-section-title">
+              <h2>{ROLES[key].sectionTitle}</h2>
+              <p>{ROLES[key].sectionDesc}</p>
+            </div>
+          </div>
+          <div className="staff-grid">
+            {grouped[key].map((member) => {
+              const AvatarIcon = member.primaryRole.icon;
+              return (
                 <button className="staff-card" type="button" onClick={() => onSelect(member)} key={member.username}>
                   <div className={`staff-avatar ${member.primaryRole.className}`}>
-                    {React.createElement(member.primaryRole.icon, { size: 20, "aria-hidden": "true" })}
+                    <AvatarIcon size={20} aria-hidden="true" />
                   </div>
                   <div className="staff-info">
                     <h3>{member.name}</h3>
                     <RoleBadges roles={member.roles} />
                   </div>
                 </button>
-              ))}
-            </div>
-          </section>
+              );
+            })}
+          </div>
+        </section>
         );
       })}
     </>
   );
 }
 
-function RoleBadges({ roles }: { roles: RoleInfo[] }) {
+function RoleBadges({ roles }: { roles: RoleEntry[] }) {
   return (
     <div className="staff-roles">
-      {roles.map((role) => (
-        <span className={`staff-role role-${role.className}`} key={`${role.filterKey}-${role.displayName}`}>
-          {React.createElement(role.icon, { size: 14, "aria-hidden": "true" })}
-          {role.displayName}
-        </span>
-      ))}
+      {roles.map((role) => {
+        const Icon = role.icon;
+        return (
+          <span className={`staff-role role-${role.className}`} key={`${role.filterKey}-${role.displayName}`}>
+            <Icon size={14} aria-hidden="true" />
+            {role.displayName}
+          </span>
+        );
+      })}
     </div>
   );
 }
 
 function StaffModal({ member, onClose }: { member: StaffMember; onClose: () => void }) {
   const links = Object.entries(member.links || {}).filter(([, value]) => Boolean(value));
+  const AvatarIcon = member.primaryRole.icon;
 
   return (
     <div className="staff-modal" onClick={onClose}>
@@ -273,7 +290,7 @@ function StaffModal({ member, onClose }: { member: StaffMember; onClose: () => v
             <X size={20} aria-hidden="true" />
           </button>
           <div className="staff-modal-avatar">
-            {React.createElement(member.primaryRole.icon, { size: 20, "aria-hidden": "true" })}
+            <AvatarIcon size={20} aria-hidden="true" />
           </div>
           <div className="staff-modal-info">
             <h2>{member.name}</h2>
@@ -294,11 +311,11 @@ function StaffModal({ member, onClose }: { member: StaffMember; onClose: () => v
               <div className="staff-modal-links">
                 {links.map(([key, value]) => {
                   const info = linkIcons[key] || { icon: Globe, label: key };
+                  const LinkIcon = info.icon as LucideIcon;
                   return (
                     <a className="staff-modal-link" href={value} target="_blank" rel="noopener noreferrer" key={key}>
                       <div className="staff-modal-link-icon">
-                          {React.createElement(info.icon as React.ComponentType<{size?: number | string}>, { size: 20 })
-                        }
+                        <LinkIcon size={20} />
                       </div>
                       <div className="staff-modal-link-text">
                         <strong>{info.label}</strong>
@@ -312,20 +329,6 @@ function StaffModal({ member, onClose }: { member: StaffMember; onClose: () => v
             </div>
           ) : null}
         </div>
-      </div>
-    </div>
-  );
-}
-
-function Benefit({ icon, title, text }: { icon: LucideIcon; title: string; text: string }) {
-  return (
-    <div className="benefit-item">
-      <div className="benefit-icon">
-        {React.createElement(icon, { size: 20, "aria-hidden": "true" })}
-      </div>
-      <div className="benefit-text">
-        <strong>{title}</strong>
-        <span>{text}</span>
       </div>
     </div>
   );

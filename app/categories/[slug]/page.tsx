@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import type { Metadata } from "next";
-import Link from "@/components/NoPrefetchLink";
 import { categories, getCategory } from "@/lib/categories";
+import { pageMeta } from "@/lib/pageMeta";
 import { safeJsonLd } from "@/lib/safeJsonLd";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import FaqCta from "@/components/FaqCta";
 import {
   AlertTriangle,
   Bot,
@@ -44,21 +44,18 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const category = getCategory(slug);
   if (!category) return {};
-  const url = `${process.env.APP_URL}/categories/${category.slug}`;
-  const image = process.env.APP_URL + "/Src/Images/banner.png";
-  return {
+  return pageMeta({
+    path: `/categories/${category.slug}`,
     title: category.title,
     description: category.description,
     keywords: [`free ${category.slug.replaceAll("-", " ")}`, "free hosting", "freehosts"],
-    robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
-    alternates: { canonical: url },
-    openGraph: { locale: "en_US", siteName: "FreeHosts", type: "website", url, title: category.title, description: category.description, images: [{ url: image, width: 1280, height: 720, alt: category.h1 }] },
-    twitter: { card: "summary_large_image", title: category.title, description: category.description, images: [{ url: image, alt: category.h1 }], site: "@freehosts_", creator: "@freehosts_" },
-  };
+    imageAlt: category.h1,
+    twitterImageAlt: category.h1,
+  });
 }
 
 export default async function CategoryPage({ params }: Props) {
@@ -91,6 +88,55 @@ export default async function CategoryPage({ params }: Props) {
     })),
   };
 
+  const sections: { icon: LucideIcon; title: string; body: React.ReactNode }[] = [
+    {
+      icon: Wrench,
+      title: `How ${topic} actually works`,
+      body: category.howItWorks.map((paragraph) => <p key={paragraph}>{paragraph}</p>),
+    },
+    {
+      icon: Scale,
+      title: "Free vs paid: where the line really is",
+      body: category.freeVsPaid.map((paragraph) => <p key={paragraph}>{paragraph}</p>),
+    },
+    {
+      icon: AlertTriangle,
+      title: "Common mistakes and how to avoid them",
+      body: (
+        <ul className="host-check-list">
+          {category.commonMistakes.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      ),
+    },
+    {
+      icon: Rocket,
+      title: "Getting started in five steps",
+      body: (
+        <ol className="host-check-list steps">
+          {category.gettingStarted.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ol>
+      ),
+    },
+    {
+      icon: CircleHelp,
+      title: "Frequently asked questions",
+      body: (
+        <div className="category-faq">
+          {category.faq.map((item) => (
+            <div className="category-faq-item" key={item.q}>
+              <h3>{item.q}</h3>
+              <p>{item.a}</p>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ];
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(webPageSchema) }} />
@@ -113,73 +159,22 @@ export default async function CategoryPage({ params }: Props) {
         </section>
 
         <div className="about-content">
-          <section className="content-section">
-            <div className="section-icon">
-              <Wrench size={24} aria-hidden="true" />
-            </div>
-            <h2>How {topic} actually works</h2>
-            {category.howItWorks.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </section>
-
-          <section className="content-section">
-            <div className="section-icon">
-              <Scale size={24} aria-hidden="true" />
-            </div>
-            <h2>Free vs paid: where the line really is</h2>
-            {category.freeVsPaid.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </section>
-
-          <section className="content-section">
-            <div className="section-icon">
-              <AlertTriangle size={24} aria-hidden="true" />
-            </div>
-            <h2>Common mistakes and how to avoid them</h2>
-            <ul className="host-check-list">
-              {category.commonMistakes.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </section>
-
-          <section className="content-section">
-            <div className="section-icon">
-              <Rocket size={24} aria-hidden="true" />
-            </div>
-            <h2>Getting started in five steps</h2>
-            <ol className="host-check-list steps">
-              {category.gettingStarted.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ol>
-          </section>
-
-          <section className="content-section">
-            <div className="section-icon">
-              <CircleHelp size={24} aria-hidden="true" />
-            </div>
-            <h2>Frequently asked questions</h2>
-            <div className="category-faq">
-              {category.faq.map((item) => (
-                <div className="category-faq-item" key={item.q}>
-                  <h3>{item.q}</h3>
-                  <p>{item.a}</p>
-                </div>
-              ))}
-            </div>
-          </section>
+          {sections.map((section) => (
+            <section key={section.title} className="content-section">
+              <div className="section-icon">
+                <section.icon size={24} aria-hidden="true" />
+              </div>
+              <h2>{section.title}</h2>
+              {section.body}
+            </section>
+          ))}
         </div>
 
-        <div className="faq-cta">
-          <h2>Ready to get started?</h2>
-          <p>Browse verified providers in the FreeHosts directory and find the right free host for your project.</p>
-          <div className="faq-cta-buttons">
-            <Link className="faq-cta-btn primary" href="/hosts">Browse the free host directory</Link>
-          </div>
-        </div>
+        <FaqCta
+          title="Ready to get started?"
+          text="Browse verified providers in the FreeHosts directory and find the right free host for your project."
+          buttons={[{ href: "/hosts", label: "Browse the free host directory", primary: true }]}
+        />
       </main>
     </>
   );

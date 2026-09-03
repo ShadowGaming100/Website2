@@ -1,5 +1,6 @@
 import { slugify } from './slugify'
 import { ramDisplay, diskDisplay } from './specs'
+import { computeRating } from './comparisonRows'
 import type { Host } from './cache'
 
 // A host's `targets` field is a comma-separated list inside each array entry
@@ -58,7 +59,8 @@ export function primaryBucket(host: Host): string {
 
 /** The most relevant bucket two hosts SHARE, for versus-page advice. */
 export function sharedBucket(a: Host, b: Host): string {
-  const shared = [...targetBuckets(a)].filter(x => targetBuckets(b).has(x))
+  const bBuckets = targetBuckets(b)
+  const shared = [...targetBuckets(a)].filter(x => bBuckets.has(x))
   return shared.length > 0 ? firstBucket(new Set(shared)) : 'other'
 }
 
@@ -67,6 +69,7 @@ export function hostRow(host: Host): {
   cpu: string; ram: string; disk: string; votes: number; ratingPct: number | null
 } {
   const totalVotes = (host.approvals || 0) + (host.disapprovals || 0)
+  const rating = computeRating(host)
   return {
     slug: slugify(host.name),
     name: host.name,
@@ -75,7 +78,7 @@ export function hostRow(host: Host): {
     ram: ramDisplay(host),
     disk: diskDisplay(host),
     votes: totalVotes,
-    ratingPct: totalVotes > 0 ? Math.round(((host.approvals || 0) / totalVotes) * 100) : null,
+    ratingPct: rating < 0 ? null : Math.round(rating),
   }
 }
 

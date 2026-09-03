@@ -1,5 +1,6 @@
 import { type Host } from './cache';
-import { parseCPUValue, parseMemoryToMB, formatSize } from './parseSpecs';
+import { parseCPUValue, parseMemoryToMB } from './parseSpecs';
+import { ramDisplay, diskDisplay } from './specs';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -10,9 +11,8 @@ export function computeRating(host: Host): number {
 }
 
 export function formatRating(host: Host): string {
-  const total = (host.approvals || 0) + (host.disapprovals || 0);
-  if (total === 0) return 'N/A';
-  return `${Math.round(((host.approvals || 0) / total) * 100)}%`;
+  const rating = computeRating(host);
+  return rating < 0 ? 'N/A' : `${Math.round(rating)}%`;
 }
 
 export function findBestIndex(values: number[]): number {
@@ -46,12 +46,12 @@ export const ROWS: Row[] = [
   },
   {
     label: 'RAM',
-    getValue: (h) => (h.ramMB && h.ramMB > 0 ? formatSize(h.ramMB) : h.ram || 'Unknown'),
+    getValue: (h) => ramDisplay(h),
     getNumeric: (h) => parseMemoryToMB(h.ram, h.ramMB),
   },
   {
     label: 'Storage',
-    getValue: (h) => (h.diskMB && h.diskMB > 0 ? formatSize(h.diskMB) : h.disk || 'Unknown'),
+    getValue: (h) => diskDisplay(h),
     getNumeric: (h) => parseMemoryToMB(h.disk, h.diskMB),
   },
   {

@@ -21,72 +21,32 @@ const SECURITY_HEADERS: Record<string, string> = {
   ].join("; "),
 };
 
-const CACHE_DEFAULT =
-  "public, max-age=86400, s-maxage=2592000, stale-while-revalidate=2592000";
-
-const CACHE_HOSTS =
-  "public, max-age=1800, s-maxage=43200, stale-while-revalidate=604800";
-
-const CACHE_SITEMAP =
-  "public, max-age=0, s-maxage=3600, stale-while-revalidate=43200, no-transform";
-
-const CACHE_NO_STORE = "private, no-store";
-
-function isHostsListingOrDetail(pathname: string): boolean {
-  // Matches /hosts and /hosts/<slug> but NOT /hosts/og/* or
-  // /hosts/<slug>/redirect/* (those are handled by their own routes below).
-  if (pathname === "/hosts") return true;
-  const parts = pathname.split("/").filter(Boolean); // e.g. ["hosts", "some-slug"]
-  return (
-    parts.length === 2 &&
-    parts[0] === "hosts" &&
-    parts[1] !== "og"
-  );
-}
-
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const response = NextResponse.next();
 
-  // Apply security headers to everything this middleware matches
-  // (the matcher below already excludes _next/static, _next/image,
-  // favicon.ico, and /api/* — mirroring next.config.ts's own exclusions).
   for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
     response.headers.set(key, value);
   }
 
-  // Cache-Control, tiered by route
-  if (pathname === "/saved") {
-    response.headers.set("Cache-Control", CACHE_NO_STORE);
-  } else if (
-    pathname.startsWith("/hosts/") &&
-    pathname.includes("/redirect/")
-  ) {
-    response.headers.set("Cache-Control", CACHE_NO_STORE);
-  } else if (pathname.startsWith("/hosts/og/")) {
-    // The OG image route sets its own Cache-Control directly on the
-    // ImageResponse (see app/hosts/og/[slug]/route.tsx) since it's the
-    // most edge-runtime-sensitive route in the app. Don't override it
-    // here — just leave security headers applied above.
-  } else if (isHostsListingOrDetail(pathname)) {
-    response.headers.set("Cache-Control", CACHE_HOSTS);
-  } else if (pathname === "/sitemap.xml") {
-    response.headers.set("Cache-Control", CACHE_SITEMAP);
-  } else {
-    response.headers.set("Cache-Control", CACHE_DEFAULT);
+  // Tiered Cache-Control. The OG image route sets its own directly on the
+  // ImageResponse (most edge-sensitive route) — don't override it here.
+  if (pathname === "/saved" || pathname.includes("/redirect/")) {
+    response.headers.set("Cache-Control", "private, no-store");
+  } else if (!pathname.startsWith("/hosts/og/")) {
+    response.headers.set(
+      "Cache-Control",
+      pathname === "/hosts" || /^\/hosts\/[^/]+$/.test(pathname)
+        ? "public, max-age=1800, s-maxage=43200, stale-while-revalidate=604800"
+        : pathname === "/sitemap.xml"
+          ? "public, max-age=0, s-maxage=3600, stale-while-revalidate=43200, no-transform"
+          : "public, max-age=86400, s-maxage=2592000, stale-while-revalidate=2592000",
+    );
   }
 
   return response;
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all paths except:
-     * - api routes (own caching/headers concerns)
-     * - _next/static, _next/image (Next-managed, already correctly cached)
-     * - favicon.ico
-     */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

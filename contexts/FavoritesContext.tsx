@@ -1,6 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext } from 'react';
+import { readCookie, writeCookie } from '../lib/cookies';
+import { usePersistentState } from '../hooks/usePersistentState';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -12,14 +14,13 @@ interface FavoritesContextValue {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function readFavoritesCookie(): number[] {
-  if (typeof document === 'undefined') return [];
+const COOKIE = 'fh_favorites';
+const MAX_AGE = 90 * 24 * 60 * 60; // 90 days in seconds
+
+function load(): number[] {
   try {
-    const match = document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('fh_favorites='));
-    if (!match) return [];
-    const raw = decodeURIComponent(match.split('=').slice(1).join('='));
+    const raw = readCookie(COOKIE);
+    if (!raw) return [];
     const parsed: unknown = JSON.parse(raw);
     if (
       Array.isArray(parsed) &&
@@ -30,17 +31,6 @@ function readFavoritesCookie(): number[] {
     return [];
   } catch {
     return [];
-  }
-}
-
-function writeFavoritesCookie(ids: number[]): void {
-  try {
-    const maxAge = 90 * 24 * 60 * 60; // 90 days in seconds
-    const value = encodeURIComponent(JSON.stringify(ids));
-    const secure = location.protocol === 'https:' ? '; Secure' : '';
-    document.cookie = `fh_favorites=${value}; Max-Age=${maxAge}; Path=/; SameSite=Lax${secure}`;
-  } catch {
-    // Cookie write failed (e.g., cookies disabled); state still works in-memory.
   }
 }
 
@@ -55,22 +45,16 @@ const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
-  const [favorites, setFavorites] = useState<number[]>([]);
-
-  // Initialize favorites from cookie on mount (client-side only).
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setFavorites(readFavoritesCookie());
-  }, []);
+  const [favorites, setFavorites] = usePersistentState<number[]>(
+    [],
+    load,
+    (ids) => writeCookie(COOKIE, JSON.stringify(ids), MAX_AGE),
+  );
 
   const isFavorite = (id: number): boolean => favorites.includes(id);
 
   const toggleFavorite = (id: number): void => {
-    setFavorites((prev) => {
-      const next = applyToggle(prev, id);
-      writeFavoritesCookie(next);
-      return next;
-    });
+    setFavorites((prev) => applyToggle(prev, id));
   };
 
   return (

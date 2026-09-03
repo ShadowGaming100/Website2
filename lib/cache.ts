@@ -53,6 +53,11 @@ interface RawHost {
 // fetch-level cache (`next: { revalidate }` below) already provides
 // request memoization + time-based revalidation and is safe across
 // runtimes, so we rely on that exclusively.
+//
+// TTL note: this 5-minute revalidation is the DATA freshness knob.
+// middleware.ts's Cache-Control tiers are the CDN/browser knob for rendered
+// pages — longer is fine there because a revalidated re-render refreshes
+// them. If listings feel stale, change REVALIDATE_SECONDS, not middleware.
 
 const REVALIDATE_SECONDS = 300 // 5 minutes
 

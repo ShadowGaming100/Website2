@@ -238,7 +238,7 @@ export default function ServerRulesContent() {
               <article className="rule-item-card" key={index}>
                 <div className="rule-card-header">
                   <div className="rule-icon-box">
-                    {React.createElement(rule.icon, { size: 20, "aria-hidden": "true" })}
+                    <rule.icon size={20} aria-hidden="true" />
                   </div>
                   <span
                     className="rule-severity-badge"

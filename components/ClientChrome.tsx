@@ -32,12 +32,32 @@ function toggleSidebar(open: boolean) {
   }
 }
 
-export default function SidebarController() {
+// Was SidebarController + RouteInitializer: two null-render usePathname()
+// effects in two files. One subscription covers both: close sidebar on
+// navigation + scroll-reveal for feature/staff cards.
+export default function ClientChrome() {
   const pathname = usePathname();
 
-  // Close sidebar on navigation
   useEffect(() => {
     toggleSidebar(false);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("reveal");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    document
+      .querySelectorAll<Element>(".feature-card, .staff-card")
+      .forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
   }, [pathname]);
 
   useEffect(() => {

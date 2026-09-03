@@ -37,4 +37,3 @@ export function TwitterIcon({ size = '1em', ...props }: BrandIconProps) {
 
 
 export type BrandIconComponent = React.ComponentType<BrandIconProps>
-export const brandIcons = { DiscordIcon, GithubIcon, InstagramIcon, TwitterIcon } as const

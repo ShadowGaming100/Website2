@@ -10,11 +10,9 @@ export const runtime = 'edge';
 
 type Props = { params: Promise<{ slug: string }> }
 
-export async function generateMetadata({ params }: Props) {
-  const { slug } = await params
-  if (/^\d+$/.test(slug)) return { title: 'Host Not Found', description: 'The host you are looking for does not exist or has been removed.', robots: { index: false, follow: false } }
-  const host = await fetchHostBySlug(slug)
-  if (!host) return { title: 'Host Not Found', description: 'The host you are looking for does not exist or has been removed.', robots: { index: false, follow: false } }
+// Shared by generateMetadata + the page body (was copy-pasted ~25 lines:
+// summary/kind/targetLabel/specsText/description/site/hostUrl/title).
+function getHostSeo(host: Host) {
   const summary = specSummary(host)
   const kind = providerKind(host)
   const targetLabel = primaryTargetLabel(host)
@@ -34,11 +32,21 @@ export async function generateMetadata({ params }: Props) {
   const site = process.env.APP_URL
   const hostUrl = `${site}/hosts/${slugify(host.name)}`
 
-  // Construct dynamic OG image URL
-  const ogImageUrl = `${site}/hosts/og/${slug}`
-
   // Target-aware title: "RRHosting — Free Web Hosting & Coding Host" instead of generic
   const title = `${host.name} — Free ${targetLabel.charAt(0).toUpperCase() + targetLabel.slice(1)}`
+
+  return { kind, targetLabel, description, site, hostUrl, title }
+}
+
+export async function generateMetadata({ params }: Props) {
+  const { slug } = await params
+  if (/^\d+$/.test(slug)) return { title: 'Host Not Found', description: 'The host you are looking for does not exist or has been removed.', robots: { index: false, follow: false } }
+  const host = await fetchHostBySlug(slug)
+  if (!host) return { title: 'Host Not Found', description: 'The host you are looking for does not exist or has been removed.', robots: { index: false, follow: false } }
+  const { targetLabel, description, site, hostUrl, title } = getHostSeo(host)
+
+  // Construct dynamic OG image URL
+  const ogImageUrl = `${site}/hosts/og/${slug}`
 
   // Rich keywords: host name + target-specific terms derived from actual targets
   const targetKeywords = (host.targets ?? []).flatMap(t =>
@@ -88,28 +96,13 @@ export default async function HostDetailPage({ params }: Props) {
   }
   const host: Host | null = await fetchHostBySlug(slug)
   if (!host) notFound()
-  const summary = specSummary(host)
-  const kind = providerKind(host)
-  const targetLabel = primaryTargetLabel(host)
-  const specsText = summary
-    ? `Specs: ${summary}.`
-    : kind === 'hosting'
-      ? 'Plan limits are not published publicly.'
-      : `Provides free ${kind}.`
-  const isTrusted = host.type && host.type.toLowerCase().includes('trusted')
-  let description = isTrusted
-    ? `${host.name} is a trusted & free ${targetLabel} provider. ${specsText} Read community reviews and compare on FreeHosts.`
-    : `${host.name} is a free ${targetLabel} provider. ${specsText} Read community reviews and compare on FreeHosts.`
-  if (description.length > 160) description = description.substring(0, 157) + '...'
-  const site = process.env.APP_URL
-  const hostUrl = `${site}/hosts/${slugify(host.name)}`
+  const { targetLabel, description, site, hostUrl, title } = getHostSeo(host)
   const totalReviews = host.approvals + host.disapprovals
   const ratingValue = totalReviews > 0 ? ((host.approvals / totalReviews) * 5).toFixed(1) : null
   // Owner decision: show the community score as soon as ANY vote exists (>=1).
   // Votes are Discord thumbs, not written reviews — if Google ever flags this,
   // re-add a review-body requirement here before touching the schema.
   const showRating = ratingValue !== null && totalReviews >= 1
-  const title = `${host.name} — Free ${targetLabel.charAt(0).toUpperCase() + targetLabel.slice(1)}`
   const jsonLd = { "@context": "https://schema.org", "@type": "WebPage", "@id": `${hostUrl}#webpage`, "url": hostUrl, "name": title, "isPartOf": { "@id": `${site}/#website` }, "inLanguage": "en", "description": description, ...(host.created_at ? { "dateModified": new Date(host.created_at).toISOString().split('T')[0] } : {}) }
   const serviceLd = {
     "@context": "https://schema.org", "@type": "Service", "name": host.name, "description": description, "url": hostUrl,
