@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext } from 'react';
-import { type Host } from '../lib/cache';
+import { type Host } from '../lib/hosts';
 import { showToast } from '../lib/toast';
 import { usePersistentState } from '../hooks/usePersistentState';
 

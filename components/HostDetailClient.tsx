@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from 'react'
 import Link from '@/components/NoPrefetchLink'
-import { type Host } from '../lib/cache'
+import { type Host } from '../lib/hosts'
 import { slugify } from '../lib/slugify'
 import { getLanguageName } from '../lib/getLanguageName'
 import { ArrowLeft, Check, Copy, Cpu, GitCompare, Crosshair, ExternalLink, Gift, HardDrive, Info, Languages, Link as LinkIcon, MemoryStick, Settings, Star, ThumbsDown, ThumbsUp } from 'lucide-react'

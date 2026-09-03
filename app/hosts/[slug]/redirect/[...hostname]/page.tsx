@@ -1,7 +1,8 @@
 export const runtime = 'edge';
 
 import { notFound } from 'next/navigation';
-import { fetchHostBySlug } from '../../../../../lib/cache';
+import { fetchHosts } from '../../../../../lib/hosts';
+import { slugify } from '../../../../../lib/slugify';
 import RedirectClient from './RedirectClient';
 
 function extractDomain(urlOrPath: string): string {
@@ -82,7 +83,7 @@ export default async function Page({ params }: Props) {
   }
   
   // Fetch the host to validate the redirect
-  const host = await fetchHostBySlug(slug);
+  const host = (await fetchHosts()).find(h => slugify(h.name) === slug) ?? null;
   
   if (!host) {
     notFound();

@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from '@/components/NoPrefetchLink'
 import { safeJsonLd } from '../../../lib/safeJsonLd'
-import { fetchHostBySlug, fetchHosts } from '../../../lib/cache'
+import { fetchHosts } from '../../../lib/hosts'
 import { slugify } from '../../../lib/slugify'
 import { splitTargets, findAlternatives, primaryBucket, hostRow, sharedTargets, providerKind, hasPublishedSpecs, primaryTargetLabel } from '../../../lib/taxonomy'
 import CompareShell from '@/components/CompareShell'
@@ -65,9 +65,9 @@ const BUCKET_ADVICE: Record<string, string[]> = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const host = await fetchHostBySlug(slug)
-  if (!host) return { title: 'Not Found', robots: { index: false, follow: false } }
   const all = await fetchHosts()
+  const host = all.find(h => slugify(h.name) === slug) ?? null
+  if (!host) return { title: 'Not Found', robots: { index: false, follow: false } }
   const alts = findAlternatives(host, all)
   const targetLabel = primaryTargetLabel(host)
   // Keep the full rendered title (base + " | FreeHosts") within ~60 chars.
@@ -92,10 +92,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function AlternativesPage({ params }: Props) {
   const { slug } = await params
-  const host = await fetchHostBySlug(slug)
-  if (!host) notFound()
-
   const all = await fetchHosts()
+  const host = all.find(h => slugify(h.name) === slug) ?? null
+  if (!host) notFound()
   const alts = findAlternatives(host, all)
   const rows = alts.map(h => ({
     ...hostRow(h),

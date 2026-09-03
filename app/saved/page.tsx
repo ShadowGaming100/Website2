@@ -1,4 +1,4 @@
-import { fetchHosts } from '../../lib/cache'
+import { fetchHosts } from '../../lib/hosts'
 import SavedClient from './SavedClient'
 import Breadcrumbs from '@/components/Breadcrumbs'
 

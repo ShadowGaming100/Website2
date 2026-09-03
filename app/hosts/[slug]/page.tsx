@@ -1,5 +1,5 @@
 import { redirect, notFound } from 'next/navigation'
-import { fetchHostById, fetchHostBySlug, fetchHosts, type Host } from '../../../lib/cache'
+import { fetchHosts, type Host } from '../../../lib/hosts'
 import { slugify } from '../../../lib/slugify'
 import { specSummary } from '../../../lib/specs'
 import { findAlternatives, providerKind, primaryTargetLabel } from '../../../lib/taxonomy'
@@ -41,7 +41,7 @@ function getHostSeo(host: Host) {
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   if (/^\d+$/.test(slug)) return { title: 'Host Not Found', description: 'The host you are looking for does not exist or has been removed.', robots: { index: false, follow: false } }
-  const host = await fetchHostBySlug(slug)
+  const host = (await fetchHosts()).find(h => slugify(h.name) === slug) ?? null
   if (!host) return { title: 'Host Not Found', description: 'The host you are looking for does not exist or has been removed.', robots: { index: false, follow: false } }
   const { targetLabel, description, site, hostUrl, title } = getHostSeo(host)
 
@@ -89,12 +89,15 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function HostDetailPage({ params }: Props) {
   const { slug } = await params
+  // One full-list fetch per render (wrappers removed — on Cloudflare each
+  // call is a real upstream request, so derive everything from one list).
+  const allHosts = await fetchHosts()
   if (/^\d+$/.test(slug)) {
-    const host: Host | null = await fetchHostById(Number(slug))
+    const host: Host | null = allHosts.find(h => h.id === Number(slug)) ?? null
     if (!host) notFound()
     redirect(`/hosts/${slugify(host.name)}`)
   }
-  const host: Host | null = await fetchHostBySlug(slug)
+  const host: Host | null = allHosts.find(h => slugify(h.name) === slug) ?? null
   if (!host) notFound()
   const { targetLabel, description, site, hostUrl, title } = getHostSeo(host)
   const totalReviews = host.approvals + host.disapprovals
@@ -113,7 +116,6 @@ export default async function HostDetailPage({ params }: Props) {
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": host.status?.toLowerCase() === "online" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock", "url": hostUrl, "description": `Free ${targetLabel}${specSummary(host) ? ` — ${specSummary(host)}` : ''}` },
     ...(showRating ? { "aggregateRating": { "@type": "AggregateRating", "ratingValue": ratingValue, "bestRating": "5", "worstRating": "1", "ratingCount": totalReviews, "reviewCount": totalReviews } } : {}),
   }
-  const allHosts = await fetchHosts()
   const related = allHosts
     .filter(h => h.id !== host.id && h.targets?.some(t => host.targets?.includes(t)))
     // Use a seed-based sort for stable variety between different hosts

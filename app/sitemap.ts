@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { fetchHosts } from '../lib/cache'
+import { fetchHosts } from '../lib/hosts'
 import { slugify } from '../lib/slugify'
 import { categories } from '../lib/categories'
 import { findAlternatives, compatibleVsPairs } from '../lib/taxonomy'

@@ -1,7 +1,7 @@
 import { slugify } from './slugify'
 import { ramDisplay, diskDisplay } from './specs'
 import { computeRating } from './comparisonRows'
-import type { Host } from './cache'
+import type { Host } from './hosts'
 
 // A host's `targets` field is a comma-separated list inside each array entry
 // (e.g. ["Website, Static"]). Split it into clean individual tags.

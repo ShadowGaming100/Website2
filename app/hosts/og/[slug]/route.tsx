@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
-import { fetchHostBySlug, fetchHostById } from '../../../../lib/cache';
+import { fetchHosts } from '../../../../lib/hosts';
+import { slugify } from '../../../../lib/slugify';
 import { ramDisplay, diskDisplay } from '../../../../lib/specs';
 import { computeRating } from '../../../../lib/comparisonRows';
 import { extractDomainNames } from '../../../../lib/domains';
@@ -14,13 +15,10 @@ type Props = {
 export async function GET(req: NextRequest, { params }: Props) {
   try {
     const { slug } = await params;
-    let host;
-
-    if (/^\d+$/.test(slug)) {
-      host = await fetchHostById(slug);
-    } else {
-      host = await fetchHostBySlug(slug);
-    }
+    const all = await fetchHosts();
+    const host = /^\d+$/.test(slug)
+      ? all.find(h => h.id === Number(slug))
+      : all.find(h => slugify(h.name) === slug);
 
     if (!host) {
       return new Response('Host not found', { status: 404 });

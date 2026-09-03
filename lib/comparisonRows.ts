@@ -1,4 +1,4 @@
-import { type Host } from './cache';
+import { type Host } from './hosts';
 import { parseCPUValue, parseMemoryToMB } from './parseSpecs';
 import { ramDisplay, diskDisplay } from './specs';
 

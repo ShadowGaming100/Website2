@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense, useRef, useMemo, useDeferredValue } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { type Host } from '../../lib/cache';
+import { type Host } from '../../lib/hosts';
 import { getLanguageName } from '../../lib/getLanguageName';
 import { parseCPUValue, parseMemoryToMB } from '../../lib/parseSpecs';
 import { computeRating } from '../../lib/comparisonRows';

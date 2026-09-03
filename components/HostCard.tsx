@@ -1,7 +1,7 @@
 'use client';
 
 import Link from '@/components/NoPrefetchLink';
-import { type Host } from '../lib/cache';
+import { type Host } from '../lib/hosts';
 import { slugify } from '../lib/slugify';
 import { getLanguageName } from '../lib/getLanguageName';
 import { ramDisplay, diskDisplay } from '../lib/specs';

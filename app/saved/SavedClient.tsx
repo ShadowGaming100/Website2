@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { type Host } from '../../lib/cache';
+import { type Host } from '../../lib/hosts';
 import { Star } from 'lucide-react';
 import { useFavorites } from '../../contexts/FavoritesContext';
 import HostCard from '@/components/HostCard';

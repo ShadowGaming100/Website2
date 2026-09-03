@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from '@/components/NoPrefetchLink'
-import { fetchHosts, type Host } from '../../../lib/cache'
+import { fetchHosts, type Host } from '../../../lib/hosts'
 import { slugify } from '../../../lib/slugify'
 import { splitTargets, targetBuckets, parseVsSlug, sharedBucket, providerKind, sharedTargets, primaryTargetLabel } from '../../../lib/taxonomy'
 import { permanentRedirect } from 'next/navigation'
